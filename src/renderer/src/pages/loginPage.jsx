@@ -12,12 +12,14 @@ import {
   CardTitle
 } from '@/components/ui/card'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
+import useUserStore from '@/stores/useUserStore'
 
 const LoginPage = () => {
   const [adminPassword, setAdminPassword] = useState('')
   const [teacherPassword, setTeacherPassword] = useState('')
   const [error, setError] = useState('')
   const navigate = useNavigate()
+  const setUser = useUserStore((state) => state.setUser)
 
   const DEFAULT_ADMIN_PASSWORD = 'admin123'
   const DEFAULT_TEACHER_PASSWORD = 'teacher123'
@@ -29,7 +31,8 @@ const LoginPage = () => {
 
     if (password === correctPassword) {
       // Successful login
-      navigate('/dashboard', { state: { userType: type } })
+      setUser(type, type) // Set user type as both user and userType for simplicity
+      navigate('/dashboard')
     } else {
       // Failed login
       setError('Incorrect password. Please try again.')
