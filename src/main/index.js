@@ -2,9 +2,9 @@ import { app, shell, BrowserWindow, ipcMain } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
-import { writeFileSync } from 'fs'
-import PDFWindow from 'electron-pdf-window'
-import { jsPDF } from 'jspdf' // Corrected import
+import { jsPDF } from 'jspdf'
+
+let certificateNumber = 1000 // Starting certificate number
 
 function createWindow() {
   // Create the browser window.
@@ -41,68 +41,56 @@ function createWindow() {
   }
 }
 
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
+function generatePDF(data, certNumber) {
+  const doc = new jsPDF()
+  doc.setFontSize(20)
+  doc.text('Certificate', 105, 20, { align: 'center' })
+  doc.setFontSize(14)
+  doc.text(`Certificate No: ${certNumber}`, 105, 30, { align: 'center' })
+  doc.text(`This is to certify that`, 105, 40, { align: 'center' })
+  doc.setFontSize(18)
+  doc.text(`${data.name}`, 105, 55, { align: 'center' })
+  doc.setFontSize(14)
+  doc.text(`Age: ${data.age}`, 105, 70, { align: 'center' })
+  doc.text(`City: ${data.city}`, 105, 85, { align: 'center' })
+  doc.text(`Date: ${new Date().toLocaleDateString()}`, 105, 100, { align: 'center' })
+
+  return doc.output('arraybuffer')
+}
+
 app.whenReady().then(() => {
-  // Set app user model id for windows
   electronApp.setAppUserModelId('com.electron')
 
-  // Default open or close DevTools by F12 in development
-  // and ignore CommandOrControl + R in production.
-  // see https://github.com/alex8088/electron-toolkit/tree/master/packages/utils
   app.on('browser-window-created', (_, window) => {
     optimizer.watchWindowShortcuts(window)
   })
 
-  // IPC test
-  ipcMain.on('ping', () => console.log('pong'))
-
-  // PDF generation and rendering
   ipcMain.handle('generate-certificate', (event, data) => {
     try {
-      const doc = new jsPDF()
-      doc.setFontSize(20)
-      doc.text('Certificate', 105, 20, { align: 'center' })
-      doc.setFontSize(14)
-      doc.text(`This is to certify that`, 105, 40, { align: 'center' })
-      doc.setFontSize(18)
-      doc.text(`${data.name}`, 105, 55, { align: 'center' })
-      doc.setFontSize(14)
-      doc.text(`Age: ${data.age}`, 105, 70, { align: 'center' })
-      doc.text(`City: ${data.city}`, 105, 85, { align: 'center' })
-      doc.text(`Date: ${new Date().toLocaleDateString()}`, 105, 100, { align: 'center' })
-
-      const pdfBuffer = doc.output('arraybuffer')
-      const tempPath = join(app.getPath('temp'), 'temp.pdf')
-      writeFileSync(tempPath, Buffer.from(pdfBuffer))
-
-      const win = new BrowserWindow({
-        width: 800,
-        height: 600
-      })
-
-      PDFWindow.addSupport(win)
-      win.loadURL(`file://${tempPath}`)
-
-      return 'PDF generated and displayed'
+      const pdfBuffer = generatePDF(data, certificateNumber)
+      return Buffer.from(pdfBuffer).toString('base64')
     } catch (error) {
       console.error('Error in generate-certificate:', error)
-      throw error // Rethrow the error so it's sent back to the renderer
+      throw error
+    }
+  })
+
+  ipcMain.handle('print-certificate', (event, data) => {
+    certificateNumber++
+    const pdfBuffer = generatePDF(data, certificateNumber)
+    return {
+      certificateNumber,
+      pdfBase64: Buffer.from(pdfBuffer).toString('base64')
     }
   })
 
   createWindow()
 
   app.on('activate', function () {
-    // On macOS it's common to re-create a window in the app when the
-    // dock icon is clicked and there are no other windows open.
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
   })
 })
 
-// Quit when all windows are closed, except on macOS. There, it's common
-// for applications and their menu bar to stay active until the user quits
-// explicitly with Cmd + Q.
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit()
