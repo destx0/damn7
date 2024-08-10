@@ -32,7 +32,7 @@ const LoginPage = () => {
     if (password === correctPassword) {
       // Successful login
       setUser(type, type) // Set user type as both user and userType for simplicity
-      navigate('/dashboard')
+      navigate('/table')
     } else {
       // Failed login
       setError('Incorrect password. Please try again.')
