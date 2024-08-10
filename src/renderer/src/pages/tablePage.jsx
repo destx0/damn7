@@ -94,8 +94,8 @@ const TablePage = () => {
   }
 
   return (
-    <div className="p-4">
-      <div className="flex justify-between items-center mb-4">
+    <div className="flex flex-col w-screen h-screen">
+      <div className="flex justify-between items-center p-4 bg-gray-100">
         <h1 className="text-2xl font-bold">Data Table</h1>
         <div>
           <span className="mr-4">
@@ -104,9 +104,9 @@ const TablePage = () => {
           <Button onClick={handleLogout}>Logout</Button>
         </div>
       </div>
-      <div className={`flex flex-col ${pdfDataUrl ? 'lg:flex-row' : ''} gap-4`}>
-        <div className={pdfDataUrl ? 'lg:w-1/2' : 'w-full'}>
-          <div className="ag-theme-alpine" style={{ height: 400, width: '100%' }}>
+      <div className="flex flex-1 overflow-hidden">
+        <div className="flex-1 overflow-auto">
+          <div className="ag-theme-alpine h-full w-full">
             <AgGridReact
               rowData={rowData}
               columnDefs={columnDefs}
@@ -114,18 +114,20 @@ const TablePage = () => {
               onCellValueChanged={onCellValueChanged}
             />
           </div>
-          {!isAdmin && <p className="mt-4 text-red-500">Note: Only admins can edit this data.</p>}
         </div>
         {pdfDataUrl && (
-          <div className="lg:w-1/2">
+          <div className="w-1/2 p-4 overflow-auto">
             <h2 className="text-xl mb-2">Certificate Preview</h2>
             <Button onClick={printCertificate} className="mb-2">
               Print Certificate
             </Button>
-            <iframe src={pdfDataUrl} className="w-full h-[400px] border-none" />
+            <iframe src={pdfDataUrl} className="w-full h-[calc(100%-80px)] border-none" />
           </div>
         )}
       </div>
+      {!isAdmin && (
+        <div className="p-4 bg-red-100 text-red-700">Note: Only admins can edit this data.</div>
+      )}
     </div>
   )
 }
