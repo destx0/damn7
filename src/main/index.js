@@ -2,6 +2,9 @@ import { app, shell, BrowserWindow, ipcMain } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
+import { writeFileSync } from 'fs'
+import PDFWindow from 'electron-pdf-window'
+import { jsPDF } from 'jspdf' // Corrected import
 
 function createWindow() {
   // Create the browser window.
@@ -19,6 +22,9 @@ function createWindow() {
 
   mainWindow.on('ready-to-show', () => {
     mainWindow.show()
+    if (is.dev) {
+      mainWindow.webContents.openDevTools()
+    }
   })
 
   mainWindow.webContents.setWindowOpenHandler((details) => {
@@ -37,7 +43,6 @@ function createWindow() {
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
-// Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
   // Set app user model id for windows
   electronApp.setAppUserModelId('com.electron')
@@ -51,6 +56,40 @@ app.whenReady().then(() => {
 
   // IPC test
   ipcMain.on('ping', () => console.log('pong'))
+
+  // PDF generation and rendering
+  ipcMain.handle('generate-certificate', (event, data) => {
+    try {
+      const doc = new jsPDF()
+      doc.setFontSize(20)
+      doc.text('Certificate', 105, 20, { align: 'center' })
+      doc.setFontSize(14)
+      doc.text(`This is to certify that`, 105, 40, { align: 'center' })
+      doc.setFontSize(18)
+      doc.text(`${data.name}`, 105, 55, { align: 'center' })
+      doc.setFontSize(14)
+      doc.text(`Age: ${data.age}`, 105, 70, { align: 'center' })
+      doc.text(`City: ${data.city}`, 105, 85, { align: 'center' })
+      doc.text(`Date: ${new Date().toLocaleDateString()}`, 105, 100, { align: 'center' })
+
+      const pdfBuffer = doc.output('arraybuffer')
+      const tempPath = join(app.getPath('temp'), 'temp.pdf')
+      writeFileSync(tempPath, Buffer.from(pdfBuffer))
+
+      const win = new BrowserWindow({
+        width: 800,
+        height: 600
+      })
+
+      PDFWindow.addSupport(win)
+      win.loadURL(`file://${tempPath}`)
+
+      return 'PDF generated and displayed'
+    } catch (error) {
+      console.error('Error in generate-certificate:', error)
+      throw error // Rethrow the error so it's sent back to the renderer
+    }
+  })
 
   createWindow()
 
@@ -69,6 +108,3 @@ app.on('window-all-closed', () => {
     app.quit()
   }
 })
-
-// In this file you can include the rest of your app"s specific main process
-// code. You can also put them in separate files and require them here.

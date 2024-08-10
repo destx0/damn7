@@ -22,14 +22,29 @@ const TablePage = () => {
 
   const isAdmin = userType === 'admin'
 
+  const generateCertificate = useCallback(async (data) => {
+    try {
+      const result = await window.api.generateCertificate(data)
+      console.log(result)
+    } catch (error) {
+      console.error('Error generating certificate:', error)
+    }
+  }, [])
+
   const columnDefs = useMemo(
     () => [
       { field: 'id', editable: false },
       { field: 'name', editable: isAdmin },
       { field: 'age', editable: isAdmin },
-      { field: 'city', editable: isAdmin }
+      { field: 'city', editable: isAdmin },
+      {
+        headerName: 'Actions',
+        cellRenderer: (params) => (
+          <Button onClick={() => generateCertificate(params.data)}>View Certificate</Button>
+        )
+      }
     ],
-    [isAdmin]
+    [isAdmin, generateCertificate]
   )
 
   const defaultColDef = useMemo(
@@ -67,7 +82,7 @@ const TablePage = () => {
           <Button onClick={handleLogout}>Logout</Button>
         </div>
       </div>
-      <div className="ag-theme-alpine" style={{ height: 400, width: 600 }}>
+      <div className="ag-theme-alpine" style={{ height: 400, width: 800 }}>
         <AgGridReact
           rowData={rowData}
           columnDefs={columnDefs}
