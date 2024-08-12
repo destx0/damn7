@@ -27,30 +27,30 @@ const TablePage = () => {
     return `data:application/pdf;base64,${base64Data}`
   }, [])
 
-  const generateCertificate = useCallback(
+  const generateLeaveCertificate = useCallback(
     async (data) => {
       try {
-        const base64Data = await window.api.generateCertificate(data)
+        const base64Data = await window.api.generateLeaveCertificate(data)
         const dataUrl = createDataUrl(base64Data)
         setPdfDataUrl(dataUrl)
         setSelectedRow(data)
       } catch (error) {
-        console.error('Error generating certificate:', error)
+        console.error('Error generating leave certificate:', error)
       }
     },
     [createDataUrl]
   )
 
-  const printCertificate = useCallback(async () => {
+  const printLeaveCertificate = useCallback(async () => {
     if (!selectedRow) return
     try {
-      const { certificateNumber, pdfBase64 } = await window.api.printCertificate(selectedRow)
-      console.log(`Certificate printed. New certificate number: ${certificateNumber}`)
+      const { certificateNumber, pdfBase64 } = await window.api.printLeaveCertificate(selectedRow)
+      console.log(`Leave Certificate printed. New certificate number: ${certificateNumber}`)
 
       const newDataUrl = createDataUrl(pdfBase64)
       setPdfDataUrl(newDataUrl)
     } catch (error) {
-      console.error('Error printing certificate:', error)
+      console.error('Error printing leave certificate:', error)
     }
   }, [selectedRow, createDataUrl])
 
@@ -63,11 +63,13 @@ const TablePage = () => {
       {
         headerName: 'Actions',
         cellRenderer: (params) => (
-          <Button onClick={() => generateCertificate(params.data)}>View Certificate</Button>
+          <Button onClick={() => generateLeaveCertificate(params.data)}>
+            View Leave Certificate
+          </Button>
         )
       }
     ],
-    [isAdmin, generateCertificate]
+    [isAdmin, generateLeaveCertificate]
   )
 
   const defaultColDef = useMemo(
@@ -96,7 +98,7 @@ const TablePage = () => {
   return (
     <div className="flex flex-col w-screen h-screen">
       <div className="flex justify-between items-center p-4 bg-gray-100">
-        <h1 className="text-2xl font-bold">Data Table</h1>
+        <h1 className="text-2xl font-bold">Employee Leave Certificates</h1>
         <div>
           <span className="mr-4">
             Logged in as: {user} ({userType})
@@ -117,16 +119,16 @@ const TablePage = () => {
         </div>
         {pdfDataUrl && (
           <div className="w-1/2 p-4 overflow-auto">
-            <h2 className="text-xl mb-2">Certificate Preview</h2>
-            <Button onClick={printCertificate} className="mb-2">
-              Print Certificate
+            <h2 className="text-xl mb-2">Leave Certificate Preview</h2>
+            <Button onClick={printLeaveCertificate} className="mb-2">
+              Print Leave Certificate
             </Button>
             <iframe src={pdfDataUrl} className="w-full h-[calc(100%-80px)] border-none" />
           </div>
         )}
       </div>
       {!isAdmin && (
-        <div className="p-4 bg-red-100 text-red-700">Note: Only admins can edit this data.</div>
+        <div className="p-4 bg-red-100 text-red-700">Note: Only admins can edit employee data.</div>
       )}
     </div>
   )

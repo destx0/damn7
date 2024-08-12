@@ -2,8 +2,8 @@ import { contextBridge, ipcRenderer } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
 
 const api = {
-  generateCertificate: (data) => ipcRenderer.invoke('generate-certificate', data),
-  printCertificate: (data) => ipcRenderer.invoke('print-certificate', data)
+  generateLeaveCertificate: (data) => ipcRenderer.invoke('generate-leave-certificate', data),
+  printLeaveCertificate: (data) => ipcRenderer.invoke('print-leave-certificate', data)
 }
 
 if (process.contextIsolated) {

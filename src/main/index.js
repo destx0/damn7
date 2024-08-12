@@ -2,9 +2,7 @@ import { app, shell, BrowserWindow, ipcMain } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
-import { jsPDF } from 'jspdf'
-
-let certificateNumber = 1000 // Starting certificate number
+import { generateLeaveCertificate, getNextCertificateNumber } from './certificateGenerator'
 
 function createWindow() {
   // Create the browser window.
@@ -65,19 +63,19 @@ app.whenReady().then(() => {
     optimizer.watchWindowShortcuts(window)
   })
 
-  ipcMain.handle('generate-certificate', (event, data) => {
+  ipcMain.handle('generate-leave-certificate', (event, data) => {
     try {
-      const pdfBuffer = generatePDF(data, certificateNumber)
+      const pdfBuffer = generateLeaveCertificate(data, getNextCertificateNumber())
       return Buffer.from(pdfBuffer).toString('base64')
     } catch (error) {
-      console.error('Error in generate-certificate:', error)
+      console.error('Error in generate-leave-certificate:', error)
       throw error
     }
   })
 
-  ipcMain.handle('print-certificate', (event, data) => {
-    certificateNumber++
-    const pdfBuffer = generatePDF(data, certificateNumber)
+  ipcMain.handle('print-leave-certificate', (event, data) => {
+    const certificateNumber = getNextCertificateNumber()
+    const pdfBuffer = generateLeaveCertificate(data, certificateNumber)
     return {
       certificateNumber,
       pdfBase64: Buffer.from(pdfBuffer).toString('base64')
