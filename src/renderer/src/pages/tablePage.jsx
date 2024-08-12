@@ -10,6 +10,7 @@ const TablePage = () => {
   const [rowData, setRowData] = useState([])
   const [pdfDataUrl, setPdfDataUrl] = useState(null)
   const [selectedRow, setSelectedRow] = useState(null)
+  const [certificateType, setCertificateType] = useState(null)
   const navigate = useNavigate()
   const { user, userType, clearUser } = useUserStore()
 
@@ -27,32 +28,39 @@ const TablePage = () => {
     return `data:application/pdf;base64,${base64Data}`
   }, [])
 
-  const generateLeaveCertificate = useCallback(
-    async (data) => {
+  const generateCertificate = useCallback(
+    async (data, type) => {
       try {
-        const base64Data = await window.api.generateLeaveCertificate(data)
+        const base64Data = await (type === 'leave'
+          ? window.api.generateLeaveCertificate(data)
+          : window.api.generateBonafideCertificate(data))
         const dataUrl = createDataUrl(base64Data)
         setPdfDataUrl(dataUrl)
         setSelectedRow(data)
+        setCertificateType(type)
       } catch (error) {
-        console.error('Error generating leave certificate:', error)
+        console.error(`Error generating ${type} certificate:`, error)
       }
     },
     [createDataUrl]
   )
 
-  const printLeaveCertificate = useCallback(async () => {
-    if (!selectedRow) return
+  const printCertificate = useCallback(async () => {
+    if (!selectedRow || !certificateType) return
     try {
-      const { certificateNumber, pdfBase64 } = await window.api.printLeaveCertificate(selectedRow)
-      console.log(`Leave Certificate printed. New certificate number: ${certificateNumber}`)
+      const { certificateNumber, pdfBase64 } = await (certificateType === 'leave'
+        ? window.api.printLeaveCertificate(selectedRow)
+        : window.api.printBonafideCertificate(selectedRow))
+      console.log(
+        `${certificateType.charAt(0).toUpperCase() + certificateType.slice(1)} Certificate printed. New certificate number: ${certificateNumber}`
+      )
 
       const newDataUrl = createDataUrl(pdfBase64)
       setPdfDataUrl(newDataUrl)
     } catch (error) {
-      console.error('Error printing leave certificate:', error)
+      console.error(`Error printing ${certificateType} certificate:`, error)
     }
-  }, [selectedRow, createDataUrl])
+  }, [selectedRow, certificateType, createDataUrl])
 
   const columnDefs = useMemo(
     () => [
@@ -63,13 +71,18 @@ const TablePage = () => {
       {
         headerName: 'Actions',
         cellRenderer: (params) => (
-          <Button onClick={() => generateLeaveCertificate(params.data)}>
-            View Leave Certificate
-          </Button>
+          <div>
+            <Button onClick={() => generateCertificate(params.data, 'leave')} className="mr-2">
+              View Leave Certificate
+            </Button>
+            <Button onClick={() => generateCertificate(params.data, 'bonafide')}>
+              View Bonafide Certificate
+            </Button>
+          </div>
         )
       }
     ],
-    [isAdmin, generateLeaveCertificate]
+    [isAdmin, generateCertificate]
   )
 
   const defaultColDef = useMemo(
@@ -98,7 +111,7 @@ const TablePage = () => {
   return (
     <div className="flex flex-col w-screen h-screen">
       <div className="flex justify-between items-center p-4 bg-gray-100">
-        <h1 className="text-2xl font-bold">Employee Leave Certificates</h1>
+        <h1 className="text-2xl font-bold">Employee Certificates</h1>
         <div>
           <span className="mr-4">
             Logged in as: {user} ({userType})
@@ -119,9 +132,12 @@ const TablePage = () => {
         </div>
         {pdfDataUrl && (
           <div className="w-1/2 p-4 overflow-auto">
-            <h2 className="text-xl mb-2">Leave Certificate Preview</h2>
-            <Button onClick={printLeaveCertificate} className="mb-2">
-              Print Leave Certificate
+            <h2 className="text-xl mb-2">
+              {certificateType.charAt(0).toUpperCase() + certificateType.slice(1)} Certificate
+              Preview
+            </h2>
+            <Button onClick={printCertificate} className="mb-2">
+              Print {certificateType.charAt(0).toUpperCase() + certificateType.slice(1)} Certificate
             </Button>
             <iframe src={pdfDataUrl} className="w-full h-[calc(100%-80px)] border-none" />
           </div>

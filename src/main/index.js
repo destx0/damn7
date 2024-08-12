@@ -2,7 +2,12 @@ import { app, shell, BrowserWindow, ipcMain } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
-import { generateLeaveCertificate, getNextCertificateNumber } from './certificateGenerator'
+import {
+  generateLeaveCertificate,
+  generateBonafideCertificate,
+  getNextLeaveCertificateNumber,
+  getNextBonafideCertificateNumber
+} from './certificateGenerator'
 
 function createWindow() {
   // Create the browser window.
@@ -30,30 +35,12 @@ function createWindow() {
     return { action: 'deny' }
   })
 
-  // HMR for renderer base on electron-vite cli.
   // Load the remote URL for development or the local html file for production.
   if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
     mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL'])
   } else {
     mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
   }
-}
-
-function generatePDF(data, certNumber) {
-  const doc = new jsPDF()
-  doc.setFontSize(20)
-  doc.text('Certificate', 105, 20, { align: 'center' })
-  doc.setFontSize(14)
-  doc.text(`Certificate No: ${certNumber}`, 105, 30, { align: 'center' })
-  doc.text(`This is to certify that`, 105, 40, { align: 'center' })
-  doc.setFontSize(18)
-  doc.text(`${data.name}`, 105, 55, { align: 'center' })
-  doc.setFontSize(14)
-  doc.text(`Age: ${data.age}`, 105, 70, { align: 'center' })
-  doc.text(`City: ${data.city}`, 105, 85, { align: 'center' })
-  doc.text(`Date: ${new Date().toLocaleDateString()}`, 105, 100, { align: 'center' })
-
-  return doc.output('arraybuffer')
 }
 
 app.whenReady().then(() => {
@@ -65,7 +52,7 @@ app.whenReady().then(() => {
 
   ipcMain.handle('generate-leave-certificate', (event, data) => {
     try {
-      const pdfBuffer = generateLeaveCertificate(data, getNextCertificateNumber())
+      const pdfBuffer = generateLeaveCertificate(data, 'DRAFT')
       return Buffer.from(pdfBuffer).toString('base64')
     } catch (error) {
       console.error('Error in generate-leave-certificate:', error)
@@ -74,8 +61,27 @@ app.whenReady().then(() => {
   })
 
   ipcMain.handle('print-leave-certificate', (event, data) => {
-    const certificateNumber = getNextCertificateNumber()
+    const certificateNumber = getNextLeaveCertificateNumber()
     const pdfBuffer = generateLeaveCertificate(data, certificateNumber)
+    return {
+      certificateNumber,
+      pdfBase64: Buffer.from(pdfBuffer).toString('base64')
+    }
+  })
+
+  ipcMain.handle('generate-bonafide-certificate', (event, data) => {
+    try {
+      const pdfBuffer = generateBonafideCertificate(data, 'DRAFT')
+      return Buffer.from(pdfBuffer).toString('base64')
+    } catch (error) {
+      console.error('Error in generate-bonafide-certificate:', error)
+      throw error
+    }
+  })
+
+  ipcMain.handle('print-bonafide-certificate', (event, data) => {
+    const certificateNumber = getNextBonafideCertificateNumber()
+    const pdfBuffer = generateBonafideCertificate(data, certificateNumber)
     return {
       certificateNumber,
       pdfBase64: Buffer.from(pdfBuffer).toString('base64')
