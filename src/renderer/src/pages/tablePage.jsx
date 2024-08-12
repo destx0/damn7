@@ -27,10 +27,12 @@ const TablePage = () => {
     }
   }
 
-  const handleEditStudent = useCallback((student) => {
-    // Navigate to edit page or open edit modal
-    console.log('Edit student:', student)
-  }, [])
+  const handleEditStudent = useCallback(
+    (student) => {
+      navigate(`/edit-student/${student.id}`, { state: { student } })
+    },
+    [navigate]
+  )
 
   const handleDeleteStudent = useCallback(async (id) => {
     try {
