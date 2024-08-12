@@ -2,15 +2,10 @@ import { app, shell, BrowserWindow, ipcMain } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
-import {
-  generateLeaveCertificate,
-  generateBonafideCertificate,
-  getNextLeaveCertificateNumber,
-  getNextBonafideCertificateNumber
-} from './certificateGenerator'
+import { generateCertificate } from './certificateGenerator'
+import { addStudent, getStudents, updateStudent, deleteStudent } from './dbOperations'
 
 function createWindow() {
-  // Create the browser window.
   const mainWindow = new BrowserWindow({
     width: 900,
     height: 670,
@@ -35,12 +30,49 @@ function createWindow() {
     return { action: 'deny' }
   })
 
-  // Load the remote URL for development or the local html file for production.
   if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
     mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL'])
   } else {
     mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
   }
+}
+
+function setupIpcHandlers() {
+  ipcMain.handle('add-student', async (_, student) => {
+    return addStudent(student)
+  })
+
+  ipcMain.handle('get-students', async () => {
+    return getStudents()
+  })
+
+  ipcMain.handle('update-student', async (_, id, student) => {
+    return updateStudent(id, student)
+  })
+
+  ipcMain.handle('delete-student', async (_, id) => {
+    return deleteStudent(id)
+  })
+
+  ipcMain.handle('generate-leave-certificate', async (_, data) => {
+    const pdfBuffer = generateCertificate(data, 'leave', true)
+    return Buffer.from(pdfBuffer).toString('base64')
+  })
+
+  ipcMain.handle('print-leave-certificate', async (_, data) => {
+    const pdfBuffer = generateCertificate(data, 'leave', false)
+    return Buffer.from(pdfBuffer).toString('base64')
+  })
+
+  ipcMain.handle('generate-bonafide-certificate', async (_, data) => {
+    const pdfBuffer = generateCertificate(data, 'bonafide', true)
+    return Buffer.from(pdfBuffer).toString('base64')
+  })
+
+  ipcMain.handle('print-bonafide-certificate', async (_, data) => {
+    const pdfBuffer = generateCertificate(data, 'bonafide', false)
+    return Buffer.from(pdfBuffer).toString('base64')
+  })
 }
 
 app.whenReady().then(() => {
@@ -50,45 +82,9 @@ app.whenReady().then(() => {
     optimizer.watchWindowShortcuts(window)
   })
 
-  ipcMain.handle('generate-leave-certificate', (event, data) => {
-    try {
-      const pdfBuffer = generateLeaveCertificate(data, 'DRAFT')
-      return Buffer.from(pdfBuffer).toString('base64')
-    } catch (error) {
-      console.error('Error in generate-leave-certificate:', error)
-      throw error
-    }
-  })
-
-  ipcMain.handle('print-leave-certificate', (event, data) => {
-    const certificateNumber = getNextLeaveCertificateNumber()
-    const pdfBuffer = generateLeaveCertificate(data, certificateNumber)
-    return {
-      certificateNumber,
-      pdfBase64: Buffer.from(pdfBuffer).toString('base64')
-    }
-  })
-
-  ipcMain.handle('generate-bonafide-certificate', (event, data) => {
-    try {
-      const pdfBuffer = generateBonafideCertificate(data, 'DRAFT')
-      return Buffer.from(pdfBuffer).toString('base64')
-    } catch (error) {
-      console.error('Error in generate-bonafide-certificate:', error)
-      throw error
-    }
-  })
-
-  ipcMain.handle('print-bonafide-certificate', (event, data) => {
-    const certificateNumber = getNextBonafideCertificateNumber()
-    const pdfBuffer = generateBonafideCertificate(data, certificateNumber)
-    return {
-      certificateNumber,
-      pdfBase64: Buffer.from(pdfBuffer).toString('base64')
-    }
-  })
-
   createWindow()
+
+  setupIpcHandlers()
 
   app.on('activate', function () {
     if (BrowserWindow.getAllWindows().length === 0) createWindow()

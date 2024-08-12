@@ -15,63 +15,85 @@ const TablePage = () => {
   const { user, userType, clearUser } = useUserStore()
 
   useEffect(() => {
-    setRowData([
-      { id: 1, name: 'John Doe', age: 35, city: 'New York' },
-      { id: 2, name: 'Jane Smith', age: 28, city: 'Los Angeles' },
-      { id: 3, name: 'Bob Johnson', age: 42, city: 'Chicago' }
-    ])
+    fetchStudents()
+  }, [])
+
+  const fetchStudents = async () => {
+    try {
+      const students = await window.api.getStudents()
+      setRowData(students)
+    } catch (error) {
+      console.error('Error fetching students:', error)
+    }
+  }
+
+  const handleEditStudent = useCallback((student) => {
+    // Navigate to edit page or open edit modal
+    console.log('Edit student:', student)
+  }, [])
+
+  const handleDeleteStudent = useCallback(async (id) => {
+    try {
+      await window.api.deleteStudent(id)
+      setRowData((prevData) => prevData.filter((student) => student.id !== id))
+    } catch (error) {
+      console.error('Error deleting student:', error)
+    }
   }, [])
 
   const isAdmin = userType === 'admin'
 
-  const createDataUrl = useCallback((base64Data) => {
-    return `data:application/pdf;base64,${base64Data}`
+  const generateCertificate = useCallback(async (data, type) => {
+    try {
+      const base64Data = await (type === 'leave'
+        ? window.api.generateLeaveCertificate(data)
+        : window.api.generateBonafideCertificate(data))
+      const dataUrl = `data:application/pdf;base64,${base64Data}`
+      setPdfDataUrl(dataUrl)
+      setSelectedRow(data)
+      setCertificateType(type)
+    } catch (error) {
+      console.error(`Error generating ${type} certificate:`, error)
+    }
   }, [])
-
-  const generateCertificate = useCallback(
-    async (data, type) => {
-      try {
-        const base64Data = await (type === 'leave'
-          ? window.api.generateLeaveCertificate(data)
-          : window.api.generateBonafideCertificate(data))
-        const dataUrl = createDataUrl(base64Data)
-        setPdfDataUrl(dataUrl)
-        setSelectedRow(data)
-        setCertificateType(type)
-      } catch (error) {
-        console.error(`Error generating ${type} certificate:`, error)
-      }
-    },
-    [createDataUrl]
-  )
 
   const printCertificate = useCallback(async () => {
     if (!selectedRow || !certificateType) return
     try {
-      const { certificateNumber, pdfBase64 } = await (certificateType === 'leave'
+      const pdfBase64 = await (certificateType === 'leave'
         ? window.api.printLeaveCertificate(selectedRow)
         : window.api.printBonafideCertificate(selectedRow))
       console.log(
-        `${certificateType.charAt(0).toUpperCase() + certificateType.slice(1)} Certificate printed. New certificate number: ${certificateNumber}`
+        `${certificateType.charAt(0).toUpperCase() + certificateType.slice(1)} Certificate printed.`
       )
 
-      const newDataUrl = createDataUrl(pdfBase64)
+      const newDataUrl = `data:application/pdf;base64,${pdfBase64}`
       setPdfDataUrl(newDataUrl)
     } catch (error) {
       console.error(`Error printing ${certificateType} certificate:`, error)
     }
-  }, [selectedRow, certificateType, createDataUrl])
+  }, [selectedRow, certificateType])
 
   const columnDefs = useMemo(
     () => [
       { field: 'id', editable: false },
       { field: 'name', editable: isAdmin },
       { field: 'age', editable: isAdmin },
-      { field: 'city', editable: isAdmin },
+      { field: 'grade', editable: isAdmin },
       {
         headerName: 'Actions',
         cellRenderer: (params) => (
           <div>
+            <Button onClick={() => handleEditStudent(params.data)} className="mr-2">
+              Edit
+            </Button>
+            <Button
+              onClick={() => handleDeleteStudent(params.data.id)}
+              variant="destructive"
+              className="mr-2"
+            >
+              Delete
+            </Button>
             <Button onClick={() => generateCertificate(params.data, 'leave')} className="mr-2">
               View Leave Certificate
             </Button>
@@ -82,7 +104,7 @@ const TablePage = () => {
         )
       }
     ],
-    [isAdmin, generateCertificate]
+    [isAdmin, generateCertificate, handleEditStudent, handleDeleteStudent]
   )
 
   const defaultColDef = useMemo(
@@ -111,8 +133,11 @@ const TablePage = () => {
   return (
     <div className="flex flex-col w-screen h-screen">
       <div className="flex justify-between items-center p-4 bg-gray-100">
-        <h1 className="text-2xl font-bold">Employee Certificates</h1>
+        <h1 className="text-2xl font-bold">Student Certificates</h1>
         <div>
+          <Button onClick={() => navigate('/add-student')} className="mr-2">
+            Add Student
+          </Button>
           <span className="mr-4">
             Logged in as: {user} ({userType})
           </span>
@@ -144,7 +169,7 @@ const TablePage = () => {
         )}
       </div>
       {!isAdmin && (
-        <div className="p-4 bg-red-100 text-red-700">Note: Only admins can edit employee data.</div>
+        <div className="p-4 bg-red-100 text-red-700">Note: Only admins can edit student data.</div>
       )}
     </div>
   )
