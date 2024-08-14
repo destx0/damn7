@@ -5,6 +5,7 @@ import 'ag-grid-community/styles/ag-theme-alpine.css'
 import { Button } from '@/components/ui/button'
 import { useNavigate } from 'react-router-dom'
 import useUserStore from '@/stores/useUserStore'
+import createColumnDefs from '@/utils/columnDefs'
 
 const TablePage = () => {
   const [rowData, setRowData] = useState([])
@@ -59,54 +60,9 @@ const TablePage = () => {
     }
   }, [])
 
-  const printCertificate = useCallback(async () => {
-    if (!selectedRow || !certificateType) return
-    try {
-      const pdfBase64 = await (certificateType === 'leave'
-        ? window.api.printLeaveCertificate(selectedRow)
-        : window.api.printBonafideCertificate(selectedRow))
-      console.log(
-        `${certificateType.charAt(0).toUpperCase() + certificateType.slice(1)} Certificate printed.`
-      )
-
-      const newDataUrl = `data:application/pdf;base64,${pdfBase64}`
-      setPdfDataUrl(newDataUrl)
-    } catch (error) {
-      console.error(`Error printing ${certificateType} certificate:`, error)
-    }
-  }, [selectedRow, certificateType])
-
   const columnDefs = useMemo(
-    () => [
-      { field: 'id', editable: false },
-      { field: 'name', editable: isAdmin },
-      { field: 'age', editable: isAdmin },
-      { field: 'grade', editable: isAdmin },
-      {
-        headerName: 'Actions',
-        cellRenderer: (params) => (
-          <div>
-            <Button onClick={() => handleEditStudent(params.data)} className="mr-2">
-              Edit
-            </Button>
-            <Button
-              onClick={() => handleDeleteStudent(params.data.id)}
-              variant="destructive"
-              className="mr-2"
-            >
-              Delete
-            </Button>
-            <Button onClick={() => generateCertificate(params.data, 'leave')} className="mr-2">
-              View Leave Certificate
-            </Button>
-            <Button onClick={() => generateCertificate(params.data, 'bonafide')}>
-              View Bonafide Certificate
-            </Button>
-          </div>
-        )
-      }
-    ],
-    [isAdmin, generateCertificate, handleEditStudent, handleDeleteStudent]
+    () => createColumnDefs(isAdmin, handleEditStudent, handleDeleteStudent, generateCertificate),
+    [isAdmin, handleEditStudent, handleDeleteStudent, generateCertificate]
   )
 
   const defaultColDef = useMemo(
@@ -147,28 +103,27 @@ const TablePage = () => {
         </div>
       </div>
       <div className="flex flex-1 overflow-hidden">
-        <div className="flex-1 overflow-auto">
-          <div className="ag-theme-alpine h-full w-full">
-            <AgGridReact
-              rowData={rowData}
-              columnDefs={columnDefs}
-              defaultColDef={defaultColDef}
-              onCellValueChanged={onCellValueChanged}
-            />
-          </div>
+      <div className="flex-1 overflow-auto">
+        <div className="ag-theme-alpine h-full w-full">
+          <AgGridReact
+            rowData={rowData}
+            columnDefs={columnDefs}
+            defaultColDef={defaultColDef}
+            onCellValueChanged={onCellValueChanged}
+          />
         </div>
-        {pdfDataUrl && (
-          <div className="w-1/2 p-4 overflow-auto">
-            <h2 className="text-xl mb-2">
-              {certificateType.charAt(0).toUpperCase() + certificateType.slice(1)} Certificate
-              Preview
-            </h2>
-            <Button onClick={printCertificate} className="mb-2">
-              Print {certificateType.charAt(0).toUpperCase() + certificateType.slice(1)} Certificate
-            </Button>
-            <iframe src={pdfDataUrl} className="w-full h-[calc(100%-80px)] border-none" />
-          </div>
-        )}
+      </div>
+      {pdfDataUrl && (
+        <div className="w-1/2 p-4 overflow-auto">
+          <h2 className="text-xl mb-2">
+            {certificateType.charAt(0).toUpperCase() + certificateType.slice(1)} Certificate Preview
+          </h2>
+          <Button onClick={() => window.print()} className="mb-2">
+            Print {certificateType.charAt(0).toUpperCase() + certificateType.slice(1)} Certificate
+          </Button>
+          <iframe src={pdfDataUrl} className="w-full h-[calc(100%-80px)] border-none" />
+        </div>
+      )}
       </div>
       {!isAdmin && (
         <div className="p-4 bg-red-100 text-red-700">Note: Only admins can edit student data.</div>
