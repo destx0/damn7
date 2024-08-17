@@ -1,15 +1,37 @@
 import sqlite3 from 'sqlite3'
 import { app } from 'electron'
-import { join } from 'path'
+import path from 'path'
 
-const db = new sqlite3.Database(join(app.getPath('userData'), 'students.db'))
+// Get the app path
+const appPath = app.getAppPath()
+
+// Define the database file path
+const dbPath = path.join(appPath, 'students.sqlite')
+
+// Create a new database connection
+const db = new sqlite3.Database(dbPath)
 
 db.serialize(() => {
   db.run(`CREATE TABLE IF NOT EXISTS students (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
+    studentId TEXT UNIQUE,
+    aadharNo TEXT,
     name TEXT,
-    age INTEGER,
-    grade TEXT
+    surname TEXT,
+    fathersName TEXT,
+    mothersName TEXT,
+    religion TEXT,
+    caste TEXT,
+    subCaste TEXT,
+    placeOfBirth TEXT,
+    taluka TEXT,
+    district TEXT,
+    state TEXT,
+    dateOfBirth TEXT,
+    lastAttendedSchool TEXT,
+    lastSchoolStandard TEXT,
+    dateOfAdmission TEXT,
+    admissionStandard TEXT
   )`)
 
   db.run(`CREATE TABLE IF NOT EXISTS certificates (
@@ -24,15 +46,16 @@ db.serialize(() => {
 
 export const addStudent = (student) => {
   return new Promise((resolve, reject) => {
-    const { name, age, grade } = student
-    db.run(
-      'INSERT INTO students (name, age, grade) VALUES (?, ?, ?)',
-      [name, age, grade],
-      function (err) {
-        if (err) reject(err)
-        else resolve({ id: this.lastID, ...student })
-      }
-    )
+    const fields = Object.keys(student).join(', ')
+    const placeholders = Object.keys(student)
+      .map(() => '?')
+      .join(', ')
+    const values = Object.values(student)
+
+    db.run(`INSERT INTO students (${fields}) VALUES (${placeholders})`, values, function (err) {
+      if (err) reject(err)
+      else resolve({ id: this.lastID, ...student })
+    })
   })
 }
 
@@ -47,15 +70,15 @@ export const getStudents = () => {
 
 export const updateStudent = (id, student) => {
   return new Promise((resolve, reject) => {
-    const { name, age, grade } = student
-    db.run(
-      'UPDATE students SET name = ?, age = ?, grade = ? WHERE id = ?',
-      [name, age, grade, id],
-      function (err) {
-        if (err) reject(err)
-        else resolve({ id, ...student })
-      }
-    )
+    const fields = Object.keys(student)
+      .map((key) => `${key} = ?`)
+      .join(', ')
+    const values = [...Object.values(student), id]
+
+    db.run(`UPDATE students SET ${fields} WHERE id = ?`, values, function (err) {
+      if (err) reject(err)
+      else resolve({ id, ...student })
+    })
   })
 }
 

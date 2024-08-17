@@ -28,8 +28,13 @@ export const generateLeaveCertificate = async (data, isDraft = true) => {
           <h1>Leave Certificate</h1>
           <div class="info">
             <p><strong>Certificate Number:</strong> ${certificateNumber}</p>
-            <p><strong>Name:</strong> ${data.name}</p>
-            <p><strong>Grade:</strong> ${data.grade}</p>
+            <p><strong>Student ID:</strong> ${data.studentId}</p>
+            <p><strong>Name:</strong> ${data.name} ${data.surname}</p>
+            <p><strong>Father's Name:</strong> ${data.fathersName}</p>
+            <p><strong>Mother's Name:</strong> ${data.mothersName}</p>
+            <p><strong>Date of Birth:</strong> ${data.dateOfBirth}</p>
+            <p><strong>Admission Standard:</strong> ${data.admissionStandard}</p>
+            <p><strong>Date of Admission:</strong> ${data.dateOfAdmission}</p>
             <p><strong>Date:</strong> ${new Date().toLocaleDateString()}</p>
           </div>
           <p>This is to certify that the above-mentioned student has been granted leave from ${data.leaveStart} to ${data.leaveEnd}.</p>

@@ -5,29 +5,48 @@ import { Label } from '@/components/ui/label'
 import { useNavigate, useParams, useLocation } from 'react-router-dom'
 
 const StudentFormPage = () => {
-  const [name, setName] = useState('')
-  const [age, setAge] = useState('')
-  const [grade, setGrade] = useState('')
+  const [formData, setFormData] = useState({
+    studentId: '',
+    aadharNo: '',
+    name: '',
+    surname: '',
+    fathersName: '',
+    mothersName: '',
+    religion: '',
+    caste: '',
+    subCaste: '',
+    placeOfBirth: '',
+    taluka: '',
+    district: '',
+    state: '',
+    dateOfBirth: '',
+    lastAttendedSchool: '',
+    lastSchoolStandard: '',
+    dateOfAdmission: '',
+    admissionStandard: ''
+  })
+
   const navigate = useNavigate()
   const { id } = useParams()
   const location = useLocation()
 
   useEffect(() => {
     if (id && location.state?.student) {
-      const { name, age, grade } = location.state.student
-      setName(name)
-      setAge(age.toString())
-      setGrade(grade)
+      setFormData(location.state.student)
     }
   }, [id, location.state])
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.id]: e.target.value })
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     try {
       if (id) {
-        await window.api.updateStudent(id, { name, age: parseInt(age), grade })
+        await window.api.updateStudent(id, formData)
       } else {
-        await window.api.addStudent({ name, age: parseInt(age), grade })
+        await window.api.addStudent(formData)
       }
       navigate('/table')
     } catch (error) {
@@ -39,24 +58,18 @@ const StudentFormPage = () => {
     <div className="p-4">
       <h1 className="text-2xl font-bold mb-4">{id ? 'Edit' : 'Add'} Student</h1>
       <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <Label htmlFor="name">Name</Label>
-          <Input id="name" value={name} onChange={(e) => setName(e.target.value)} required />
-        </div>
-        <div>
-          <Label htmlFor="age">Age</Label>
-          <Input
-            id="age"
-            type="number"
-            value={age}
-            onChange={(e) => setAge(e.target.value)}
-            required
-          />
-        </div>
-        <div>
-          <Label htmlFor="grade">Grade</Label>
-          <Input id="grade" value={grade} onChange={(e) => setGrade(e.target.value)} required />
-        </div>
+        {Object.entries(formData).map(([key, value]) => (
+          <div key={key}>
+            <Label htmlFor={key}>{key.charAt(0).toUpperCase() + key.slice(1)}</Label>
+            <Input
+              id={key}
+              value={value}
+              onChange={handleChange}
+              required
+              type={key === 'dateOfBirth' || key === 'dateOfAdmission' ? 'date' : 'text'}
+            />
+          </div>
+        ))}
         <Button type="submit">{id ? 'Update' : 'Add'} Student</Button>
         <Button type="button" onClick={() => navigate('/table')} variant="secondary">
           Cancel
