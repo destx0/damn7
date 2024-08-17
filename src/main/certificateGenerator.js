@@ -1,5 +1,4 @@
-// src/main/certificateGenerator.js
-import { jsPDF } from 'jspdf'
+import puppeteer from 'puppeteer'
 
 let leaveCertificateNumber = 1000
 let bonafideCertificateNumber = 2000
@@ -12,40 +11,46 @@ export const getNextBonafideCertificateNumber = () => {
   return bonafideCertificateNumber++
 }
 
-export const generateCertificate = (data, type, isDraft = true) => {
-  const doc = new jsPDF()
+export const generateCertificate = async (data, type, isDraft = true) => {
+  const browser = await puppeteer.launch()
+  const page = await browser.newPage()
 
-  doc.setFontSize(22)
-  doc.text(`${type.charAt(0).toUpperCase() + type.slice(1)} Certificate`, 105, 20, {
-    align: 'center'
-  })
+  const certificateNumber = isDraft
+    ? 'DRAFT'
+    : type === 'leave'
+      ? getNextLeaveCertificateNumber()
+      : getNextBonafideCertificateNumber()
 
-  doc.setFontSize(12)
-  doc.text(
-    `Certificate Number: ${isDraft ? 'DRAFT' : type === 'leave' ? getNextLeaveCertificateNumber() : getNextBonafideCertificateNumber()}`,
-    20,
-    40
-  )
-  doc.text(`Name: ${data.name}`, 20, 50)
-  doc.text(`Grade: ${data.grade}`, 20, 60)
-  doc.text(`Date: ${new Date().toLocaleDateString()}`, 20, 70)
+  const content = `
+    <html>
+      <head>
+        <style>
+          body { font-family: Arial, sans-serif; }
+          h1 { text-align: center; }
+          .draft { position: absolute; font-size: 100px; color: #e0e0e0; transform: rotate(45deg); top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(45deg); }
+        </style>
+      </head>
+      <body>
+        <h1>${type.charAt(0).toUpperCase() + type.slice(1)} Certificate</h1>
+        <p>Certificate Number: ${certificateNumber}</p>
+        <p>Name: ${data.name}</p>
+        <p>Grade: ${data.grade}</p>
+        <p>Date: ${new Date().toLocaleDateString()}</p>
+        ${
+          type === 'leave'
+            ? '<p>This is to certify that the above-mentioned student has been granted leave.</p>'
+            : `<p>Age: ${data.age}</p>
+             <p>This is to certify that the above-mentioned student is a bonafide student of our institution.</p>`
+        }
+        ${isDraft ? '<div class="draft">DRAFT</div>' : ''}
+      </body>
+    </html>
+  `
 
-  if (type === 'leave') {
-    doc.text('This is to certify that the above-mentioned student has been granted leave.', 20, 90)
-  } else {
-    doc.text(`Age: ${data.age}`, 20, 80)
-    doc.text(
-      'This is to certify that the above-mentioned student is a bonafide student of our institution.',
-      20,
-      100
-    )
-  }
+  await page.setContent(content)
+  const pdf = await page.pdf({ format: 'A4' })
 
-  if (isDraft) {
-    doc.setFontSize(40)
-    doc.setTextColor(200, 200, 200)
-    doc.text('DRAFT', 105, 150, { align: 'center', angle: 45 })
-  }
+  await browser.close()
 
-  return doc.output('arraybuffer')
+  return pdf.buffer
 }

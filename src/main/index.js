@@ -55,23 +55,43 @@ function setupIpcHandlers() {
   })
 
   ipcMain.handle('generate-leave-certificate', async (_, data) => {
-    const pdfBuffer = generateCertificate(data, 'leave', true)
-    return Buffer.from(pdfBuffer).toString('base64')
+    try {
+      const pdfBuffer = await generateCertificate(data, 'leave', true)
+      return Buffer.from(pdfBuffer).toString('base64')
+    } catch (error) {
+      console.error('Error generating leave certificate:', error)
+      throw error
+    }
   })
 
   ipcMain.handle('print-leave-certificate', async (_, data) => {
-    const pdfBuffer = generateCertificate(data, 'leave', false)
-    return Buffer.from(pdfBuffer).toString('base64')
+    try {
+      const pdfBuffer = await generateCertificate(data, 'leave', false)
+      return Buffer.from(pdfBuffer).toString('base64')
+    } catch (error) {
+      console.error('Error printing leave certificate:', error)
+      throw error
+    }
   })
 
   ipcMain.handle('generate-bonafide-certificate', async (_, data) => {
-    const pdfBuffer = generateCertificate(data, 'bonafide', true)
-    return Buffer.from(pdfBuffer).toString('base64')
+    try {
+      const pdfBuffer = await generateCertificate(data, 'bonafide', true)
+      return Buffer.from(pdfBuffer).toString('base64')
+    } catch (error) {
+      console.error('Error generating bonafide certificate:', error)
+      throw error
+    }
   })
 
   ipcMain.handle('print-bonafide-certificate', async (_, data) => {
-    const pdfBuffer = generateCertificate(data, 'bonafide', false)
-    return Buffer.from(pdfBuffer).toString('base64')
+    try {
+      const pdfBuffer = await generateCertificate(data, 'bonafide', false)
+      return Buffer.from(pdfBuffer).toString('base64')
+    } catch (error) {
+      console.error('Error printing bonafide certificate:', error)
+      throw error
+    }
   })
 }
 
@@ -83,7 +103,6 @@ app.whenReady().then(() => {
   })
 
   createWindow()
-
   setupIpcHandlers()
 
   app.on('activate', function () {
