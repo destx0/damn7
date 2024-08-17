@@ -2,7 +2,8 @@ import { app, shell, BrowserWindow, ipcMain } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
-import { generateCertificate } from './certificateGenerator'
+import { generateLeaveCertificate } from './leaveCertificateGenerator'
+import { generateBonafideCertificate } from './bonafideCertificateGenerator'
 import { addStudent, getStudents, updateStudent, deleteStudent } from './dbOperations'
 
 function createWindow() {
@@ -56,7 +57,7 @@ function setupIpcHandlers() {
 
   ipcMain.handle('generate-leave-certificate', async (_, data) => {
     try {
-      const pdfBuffer = await generateCertificate(data, 'leave', true)
+      const pdfBuffer = await generateLeaveCertificate(data, true)
       return Buffer.from(pdfBuffer).toString('base64')
     } catch (error) {
       console.error('Error generating leave certificate:', error)
@@ -66,7 +67,7 @@ function setupIpcHandlers() {
 
   ipcMain.handle('print-leave-certificate', async (_, data) => {
     try {
-      const pdfBuffer = await generateCertificate(data, 'leave', false)
+      const pdfBuffer = await generateLeaveCertificate(data, false)
       return Buffer.from(pdfBuffer).toString('base64')
     } catch (error) {
       console.error('Error printing leave certificate:', error)
@@ -76,7 +77,7 @@ function setupIpcHandlers() {
 
   ipcMain.handle('generate-bonafide-certificate', async (_, data) => {
     try {
-      const pdfBuffer = await generateCertificate(data, 'bonafide', true)
+      const pdfBuffer = await generateBonafideCertificate(data, true)
       return Buffer.from(pdfBuffer).toString('base64')
     } catch (error) {
       console.error('Error generating bonafide certificate:', error)
@@ -86,7 +87,7 @@ function setupIpcHandlers() {
 
   ipcMain.handle('print-bonafide-certificate', async (_, data) => {
     try {
-      const pdfBuffer = await generateCertificate(data, 'bonafide', false)
+      const pdfBuffer = await generateBonafideCertificate(data, false)
       return Buffer.from(pdfBuffer).toString('base64')
     } catch (error) {
       console.error('Error printing bonafide certificate:', error)
