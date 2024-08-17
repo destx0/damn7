@@ -6,14 +6,15 @@ import { Button } from '@/components/ui/button'
 import { useNavigate } from 'react-router-dom'
 import useUserStore from '@/stores/useUserStore'
 import createColumnDefs from '@/utils/columnDefs'
-import PDFViewer from './PDFViewer'
+import LeaveForm from './LeaveForm'
+import BonafideForm from './BonafideForm'
 
 const TablePage = () => {
   const [rowData, setRowData] = useState([])
   const [pdfDataUrl, setPdfDataUrl] = useState(null)
   const [selectedRow, setSelectedRow] = useState(null)
   const [certificateType, setCertificateType] = useState(null)
-  const [isFullView, setIsFullView] = useState(false)
+  const [showCertificate, setShowCertificate] = useState(false)
   const navigate = useNavigate()
   const { user, userType, clearUser } = useUserStore()
 
@@ -69,6 +70,7 @@ const TablePage = () => {
       setPdfDataUrl(dataUrl)
       setSelectedRow(data)
       setCertificateType(type)
+      setShowCertificate(true)
     } catch (error) {
       console.error(`Error generating draft ${type} certificate:`, error)
     }
@@ -95,8 +97,11 @@ const TablePage = () => {
     navigate('/')
   }
 
-  const toggleFullView = () => {
-    setIsFullView(!isFullView)
+  const closeCertificate = () => {
+    setShowCertificate(false)
+    setPdfDataUrl(null)
+    setSelectedRow(null)
+    setCertificateType(null)
   }
 
   if (!user) {
@@ -118,26 +123,27 @@ const TablePage = () => {
           <Button onClick={handleLogout}>Logout</Button>
         </div>
       </div>
-      <div className="flex flex-1 overflow-hidden">
-        {!isFullView && (
-          <div className="flex-1 overflow-auto">
-            <div className="ag-theme-alpine h-full w-full">
-              <AgGridReact
-                rowData={rowData}
-                columnDefs={columnDefs}
-                defaultColDef={defaultColDef}
-              />
-            </div>
+      <div className="flex-1 overflow-hidden">
+        {!showCertificate ? (
+          <div className="ag-theme-alpine h-full w-full">
+            <AgGridReact rowData={rowData} columnDefs={columnDefs} defaultColDef={defaultColDef} />
           </div>
-        )}
-        {pdfDataUrl && (
-          <PDFViewer
-            pdfDataUrl={pdfDataUrl}
-            certificateType={certificateType}
-            isFullView={isFullView}
-            toggleFullView={toggleFullView}
-            studentData={selectedRow}
-          />
+        ) : (
+          <div className="flex h-full">
+            {certificateType === 'leave' ? (
+              <LeaveForm
+                studentData={selectedRow}
+                pdfDataUrl={pdfDataUrl}
+                closeCertificate={closeCertificate}
+              />
+            ) : (
+              <BonafideForm
+                studentData={selectedRow}
+                pdfDataUrl={pdfDataUrl}
+                closeCertificate={closeCertificate}
+              />
+            )}
+          </div>
         )}
       </div>
       {!isAdmin && (

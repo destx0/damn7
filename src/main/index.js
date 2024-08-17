@@ -39,6 +39,7 @@ function createWindow() {
 }
 
 function setupIpcHandlers() {
+  // Database operations
   ipcMain.handle('add-student', async (_, student) => {
     return addStudent(student)
   })
@@ -55,6 +56,7 @@ function setupIpcHandlers() {
     return deleteStudent(id)
   })
 
+  // Leave Certificate operations
   ipcMain.handle('generate-draft-leave-certificate', async (_, data) => {
     try {
       const pdfBuffer = await generateLeaveCertificate(data, true)
@@ -75,6 +77,7 @@ function setupIpcHandlers() {
     }
   })
 
+  // Bonafide Certificate operations
   ipcMain.handle('generate-draft-bonafide-certificate', async (_, data) => {
     try {
       const pdfBuffer = await generateBonafideCertificate(data, true)
@@ -115,4 +118,15 @@ app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit()
   }
+})
+
+// Error handling
+process.on('uncaughtException', (error) => {
+  console.error('Uncaught Exception:', error)
+  // You might want to log this error to a file or send it to a remote logging service
+})
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Unhandled Rejection at:', promise, 'reason:', reason)
+  // You might want to log this error to a file or send it to a remote logging service
 })
