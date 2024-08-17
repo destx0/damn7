@@ -48,23 +48,29 @@ const TablePage = () => {
 
   const isAdmin = userType === 'admin'
 
-  const generateCertificate = useCallback(async (data, type) => {
+  const generateDraftCertificate = useCallback(async (data, type) => {
     try {
-      const base64Data = await (type === 'leave'
-        ? window.api.generateLeaveCertificate(data)
-        : window.api.generateBonafideCertificate(data))
+      let base64Data
+      if (type === 'leave') {
+        base64Data = await window.api.generateDraftLeaveCertificate(data)
+      } else if (type === 'bonafide') {
+        base64Data = await window.api.generateDraftBonafideCertificate(data)
+      } else {
+        throw new Error('Unknown certificate type')
+      }
       const dataUrl = `data:application/pdf;base64,${base64Data}`
       setPdfDataUrl(dataUrl)
       setSelectedRow(data)
       setCertificateType(type)
     } catch (error) {
-      console.error(`Error generating ${type} certificate:`, error)
+      console.error(`Error generating draft ${type} certificate:`, error)
     }
   }, [])
 
   const columnDefs = useMemo(
-    () => createColumnDefs(isAdmin, handleEditStudent, handleDeleteStudent, generateCertificate),
-    [isAdmin, handleEditStudent, handleDeleteStudent, generateCertificate]
+    () =>
+      createColumnDefs(isAdmin, handleEditStudent, handleDeleteStudent, generateDraftCertificate),
+    [isAdmin, handleEditStudent, handleDeleteStudent, generateDraftCertificate]
   )
 
   const defaultColDef = useMemo(
@@ -127,6 +133,7 @@ const TablePage = () => {
             certificateType={certificateType}
             isFullView={isFullView}
             toggleFullView={toggleFullView}
+            studentData={selectedRow}
           />
         )}
       </div>

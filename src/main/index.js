@@ -55,42 +55,42 @@ function setupIpcHandlers() {
     return deleteStudent(id)
   })
 
-  ipcMain.handle('generate-leave-certificate', async (_, data) => {
+  ipcMain.handle('generate-draft-leave-certificate', async (_, data) => {
     try {
       const pdfBuffer = await generateLeaveCertificate(data, true)
       return Buffer.from(pdfBuffer).toString('base64')
     } catch (error) {
-      console.error('Error generating leave certificate:', error)
+      console.error('Error generating draft leave certificate:', error)
       throw error
     }
   })
 
-  ipcMain.handle('print-leave-certificate', async (_, data) => {
+  ipcMain.handle('generate-official-leave-certificate', async (_, data) => {
     try {
       const pdfBuffer = await generateLeaveCertificate(data, false)
       return Buffer.from(pdfBuffer).toString('base64')
     } catch (error) {
-      console.error('Error printing leave certificate:', error)
+      console.error('Error generating official leave certificate:', error)
       throw error
     }
   })
 
-  ipcMain.handle('generate-bonafide-certificate', async (_, data) => {
+  ipcMain.handle('generate-draft-bonafide-certificate', async (_, data) => {
     try {
       const pdfBuffer = await generateBonafideCertificate(data, true)
       return Buffer.from(pdfBuffer).toString('base64')
     } catch (error) {
-      console.error('Error generating bonafide certificate:', error)
+      console.error('Error generating draft bonafide certificate:', error)
       throw error
     }
   })
 
-  ipcMain.handle('print-bonafide-certificate', async (_, data) => {
+  ipcMain.handle('generate-official-bonafide-certificate', async (_, data) => {
     try {
       const pdfBuffer = await generateBonafideCertificate(data, false)
       return Buffer.from(pdfBuffer).toString('base64')
     } catch (error) {
-      console.error('Error printing bonafide certificate:', error)
+      console.error('Error generating official bonafide certificate:', error)
       throw error
     }
   })

@@ -2,10 +2,14 @@ import { contextBridge, ipcRenderer } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
 
 const api = {
-  generateLeaveCertificate: (data) => ipcRenderer.invoke('generate-leave-certificate', data),
-  printLeaveCertificate: (data) => ipcRenderer.invoke('print-leave-certificate', data),
-  generateBonafideCertificate: (data) => ipcRenderer.invoke('generate-bonafide-certificate', data),
-  printBonafideCertificate: (data) => ipcRenderer.invoke('print-bonafide-certificate', data),
+  generateDraftLeaveCertificate: (data) =>
+    ipcRenderer.invoke('generate-draft-leave-certificate', data),
+  generateOfficialLeaveCertificate: (data) =>
+    ipcRenderer.invoke('generate-official-leave-certificate', data),
+  generateDraftBonafideCertificate: (data) =>
+    ipcRenderer.invoke('generate-draft-bonafide-certificate', data),
+  generateOfficialBonafideCertificate: (data) =>
+    ipcRenderer.invoke('generate-official-bonafide-certificate', data),
   addStudent: (student) => ipcRenderer.invoke('add-student', student),
   getStudents: () => ipcRenderer.invoke('get-students'),
   updateStudent: (id, student) => ipcRenderer.invoke('update-student', id, student),

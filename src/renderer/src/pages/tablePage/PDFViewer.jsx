@@ -1,14 +1,29 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 
-const PDFViewer = ({ pdfDataUrl, certificateType, isFullView, toggleFullView }) => {
-  const handlePrint = () => {
-    // Since this is an Electron app, we can use the Electron API to print
-    if (window.electron) {
-      window.electron.printPDF(pdfDataUrl)
-    } else {
-      // Fallback to browser printing if Electron API is not available
-      window.print()
+const PDFViewer = ({ pdfDataUrl, certificateType, isFullView, toggleFullView, studentData }) => {
+  const [currentPdfUrl, setCurrentPdfUrl] = useState(pdfDataUrl)
+
+  useEffect(() => {
+    setCurrentPdfUrl(pdfDataUrl)
+  }, [pdfDataUrl])
+
+  const generateOfficialCertificate = async () => {
+    try {
+      let base64Data
+      if (certificateType === 'leave') {
+        base64Data = await window.api.generateOfficialLeaveCertificate(studentData)
+      } else if (certificateType === 'bonafide') {
+        base64Data = await window.api.generateOfficialBonafideCertificate(studentData)
+      } else {
+        console.error('Unknown certificate type')
+        return
+      }
+
+      const newPdfUrl = `data:application/pdf;base64,${base64Data}`
+      setCurrentPdfUrl(newPdfUrl)
+    } catch (error) {
+      console.error('Error generating official certificate:', error)
     }
   }
 
@@ -19,15 +34,15 @@ const PDFViewer = ({ pdfDataUrl, certificateType, isFullView, toggleFullView }) 
           {certificateType.charAt(0).toUpperCase() + certificateType.slice(1)} Certificate Preview
         </h2>
         <div>
-          <Button onClick={handlePrint} className="mr-2">
-            Print Certificate
+          <Button onClick={generateOfficialCertificate} className="mr-2">
+            Generate Official Certificate
           </Button>
           <Button onClick={toggleFullView}>
             {isFullView ? 'Exit Full View' : 'Full Window View'}
           </Button>
         </div>
       </div>
-      <iframe src={pdfDataUrl} className="w-full h-[calc(100%-60px)] border-none" />
+      <iframe src={currentPdfUrl} className="w-full h-[calc(100%-60px)] border-none" />
     </div>
   )
 }
