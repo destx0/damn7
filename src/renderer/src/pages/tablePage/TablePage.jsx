@@ -32,19 +32,26 @@ const TablePage = () => {
 
   const handleEditStudent = useCallback(
     (student) => {
-      navigate(`/edit-student/${student.id}`, { state: { student } })
+      if (userType === 'admin') {
+        navigate(`/edit-student/${student.id}`, { state: { student } })
+      }
     },
-    [navigate]
+    [navigate, userType]
   )
 
-  const handleDeleteStudent = useCallback(async (id) => {
-    try {
-      await window.api.deleteStudent(id)
-      setRowData((prevData) => prevData.filter((student) => student.id !== id))
-    } catch (error) {
-      console.error('Error deleting student:', error)
-    }
-  }, [])
+  const handleDeleteStudent = useCallback(
+    async (id) => {
+      if (userType === 'admin') {
+        try {
+          await window.api.deleteStudent(id)
+          setRowData((prevData) => prevData.filter((student) => student.id !== id))
+        } catch (error) {
+          console.error('Error deleting student:', error)
+        }
+      }
+    },
+    [userType]
+  )
 
   const isAdmin = userType === 'admin'
 
@@ -77,14 +84,11 @@ const TablePage = () => {
     () => ({
       sortable: true,
       filter: true,
-      resizable: true
+      resizable: true,
+      editable: false
     }),
     []
   )
-
-  const onCellValueChanged = useCallback((event) => {
-    console.log(`Cell value changed: ${event.colDef.field} = ${event.newValue}`)
-  }, [])
 
   const handleLogout = () => {
     clearUser()
@@ -122,7 +126,6 @@ const TablePage = () => {
                 rowData={rowData}
                 columnDefs={columnDefs}
                 defaultColDef={defaultColDef}
-                onCellValueChanged={onCellValueChanged}
               />
             </div>
           </div>
@@ -138,7 +141,9 @@ const TablePage = () => {
         )}
       </div>
       {!isAdmin && (
-        <div className="p-4 bg-red-100 text-red-700">Note: Only admins can edit student data.</div>
+        <div className="p-4 bg-red-100 text-red-700">
+          Note: Only admins can edit or delete student data.
+        </div>
       )}
     </div>
   )
