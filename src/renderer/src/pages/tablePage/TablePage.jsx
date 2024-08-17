@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { useNavigate } from 'react-router-dom'
 import useUserStore from '@/stores/useUserStore'
 import createColumnDefs from '@/utils/columnDefs'
+import PDFViewer from './PDFViewer'
 
 const TablePage = () => {
   const [rowData, setRowData] = useState([])
@@ -103,27 +104,17 @@ const TablePage = () => {
         </div>
       </div>
       <div className="flex flex-1 overflow-hidden">
-      <div className="flex-1 overflow-auto">
-        <div className="ag-theme-alpine h-full w-full">
-          <AgGridReact
-            rowData={rowData}
-            columnDefs={columnDefs}
-            defaultColDef={defaultColDef}
-            onCellValueChanged={onCellValueChanged}
-          />
+        <div className="flex-1 overflow-auto">
+          <div className="ag-theme-alpine h-full w-full">
+            <AgGridReact
+              rowData={rowData}
+              columnDefs={columnDefs}
+              defaultColDef={defaultColDef}
+              onCellValueChanged={onCellValueChanged}
+            />
+          </div>
         </div>
-      </div>
-      {pdfDataUrl && (
-        <div className="w-1/2 p-4 overflow-auto">
-          <h2 className="text-xl mb-2">
-            {certificateType.charAt(0).toUpperCase() + certificateType.slice(1)} Certificate Preview
-          </h2>
-          <Button onClick={() => window.print()} className="mb-2">
-            Print {certificateType.charAt(0).toUpperCase() + certificateType.slice(1)} Certificate
-          </Button>
-          <iframe src={pdfDataUrl} className="w-full h-[calc(100%-80px)] border-none" />
-        </div>
-      )}
+        {pdfDataUrl && <PDFViewer pdfDataUrl={pdfDataUrl} certificateType={certificateType} />}
       </div>
       {!isAdmin && (
         <div className="p-4 bg-red-100 text-red-700">Note: Only admins can edit student data.</div>
