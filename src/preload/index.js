@@ -13,7 +13,13 @@ const api = {
   addStudent: (student) => ipcRenderer.invoke('add-student', student),
   getStudents: () => ipcRenderer.invoke('get-students'),
   updateStudent: (id, student) => ipcRenderer.invoke('update-student', id, student),
-  deleteStudent: (id) => ipcRenderer.invoke('delete-student', id)
+  deleteStudent: (id) => ipcRenderer.invoke('delete-student', id),
+
+  // New methods for certificate operations
+  saveCertificate: (studentId, type, data) =>
+    ipcRenderer.invoke('save-certificate', studentId, type, data),
+  getLatestCertificate: (studentId, type) =>
+    ipcRenderer.invoke('get-latest-certificate', studentId, type)
 }
 
 if (process.contextIsolated) {

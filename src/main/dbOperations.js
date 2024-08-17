@@ -1,4 +1,3 @@
-// src/main/dbOperations.js
 import sqlite3 from 'sqlite3'
 import { app } from 'electron'
 import { join } from 'path'
@@ -11,6 +10,15 @@ db.serialize(() => {
     name TEXT,
     age INTEGER,
     grade TEXT
+  )`)
+
+  db.run(`CREATE TABLE IF NOT EXISTS certificates (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    student_id INTEGER,
+    type TEXT,
+    data TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (student_id) REFERENCES students(id)
   )`)
 })
 
@@ -57,5 +65,36 @@ export const deleteStudent = (id) => {
       if (err) reject(err)
       else resolve(id)
     })
+  })
+}
+
+export const saveCertificate = (studentId, type, data) => {
+  return new Promise((resolve, reject) => {
+    db.run(
+      'INSERT INTO certificates (student_id, type, data) VALUES (?, ?, ?)',
+      [studentId, type, JSON.stringify(data)],
+      function (err) {
+        if (err) reject(err)
+        else resolve({ id: this.lastID, student_id: studentId, type, data })
+      }
+    )
+  })
+}
+
+export const getLatestCertificate = (studentId, type) => {
+  return new Promise((resolve, reject) => {
+    db.get(
+      'SELECT * FROM certificates WHERE student_id = ? AND type = ? ORDER BY created_at DESC LIMIT 1',
+      [studentId, type],
+      (err, row) => {
+        if (err) reject(err)
+        else {
+          if (row) {
+            row.data = JSON.parse(row.data)
+          }
+          resolve(row)
+        }
+      }
+    )
   })
 }

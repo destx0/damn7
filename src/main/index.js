@@ -4,7 +4,14 @@ import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 import { generateLeaveCertificate } from './leaveCertificateGenerator'
 import { generateBonafideCertificate } from './bonafideCertificateGenerator'
-import { addStudent, getStudents, updateStudent, deleteStudent } from './dbOperations'
+import {
+  addStudent,
+  getStudents,
+  updateStudent,
+  deleteStudent,
+  saveCertificate,
+  getLatestCertificate
+} from './dbOperations'
 
 function createWindow() {
   const mainWindow = new BrowserWindow({
@@ -94,6 +101,25 @@ function setupIpcHandlers() {
       return Buffer.from(pdfBuffer).toString('base64')
     } catch (error) {
       console.error('Error generating official bonafide certificate:', error)
+      throw error
+    }
+  })
+
+  // New IPC handlers for certificate operations
+  ipcMain.handle('save-certificate', async (_, studentId, type, data) => {
+    try {
+      return await saveCertificate(studentId, type, data)
+    } catch (error) {
+      console.error('Error saving certificate:', error)
+      throw error
+    }
+  })
+
+  ipcMain.handle('get-latest-certificate', async (_, studentId, type) => {
+    try {
+      return await getLatestCertificate(studentId, type)
+    } catch (error) {
+      console.error('Error getting latest certificate:', error)
       throw error
     }
   })

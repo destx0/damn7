@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -6,6 +6,22 @@ import { Label } from '@/components/ui/label'
 const BonafideForm = ({ studentData, pdfDataUrl, closeCertificate }) => {
   const [academicYear, setAcademicYear] = useState('')
   const [currentPdfUrl, setCurrentPdfUrl] = useState(pdfDataUrl)
+
+  useEffect(() => {
+    loadLatestCertificate()
+  }, [])
+
+  const loadLatestCertificate = async () => {
+    try {
+      const latestCertificate = await window.api.getLatestCertificate(studentData.id, 'bonafide')
+      if (latestCertificate) {
+        setAcademicYear(latestCertificate.data.academicYear || '')
+        setCurrentPdfUrl(latestCertificate.data.pdfUrl || pdfDataUrl)
+      }
+    } catch (error) {
+      console.error('Error loading latest bonafide certificate:', error)
+    }
+  }
 
   const generateOfficialCertificate = async () => {
     try {
@@ -16,6 +32,12 @@ const BonafideForm = ({ studentData, pdfDataUrl, closeCertificate }) => {
       const base64Data = await window.api.generateOfficialBonafideCertificate(certificateData)
       const newPdfUrl = `data:application/pdf;base64,${base64Data}`
       setCurrentPdfUrl(newPdfUrl)
+
+      // Save the certificate data
+      await window.api.saveCertificate(studentData.id, 'bonafide', {
+        ...certificateData,
+        pdfUrl: newPdfUrl
+      })
     } catch (error) {
       console.error('Error generating official bonafide certificate:', error)
     }
