@@ -13,6 +13,7 @@ const TablePage = () => {
   const [pdfDataUrl, setPdfDataUrl] = useState(null)
   const [selectedRow, setSelectedRow] = useState(null)
   const [certificateType, setCertificateType] = useState(null)
+  const [isFullView, setIsFullView] = useState(false)
   const navigate = useNavigate()
   const { user, userType, clearUser } = useUserStore()
 
@@ -84,6 +85,10 @@ const TablePage = () => {
     navigate('/')
   }
 
+  const toggleFullView = () => {
+    setIsFullView(!isFullView)
+  }
+
   if (!user) {
     navigate('/')
     return null
@@ -104,17 +109,26 @@ const TablePage = () => {
         </div>
       </div>
       <div className="flex flex-1 overflow-hidden">
-        <div className="flex-1 overflow-auto">
-          <div className="ag-theme-alpine h-full w-full">
-            <AgGridReact
-              rowData={rowData}
-              columnDefs={columnDefs}
-              defaultColDef={defaultColDef}
-              onCellValueChanged={onCellValueChanged}
-            />
+        {!isFullView && (
+          <div className="flex-1 overflow-auto">
+            <div className="ag-theme-alpine h-full w-full">
+              <AgGridReact
+                rowData={rowData}
+                columnDefs={columnDefs}
+                defaultColDef={defaultColDef}
+                onCellValueChanged={onCellValueChanged}
+              />
+            </div>
           </div>
-        </div>
-        {pdfDataUrl && <PDFViewer pdfDataUrl={pdfDataUrl} certificateType={certificateType} />}
+        )}
+        {pdfDataUrl && (
+          <PDFViewer
+            pdfDataUrl={pdfDataUrl}
+            certificateType={certificateType}
+            isFullView={isFullView}
+            toggleFullView={toggleFullView}
+          />
+        )}
       </div>
       {!isAdmin && (
         <div className="p-4 bg-red-100 text-red-700">Note: Only admins can edit student data.</div>
