@@ -9,50 +9,76 @@ const appPath = app.getAppPath()
 const dbPath = path.join(appPath, 'students.sqlite')
 
 // Create a new database connection
-const db = new sqlite3.Database(dbPath)
+let db
 
-db.serialize(() => {
-  db.run(`CREATE TABLE IF NOT EXISTS students (
-    studentId TEXT PRIMARY KEY,
-    aadharNo TEXT,
-    PENNo TEXT,
-    name TEXT,
-    surname TEXT,
-    fathersName TEXT,
-    mothersName TEXT,
-    religion TEXT,
-    caste TEXT,
-    subCaste TEXT,
-    placeOfBirth TEXT,
-    taluka TEXT,
-    district TEXT,
-    state TEXT,
-    dateOfBirth TEXT,
-    lastAttendedSchool TEXT,
-    lastSchoolStandard TEXT,
-    dateOfAdmission TEXT,
-    admissionStandard TEXT,
-    nationality TEXT,
-    motherTongue TEXT,
-    grn TEXT,
-    ten TEXT,
-    currentStandard TEXT,
-    progress TEXT,
-    conduct TEXT,
-    dateOfLeaving TEXT,
-    reasonOfLeaving TEXT,
-    remarks TEXT
-  )`)
+// Initialize the database
+export const initializeDatabase = () => {
+  return new Promise((resolve, reject) => {
+    db = new sqlite3.Database(dbPath, (err) => {
+      if (err) {
+        console.error('Error opening database:', err)
+        reject(err)
+      } else {
+        console.log('Database connected successfully')
+        db.serialize(() => {
+          db.run(`CREATE TABLE IF NOT EXISTS students (
+            studentId TEXT PRIMARY KEY,
+            aadharNo TEXT,
+            PENNo TEXT,
+            name TEXT,
+            surname TEXT,
+            fathersName TEXT,
+            mothersName TEXT,
+            religion TEXT,
+            caste TEXT,
+            subCaste TEXT,
+            placeOfBirth TEXT,
+            taluka TEXT,
+            district TEXT,
+            state TEXT,
+            dateOfBirth TEXT,
+            lastAttendedSchool TEXT,
+            lastSchoolStandard TEXT,
+            dateOfAdmission TEXT,
+            admissionStandard TEXT,
+            nationality TEXT,
+            motherTongue TEXT,
+            grn TEXT,
+            ten TEXT,
+            currentStandard TEXT,
+            progress TEXT,
+            conduct TEXT,
+            dateOfLeaving TEXT,
+            reasonOfLeaving TEXT,
+            remarks TEXT
+          )`)
 
-  db.run(`CREATE TABLE IF NOT EXISTS certificate_counters (
-    type TEXT PRIMARY KEY,
-    next_number INTEGER DEFAULT 1
-  )`)
+          db.run(`CREATE TABLE IF NOT EXISTS certificate_counters (
+            type TEXT PRIMARY KEY,
+            next_number INTEGER DEFAULT 1
+          )`)
 
-  // Initialize certificate counters if they don't exist
-  db.run(`INSERT OR IGNORE INTO certificate_counters (type, next_number) VALUES ('bonafide', 1)`)
-  db.run(`INSERT OR IGNORE INTO certificate_counters (type, next_number) VALUES ('leave', 1)`)
-})
+          // Initialize certificate counters if they don't exist
+          db.run(
+            `INSERT OR IGNORE INTO certificate_counters (type, next_number) VALUES ('bonafide', 1)`
+          )
+          db.run(
+            `INSERT OR IGNORE INTO certificate_counters (type, next_number) VALUES ('leave', 1)`,
+            (err) => {
+              if (err) {
+                console.error('Error initializing certificate counters:', err)
+                reject(err)
+              } else {
+                console.log('Database initialized successfully')
+                resolve()
+              }
+            }
+          )
+        })
+      }
+    })
+  })
+}
 
 export const addStudent = (student) => {
   return new Promise((resolve, reject) => {

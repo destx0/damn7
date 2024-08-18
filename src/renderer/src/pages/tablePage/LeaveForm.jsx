@@ -25,11 +25,15 @@ const LeaveForm = ({ studentData, pdfDataUrl, closeCertificate, onStudentUpdate 
 
   const loadStudentData = async () => {
     try {
-      const student = await window.api.getStudent(studentData.studentId)
-      setFormData((prevData) => ({
-        ...prevData,
-        ...student
-      }))
+      if (studentData && studentData.studentId) {
+        const student = await window.api.getStudent(studentData.studentId)
+        setFormData((prevData) => ({
+          ...prevData,
+          ...student
+        }))
+      } else {
+        console.error('Student data or studentId is undefined')
+      }
     } catch (error) {
       console.error('Error loading student data:', error)
     }

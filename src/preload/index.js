@@ -12,10 +12,9 @@ const api = {
     ipcRenderer.invoke('generate-official-bonafide-certificate', data),
   addStudent: (student) => ipcRenderer.invoke('add-student', student),
   getStudents: () => ipcRenderer.invoke('get-students'),
+  getStudent: (id) => ipcRenderer.invoke('get-student', id),
   updateStudent: (id, student) => ipcRenderer.invoke('update-student', id, student),
   deleteStudent: (id) => ipcRenderer.invoke('delete-student', id),
-
-  // New methods for certificate operations
   saveCertificate: (studentId, type, data) =>
     ipcRenderer.invoke('save-certificate', studentId, type, data),
   getLatestCertificate: (studentId, type) =>

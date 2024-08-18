@@ -11,7 +11,8 @@ import {
   updateStudent,
   deleteStudent,
   getNextCertificateNumber,
-  incrementCertificateCounter
+  incrementCertificateCounter,
+  initializeDatabase
 } from './dbOperations'
 
 // Function to create the main window
@@ -69,12 +70,12 @@ function setupIpcHandlers() {
   })
 
   ipcMain.handle('get-student', async (_, studentId) => {
-    return new Promise((resolve, reject) => {
-      db.get('SELECT * FROM students WHERE studentId = ?', [studentId], (err, row) => {
-        if (err) reject(err)
-        else resolve(row)
-      })
-    })
+    try {
+      return await getStudent(studentId)
+    } catch (error) {
+      console.error('Error getting student:', error)
+      throw error
+    }
   })
 
   ipcMain.handle('update-student', async (_, studentId, student) => {
@@ -158,17 +159,18 @@ function setupIpcHandlers() {
 }
 
 // App lifecycle events
-app.whenReady().then(() => {
-  electronApp.setAppUserModelId('com.electron')
+app.whenReady().then(async () => {
+  try {
+    await initializeDatabase()
+    console.log('Database initialized successfully')
+    setupIpcHandlers()
+    createWindow()
+  } catch (error) {
+    console.error('Failed to initialize database:', error)
+    app.quit()
+  }
 
-  app.on('browser-window-created', (_, window) => {
-    optimizer.watchWindowShortcuts(window)
-  })
-
-  createWindow()
-  setupIpcHandlers()
-
-  app.on('activate', function () {
+  app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
   })
 })
