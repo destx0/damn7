@@ -14,6 +14,7 @@ import {
   incrementCertificateCounter
 } from './dbOperations'
 
+// Function to create the main window
 function createWindow() {
   const mainWindow = new BrowserWindow({
     width: 900,
@@ -46,6 +47,7 @@ function createWindow() {
   }
 }
 
+// Function to set up IPC handlers
 function setupIpcHandlers() {
   // Database operations
   ipcMain.handle('add-student', async (_, student) => {
@@ -67,12 +69,12 @@ function setupIpcHandlers() {
   })
 
   ipcMain.handle('get-student', async (_, studentId) => {
-    try {
-      return await getStudent(studentId)
-    } catch (error) {
-      console.error('Error getting student:', error)
-      throw error
-    }
+    return new Promise((resolve, reject) => {
+      db.get('SELECT * FROM students WHERE studentId = ?', [studentId], (err, row) => {
+        if (err) reject(err)
+        else resolve(row)
+      })
+    })
   })
 
   ipcMain.handle('update-student', async (_, studentId, student) => {
@@ -93,7 +95,7 @@ function setupIpcHandlers() {
     }
   })
 
-  // Certificate operations (as defined in your previous code)
+  // Certificate operations
   ipcMain.handle('generate-draft-leave-certificate', async (_, data) => {
     try {
       const nextNumber = await getNextCertificateNumber('leave')
@@ -155,6 +157,7 @@ function setupIpcHandlers() {
   })
 }
 
+// App lifecycle events
 app.whenReady().then(() => {
   electronApp.setAppUserModelId('com.electron')
 
@@ -176,13 +179,13 @@ app.on('window-all-closed', () => {
   }
 })
 
-// Error handling
+// Global error handling
 process.on('uncaughtException', (error) => {
   console.error('Uncaught Exception:', error)
-  // You might want to log this error to a file or send it to a remote logging service
+  // Optionally, log this error to a file or remote logging service
 })
 
 process.on('unhandledRejection', (reason, promise) => {
   console.error('Unhandled Rejection at:', promise, 'reason:', reason)
-  // You might want to log this error to a file or send it to a remote logging service
+  // Optionally, log this error to a file or remote logging service
 })

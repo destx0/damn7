@@ -16,7 +16,6 @@ db.serialize(() => {
     studentId TEXT PRIMARY KEY,
     aadharNo TEXT,
     PENNo TEXT,
-    UID TEXT,
     name TEXT,
     surname TEXT,
     fathersName TEXT,
