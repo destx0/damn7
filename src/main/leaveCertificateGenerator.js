@@ -83,8 +83,8 @@ export const generateLeaveCertificate = async (data, isDraft = true) => {
     <html>
       <head>
         <style>
-          body { font-family: 'Times New Roman', Times, serif; margin: 0; padding: 20mm 12mm; color: #000; font-size: 12pt; }
-          .container { border: 2px solid #000; padding: 10mm; position: relative; width: 210mm; height: 297mm; box-sizing: border-box; }
+          body { font-family: 'Times New Roman', Times, serif; margin: 0; padding: 10mm 10mm; color: #000; font-size: 13pt; }
+          .container { border: 2px solid #000; padding: 10mm; position: relative; width: 195mm; height: 297mm; box-sizing: border-box; }
           h1, h2, h3 { text-align: center; margin: 0; }
           .header { margin-bottom: 10px; }
           .content { line-height: 1.6; }
