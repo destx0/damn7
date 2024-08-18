@@ -37,7 +37,22 @@ const createColumnDefs = (
   handleDeleteStudent,
   generateDraftCertificate
 ) => [
-  { headerName: 'Student ID', field: 'studentId' },
+  {
+    headerName: '',
+    cellRenderer: (params) => (
+      <ActionMenu
+        isAdmin={isAdmin}
+        onEdit={() => handleEditStudent(params.data)}
+        onDelete={() => handleDeleteStudent(params.data.id)}
+        onLeaveCertificate={() => generateDraftCertificate(params.data, 'leave')}
+        onBonafideCertificate={() => generateDraftCertificate(params.data, 'bonafide')}
+      />
+    ),
+    pinned: 'left',
+    width: 30,
+    cellStyle: { display: 'flex', justifyContent: 'center', alignItems: 'center' }
+  },
+  { headerName: 'Student ID', field: 'studentId', pinned: 'left', width: 120 },
   { headerName: 'Aadhar No', field: 'aadharNo' },
   { headerName: 'Name', field: 'name' },
   { headerName: 'Surname', field: 'surname' },
@@ -54,19 +69,7 @@ const createColumnDefs = (
   { headerName: 'Last Attended School', field: 'lastAttendedSchool' },
   { headerName: 'Last School Standard', field: 'lastSchoolStandard' },
   { headerName: 'Date of Admission', field: 'dateOfAdmission', filter: 'agDateColumnFilter' },
-  { headerName: 'Admission Standard', field: 'admissionStandard' },
-  {
-    headerName: 'Actions',
-    cellRenderer: (params) => (
-      <ActionMenu
-        isAdmin={isAdmin}
-        onEdit={() => handleEditStudent(params.data)}
-        onDelete={() => handleDeleteStudent(params.data.id)}
-        onLeaveCertificate={() => generateDraftCertificate(params.data, 'leave')}
-        onBonafideCertificate={() => generateDraftCertificate(params.data, 'bonafide')}
-      />
-    )
-  }
+  { headerName: 'Admission Standard', field: 'admissionStandard' }
 ]
 
 export { createColumnDefs, ActionMenu }
