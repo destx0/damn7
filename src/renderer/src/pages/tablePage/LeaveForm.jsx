@@ -4,9 +4,21 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 
 const LeaveForm = ({ studentData, pdfDataUrl, closeCertificate }) => {
-  const [leaveReason, setLeaveReason] = useState('')
-  const [leaveStart, setLeaveStart] = useState('')
-  const [leaveEnd, setLeaveEnd] = useState('')
+  const [formData, setFormData] = useState({
+    leaveReason: '',
+    leaveStart: '',
+    leaveEnd: '',
+    nationality: '',
+    motherTongue: '',
+    grn: '',
+    ten: '',
+    currentStandard: '',
+    progress: '',
+    conduct: '',
+    dateOfLeaving: '',
+    reasonOfLeaving: '',
+    remarks: ''
+  })
   const [currentPdfUrl, setCurrentPdfUrl] = useState(pdfDataUrl)
 
   useEffect(() => {
@@ -17,9 +29,10 @@ const LeaveForm = ({ studentData, pdfDataUrl, closeCertificate }) => {
     try {
       const latestCertificate = await window.api.getLatestCertificate(studentData.id, 'leave')
       if (latestCertificate) {
-        setLeaveReason(latestCertificate.data.leaveReason || '')
-        setLeaveStart(latestCertificate.data.leaveStart || '')
-        setLeaveEnd(latestCertificate.data.leaveEnd || '')
+        setFormData((prevData) => ({
+          ...prevData,
+          ...latestCertificate.data
+        }))
         setCurrentPdfUrl(latestCertificate.data.pdfUrl || pdfDataUrl)
       }
     } catch (error) {
@@ -27,13 +40,19 @@ const LeaveForm = ({ studentData, pdfDataUrl, closeCertificate }) => {
     }
   }
 
+  const handleInputChange = (e) => {
+    const { id, value } = e.target
+    setFormData((prevData) => ({
+      ...prevData,
+      [id]: value
+    }))
+  }
+
   const generateOfficialCertificate = async () => {
     try {
       const certificateData = {
         ...studentData,
-        leaveReason,
-        leaveStart,
-        leaveEnd
+        ...formData
       }
       const base64Data = await window.api.generateOfficialLeaveCertificate(certificateData)
       const newPdfUrl = `data:application/pdf;base64,${base64Data}`
@@ -53,34 +72,21 @@ const LeaveForm = ({ studentData, pdfDataUrl, closeCertificate }) => {
     <div className="flex w-full h-full">
       <div className="w-1/2 p-4 flex flex-col">
         <h2 className="text-xl mb-4">Leave Certificate Form</h2>
-        <div className="space-y-4 flex-grow">
-          <div>
-            <Label htmlFor="leaveReason">Reason for Leave</Label>
-            <Input
-              id="leaveReason"
-              value={leaveReason}
-              onChange={(e) => setLeaveReason(e.target.value)}
-              placeholder="Enter reason for leave"
-            />
-          </div>
-          <div>
-            <Label htmlFor="leaveStart">Leave Start Date</Label>
-            <Input
-              id="leaveStart"
-              type="date"
-              value={leaveStart}
-              onChange={(e) => setLeaveStart(e.target.value)}
-            />
-          </div>
-          <div>
-            <Label htmlFor="leaveEnd">Leave End Date</Label>
-            <Input
-              id="leaveEnd"
-              type="date"
-              value={leaveEnd}
-              onChange={(e) => setLeaveEnd(e.target.value)}
-            />
-          </div>
+        <div className="space-y-4 flex-grow overflow-auto">
+          {Object.entries(formData).map(([key, value]) => (
+            <div key={key}>
+              <Label htmlFor={key}>
+                {key.replace(/([A-Z])/g, ' $1').replace(/^./, (str) => str.toUpperCase())}
+              </Label>
+              <Input
+                id={key}
+                value={value}
+                onChange={handleInputChange}
+                type={key.includes('date') ? 'date' : 'text'}
+                placeholder={`Enter ${key.replace(/([A-Z])/g, ' $1').toLowerCase()}`}
+              />
+            </div>
+          ))}
         </div>
         <div className="flex justify-between mt-4">
           <Button onClick={generateOfficialCertificate}>Generate Official Certificate</Button>
