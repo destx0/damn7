@@ -2,17 +2,16 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react'
 import { AgGridReact } from 'ag-grid-react'
 import 'ag-grid-community/styles/ag-grid.css'
 import 'ag-grid-community/styles/ag-theme-alpine.css'
-import 'ag-grid-community/styles/ag-grid.css'
-import 'ag-grid-community/styles/ag-theme-alpine.css'
 import 'ag-grid-community/styles/ag-theme-quartz.css'
 import '@/assets/ag.css'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 import { useNavigate } from 'react-router-dom'
 import useUserStore from '@/stores/useUserStore'
 import LeaveForm from './LeaveForm'
 import BonafideForm from './BonafideForm'
 import { createColumnDefs } from './columnDefs'
-import { UserCircle, LogOut, UserPlus } from 'lucide-react'
+import { UserCircle, LogOut, UserPlus, Search } from 'lucide-react'
 
 const TablePage = () => {
   const [rowData, setRowData] = useState([])
@@ -20,6 +19,7 @@ const TablePage = () => {
   const [selectedRow, setSelectedRow] = useState(null)
   const [certificateType, setCertificateType] = useState(null)
   const [showCertificate, setShowCertificate] = useState(false)
+  const [quickFilterText, setQuickFilterText] = useState('')
   const navigate = useNavigate()
   const { user, userType, clearUser } = useUserStore()
 
@@ -109,6 +109,10 @@ const TablePage = () => {
     setCertificateType(null)
   }
 
+  const onQuickFilterChanged = useCallback((e) => {
+    setQuickFilterText(e.target.value)
+  }, [])
+
   if (!user) {
     navigate('/')
     return null
@@ -119,6 +123,16 @@ const TablePage = () => {
       <header className="flex justify-between items-center p-4 bg-gray-800 text-white shadow-md">
         <h1 className="text-2xl font-bold">Student Certificates</h1>
         <div className="flex items-center space-x-4">
+          <div className="flex items-center">
+            <Search className="h-4 w-4 mr-2" />
+            <Input
+              type="text"
+              placeholder="Quick filter..."
+              value={quickFilterText}
+              onChange={onQuickFilterChanged}
+              className="px-2 py-1 text-black"
+            />
+          </div>
           <Button
             onClick={() => navigate('/add-student')}
             variant="ghost"
@@ -129,9 +143,7 @@ const TablePage = () => {
           </Button>
           <div className="flex items-center space-x-2 px-3 py-1 bg-gray-700 rounded-full">
             <UserCircle size={18} />
-            <span>
-              {user} ({userType})
-            </span>
+            <span>{user}</span>
           </div>
           <Button
             onClick={handleLogout}
@@ -157,6 +169,7 @@ const TablePage = () => {
               paginationPageSizeSelector={[10, 20, 50, 100]}
               headerHeight={32}
               rowHeight={32}
+              quickFilterText={quickFilterText}
             />
           </div>
         ) : (
