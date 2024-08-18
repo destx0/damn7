@@ -5,6 +5,7 @@ import { Label } from '@/components/ui/label'
 import { useNavigate, useParams, useLocation } from 'react-router-dom'
 import { ArrowLeft, UserPlus, Save } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { ScrollArea } from '@/components/ui/scroll-area'
 
 const fieldNames = [
   'studentId',
@@ -92,7 +93,7 @@ const StudentFormPage = () => {
   }
 
   return (
-    <div className="flex flex-col min-h-screen w-screen bg-gray-100">
+    <div className="flex flex-col h-screen w-screen bg-gray-100">
       <header className="bg-gray-800 text-white shadow-md p-4">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           <h1 className="text-2xl font-bold">{id ? 'Edit' : 'Add'} Student</h1>
@@ -101,35 +102,37 @@ const StudentFormPage = () => {
           </Button>
         </div>
       </header>
-      <main className="flex-grow p-6">
-        <Card className="max-w-4xl mx-auto">
+      <main className="flex-grow p-6 overflow-hidden">
+        <Card className="max-w-4xl mx-auto h-full flex flex-col">
           <CardHeader>
             <CardTitle className="text-2xl">
               {id ? 'Edit Student Information' : 'New Student Registration'}
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {fieldNames.map((field) => (
-                  <div key={field}>
-                    <Label htmlFor={field} className="text-sm font-medium">
-                      {fieldLabels[field]}
-                    </Label>
-                    <Input
-                      id={field}
-                      value={formData[field]}
-                      onChange={handleChange}
-                      required
-                      type={
-                        field === 'dateOfBirth' || field === 'dateOfAdmission' ? 'date' : 'text'
-                      }
-                      className="mt-1"
-                    />
-                  </div>
-                ))}
-              </div>
-              <div className="flex justify-end space-x-4 mt-8">
+          <CardContent className="flex-grow overflow-hidden">
+            <form onSubmit={handleSubmit} className="h-full flex flex-col">
+              <ScrollArea className="flex-grow pr-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {fieldNames.map((field) => (
+                    <div key={field}>
+                      <Label htmlFor={field} className="text-sm font-medium">
+                        {fieldLabels[field]}
+                      </Label>
+                      <Input
+                        id={field}
+                        value={formData[field]}
+                        onChange={handleChange}
+                        required
+                        type={
+                          field === 'dateOfBirth' || field === 'dateOfAdmission' ? 'date' : 'text'
+                        }
+                        className="mt-1"
+                      />
+                    </div>
+                  ))}
+                </div>
+              </ScrollArea>
+              <div className="absolute bottom-6 right-6 p-4 space-x-4 mt-8">
                 <Button type="button" onClick={handleBack} variant="outline">
                   Cancel
                 </Button>
