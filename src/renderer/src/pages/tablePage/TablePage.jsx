@@ -8,6 +8,7 @@ import useUserStore from '@/stores/useUserStore'
 import LeaveForm from './LeaveForm'
 import BonafideForm from './BonafideForm'
 import { createColumnDefs } from './columnDefs'
+import { UserCircle, LogOut, UserPlus } from 'lucide-react'
 
 const TablePage = () => {
   const [rowData, setRowData] = useState([])
@@ -111,18 +112,33 @@ const TablePage = () => {
 
   return (
     <div className="flex flex-col w-screen h-screen">
-      <div className="flex justify-between items-center p-4 bg-gray-100">
+      <header className="flex justify-between items-center p-4 bg-gray-800 text-white shadow-md">
         <h1 className="text-2xl font-bold">Student Certificates</h1>
-        <div>
-          <Button onClick={() => navigate('/add-student')} className="mr-2">
-            Add Student
+        <div className="flex items-center space-x-4">
+          <Button
+            onClick={() => navigate('/add-student')}
+            variant="ghost"
+            className="flex items-center space-x-2 hover:bg-gray-700"
+          >
+            <UserPlus size={18} />
+            <span>Add Student</span>
           </Button>
-          <span className="mr-4">
-            Logged in as: {user} ({userType})
-          </span>
-          <Button onClick={handleLogout}>Logout</Button>
+          <div className="flex items-center space-x-2 px-3 py-1 bg-gray-700 rounded-full">
+            <UserCircle size={18} />
+            <span>
+              {user} ({userType})
+            </span>
+          </div>
+          <Button
+            onClick={handleLogout}
+            variant="ghost"
+            className="flex items-center space-x-2 hover:bg-gray-700"
+          >
+            <LogOut size={18} />
+            <span>Logout</span>
+          </Button>
         </div>
-      </div>
+      </header>
       <div className="flex-1 overflow-hidden">
         {!showCertificate ? (
           <div className="ag-theme-alpine h-full w-full">

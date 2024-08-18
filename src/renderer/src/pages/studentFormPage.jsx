@@ -3,6 +3,8 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useNavigate, useParams, useLocation } from 'react-router-dom'
+import { ArrowLeft, UserPlus, Save } from 'lucide-react'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 const fieldNames = [
   'studentId',
@@ -90,42 +92,56 @@ const StudentFormPage = () => {
   }
 
   return (
-    <div className="flex flex-col h-screen w-screen">
-      <div className="flex-grow overflow-y-auto p-6">
-        <div className="max-w-4xl mx-auto">
-          <div className="flex justify-between items-center mb-6">
-            <h1 className="text-3xl font-bold">{id ? 'Edit' : 'Add'} Student</h1>
-            <Button onClick={handleBack} variant="outline">
-              Back
-            </Button>
-          </div>
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {fieldNames.map((field) => (
-                <div key={field}>
-                  <Label htmlFor={field} className="text-sm font-medium">
-                    {fieldLabels[field]}
-                  </Label>
-                  <Input
-                    id={field}
-                    value={formData[field]}
-                    onChange={handleChange}
-                    required
-                    type={field === 'dateOfBirth' || field === 'dateOfAdmission' ? 'date' : 'text'}
-                    className="mt-1"
-                  />
-                </div>
-              ))}
-            </div>
-            <div className="flex justify-end space-x-4 mt-8">
-              <Button type="button" onClick={handleBack} variant="outline">
-                Cancel
-              </Button>
-              <Button type="submit">{id ? 'Update' : 'Add'} Student</Button>
-            </div>
-          </form>
+    <div className="flex flex-col min-h-screen w-screen bg-gray-100">
+      <header className="bg-gray-800 text-white shadow-md p-4">
+        <div className="max-w-7xl mx-auto flex justify-between items-center">
+          <h1 className="text-2xl font-bold">{id ? 'Edit' : 'Add'} Student</h1>
+          <Button onClick={handleBack} variant="ghost" className="hover:bg-gray-700">
+            <ArrowLeft className="mr-2 h-4 w-4" /> Back
+          </Button>
         </div>
-      </div>
+      </header>
+      <main className="flex-grow p-6">
+        <Card className="max-w-4xl mx-auto">
+          <CardHeader>
+            <CardTitle className="text-2xl">
+              {id ? 'Edit Student Information' : 'New Student Registration'}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {fieldNames.map((field) => (
+                  <div key={field}>
+                    <Label htmlFor={field} className="text-sm font-medium">
+                      {fieldLabels[field]}
+                    </Label>
+                    <Input
+                      id={field}
+                      value={formData[field]}
+                      onChange={handleChange}
+                      required
+                      type={
+                        field === 'dateOfBirth' || field === 'dateOfAdmission' ? 'date' : 'text'
+                      }
+                      className="mt-1"
+                    />
+                  </div>
+                ))}
+              </div>
+              <div className="flex justify-end space-x-4 mt-8">
+                <Button type="button" onClick={handleBack} variant="outline">
+                  Cancel
+                </Button>
+                <Button type="submit" className="bg-green-600 hover:bg-green-700">
+                  {id ? <Save className="mr-2 h-4 w-4" /> : <UserPlus className="mr-2 h-4 w-4" />}
+                  {id ? 'Update' : 'Add'} Student
+                </Button>
+              </div>
+            </form>
+          </CardContent>
+        </Card>
+      </main>
     </div>
   )
 }
