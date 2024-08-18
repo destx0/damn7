@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Textarea } from '@/components/ui/textarea'
 
 const LeaveForm = ({ studentData, pdfDataUrl, closeCertificate }) => {
   const [formData, setFormData] = useState({
@@ -41,10 +42,10 @@ const LeaveForm = ({ studentData, pdfDataUrl, closeCertificate }) => {
   }
 
   const handleInputChange = (e) => {
-    const { id, value } = e.target
+    const { name, value } = e.target
     setFormData((prevData) => ({
       ...prevData,
-      [id]: value
+      [name]: value
     }))
   }
 
@@ -68,23 +69,48 @@ const LeaveForm = ({ studentData, pdfDataUrl, closeCertificate }) => {
     }
   }
 
+  const formFields = [
+    { name: 'leaveReason', label: 'Reason for Leave', type: 'textarea' },
+    { name: 'leaveStart', label: 'Leave Start Date', type: 'date' },
+    { name: 'leaveEnd', label: 'Leave End Date', type: 'date' },
+    { name: 'nationality', label: 'Nationality', type: 'text' },
+    { name: 'motherTongue', label: 'Mother Tongue', type: 'text' },
+    { name: 'grn', label: 'GRN', type: 'text' },
+    { name: 'ten', label: 'TEN', type: 'text' },
+    { name: 'currentStandard', label: 'Current Standard', type: 'text' },
+    { name: 'progress', label: 'Progress', type: 'text' },
+    { name: 'conduct', label: 'Conduct', type: 'text' },
+    { name: 'dateOfLeaving', label: 'Date of Leaving', type: 'date' },
+    { name: 'reasonOfLeaving', label: 'Reason of Leaving', type: 'textarea' },
+    { name: 'remarks', label: 'Remarks', type: 'textarea' }
+  ]
+
   return (
     <div className="flex w-full h-full">
-      <div className="w-1/2 p-4 flex flex-col">
+      <div className="w-1/2 p-4 flex flex-col overflow-y-auto">
         <h2 className="text-xl mb-4">Leave Certificate Form</h2>
-        <div className="space-y-4 flex-grow overflow-auto">
-          {Object.entries(formData).map(([key, value]) => (
-            <div key={key}>
-              <Label htmlFor={key}>
-                {key.replace(/([A-Z])/g, ' $1').replace(/^./, (str) => str.toUpperCase())}
-              </Label>
-              <Input
-                id={key}
-                value={value}
-                onChange={handleInputChange}
-                type={key.includes('date') ? 'date' : 'text'}
-                placeholder={`Enter ${key.replace(/([A-Z])/g, ' $1').toLowerCase()}`}
-              />
+        <div className="space-y-4 flex-grow">
+          {formFields.map((field) => (
+            <div key={field.name}>
+              <Label htmlFor={field.name}>{field.label}</Label>
+              {field.type === 'textarea' ? (
+                <Textarea
+                  id={field.name}
+                  name={field.name}
+                  value={formData[field.name]}
+                  onChange={handleInputChange}
+                  placeholder={`Enter ${field.label.toLowerCase()}`}
+                />
+              ) : (
+                <Input
+                  id={field.name}
+                  name={field.name}
+                  value={formData[field.name]}
+                  onChange={handleInputChange}
+                  type={field.type}
+                  placeholder={`Enter ${field.label.toLowerCase()}`}
+                />
+              )}
             </div>
           ))}
         </div>
