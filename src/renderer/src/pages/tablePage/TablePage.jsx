@@ -5,9 +5,9 @@ import 'ag-grid-community/styles/ag-theme-alpine.css'
 import { Button } from '@/components/ui/button'
 import { useNavigate } from 'react-router-dom'
 import useUserStore from '@/stores/useUserStore'
-import createColumnDefs from '@/utils/columnDefs'
 import LeaveForm from './LeaveForm'
 import BonafideForm from './BonafideForm'
+import { createColumnDefs } from './columnDefs'
 
 const TablePage = () => {
   const [rowData, setRowData] = useState([])
@@ -77,65 +77,8 @@ const TablePage = () => {
   }, [])
 
   const columnDefs = useMemo(
-    () => [
-      { headerName: 'Student ID', field: 'studentId', filter: 'agTextColumnFilter' },
-      { headerName: 'Aadhar No', field: 'aadharNo', filter: 'agTextColumnFilter' },
-      { headerName: 'Name', field: 'name', filter: 'agTextColumnFilter' },
-      { headerName: 'Surname', field: 'surname', filter: 'agTextColumnFilter' },
-      { headerName: "Father's Name", field: 'fathersName', filter: 'agTextColumnFilter' },
-      { headerName: "Mother's Name", field: 'mothersName', filter: 'agTextColumnFilter' },
-      { headerName: 'Religion', field: 'religion', filter: 'agTextColumnFilter' },
-      { headerName: 'Caste', field: 'caste', filter: 'agTextColumnFilter' },
-      { headerName: 'Sub Caste', field: 'subCaste', filter: 'agTextColumnFilter' },
-      { headerName: 'Place of Birth', field: 'placeOfBirth', filter: 'agTextColumnFilter' },
-      { headerName: 'Taluka', field: 'taluka', filter: 'agTextColumnFilter' },
-      { headerName: 'District', field: 'district', filter: 'agTextColumnFilter' },
-      { headerName: 'State', field: 'state', filter: 'agTextColumnFilter' },
-      { headerName: 'Date of Birth', field: 'dateOfBirth', filter: 'agDateColumnFilter' },
-      {
-        headerName: 'Last Attended School',
-        field: 'lastAttendedSchool',
-        filter: 'agTextColumnFilter'
-      },
-      {
-        headerName: 'Last School Standard',
-        field: 'lastSchoolStandard',
-        filter: 'agTextColumnFilter'
-      },
-      { headerName: 'Date of Admission', field: 'dateOfAdmission', filter: 'agDateColumnFilter' },
-      {
-        headerName: 'Admission Standard',
-        field: 'admissionStandard',
-        filter: 'agTextColumnFilter'
-      },
-      {
-        headerName: 'Actions',
-        cellRenderer: (params) => (
-          <div>
-            {isAdmin && (
-              <>
-                <Button onClick={() => handleEditStudent(params.data)} className="mr-2">
-                  Edit
-                </Button>
-                <Button
-                  onClick={() => handleDeleteStudent(params.data.id)}
-                  variant="destructive"
-                  className="mr-2"
-                >
-                  Delete
-                </Button>
-              </>
-            )}
-            <Button onClick={() => generateDraftCertificate(params.data, 'leave')} className="mr-2">
-              Leave Certificate
-            </Button>
-            <Button onClick={() => generateDraftCertificate(params.data, 'bonafide')}>
-              Bonafide Certificate
-            </Button>
-          </div>
-        )
-      }
-    ],
+    () =>
+      createColumnDefs(isAdmin, handleEditStudent, handleDeleteStudent, generateDraftCertificate),
     [isAdmin, handleEditStudent, handleDeleteStudent, generateDraftCertificate]
   )
 
