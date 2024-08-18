@@ -146,7 +146,18 @@ const TablePage = () => {
       <div className="flex-1 overflow-hidden">
         {!showCertificate ? (
           <div className="ag-theme-quartz w-full h-full text-sm">
-            <AgGridReact rowData={rowData} columnDefs={columnDefs} defaultColDef={defaultColDef} />
+            <AgGridReact
+              rowData={rowData}
+              columnDefs={columnDefs}
+              defaultColDef={defaultColDef}
+              domLayout="normal"
+              rowSelection={'multiple'}
+              pagination={true}
+              paginationPageSize={10}
+              paginationPageSizeSelector={[10, 20, 50, 100]}
+              headerHeight={32}
+              rowHeight={32}
+            />
           </div>
         ) : (
           <div className="flex h-full">
