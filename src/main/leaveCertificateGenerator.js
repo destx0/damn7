@@ -1,12 +1,6 @@
 import puppeteer from 'puppeteer'
 import { format } from 'date-fns'
 
-let leaveCertificateNumber = 1000
-
-export const getNextLeaveCertificateNumber = () => {
-  return leaveCertificateNumber++
-}
-
 const numberToWords = (num) => {
   const units = [
     '',
@@ -70,7 +64,7 @@ export const generateLeaveCertificate = async (data, isDraft = true) => {
   const browser = await puppeteer.launch()
   const page = await browser.newPage()
 
-  const certificateNumber = isDraft ? 'DRAFT' : getNextLeaveCertificateNumber()
+  const certificateNumber = isDraft ? 'DRAFT' : data.certificateNumber.toString().padStart(4, '0')
 
   const formatDate = (dateString) => {
     if (!dateString) return ''
@@ -109,7 +103,7 @@ export const generateLeaveCertificate = async (data, isDraft = true) => {
           </div>
           <div class="content">
             <div style="display: flex; justify-content: space-between;">
-              <span>${createField('Sr. No.', certificateNumber.toString(), 8)}</span>
+              <span>${createField('Sr. No.', certificateNumber, 8)}</span>
               <span>${createField('G. Register No.', data.grn, 6)}</span>
             </div>
             <div style="display: flex; justify-content: space-between;">

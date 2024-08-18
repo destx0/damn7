@@ -1,12 +1,6 @@
 import puppeteer from 'puppeteer'
 import { format } from 'date-fns'
 
-let bonafideCertificateNumber = 1000
-
-export const getNextBonafideCertificateNumber = () => {
-  return bonafideCertificateNumber++
-}
-
 const numberToWords = (num) => {
   const units = [
     '',
@@ -70,7 +64,7 @@ export const generateBonafideCertificate = async (data, isDraft = true) => {
   const browser = await puppeteer.launch()
   const page = await browser.newPage()
 
-  const certificateNumber = isDraft ? 'DRAFT' : getNextBonafideCertificateNumber()
+  const certificateNumber = isDraft ? 'DRAFT' : data.certificateNumber.toString().padStart(4, '0')
 
   const formatDate = (dateString) => {
     if (!dateString) return ''
@@ -94,23 +88,23 @@ export const generateBonafideCertificate = async (data, isDraft = true) => {
           .content { line-height: 1.6; }
           .footer { margin-top: 20px; }
           .draft { position: absolute; font-size: 100px; color: #e0e0e0; transform: rotate(45deg); top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(45deg); }
-          pre { font-family: inherit; white-space: pre-wrap; word-wrap: break-word; }
         </style>
       </head>
       <body>
         <div class="container">
           <div class="header">
             <h2>Jaggannath Shikshan Prasarak Mandal's</h2>
-            <h1>Shakikant Sakharam Chaudhari Kanya Vidyalay, Yawal</h1>
+            <h1>Shashikant Sakharam Chaudhari Kanya Vidyalay, Yawal</h1>
             <h3>Taluka- Yawal, Dist. Jalgaon</h3>
           </div>
           <div class="content">
             <h1 style="font-size: 24pt; margin: 20px 0;">Bonafide Certificate</h1>
             <div style="display: flex; justify-content: space-between;">
+              ${createField('Certificate No.', certificateNumber, 10)}
               ${createField('General Register No.', data.grn, 20)}
               ${createField('Date', formatDate(new Date()), 20)}
             </div>
-            <p>This is to certify that Ms. <strong>${data.name} ${data.fathersName} ${data.surname}</strong> is a student of Shakikant Sakharam Chaudhari Kanya Vidyalay, Yawal, Taluka-Yawal, Dist.-Jalgaon. She is currently enrolled in the <strong>${data.currentStandard}</strong> grade for the academic year <strong>${data.academicYear}</strong>.</p>
+            <p>This is to certify that Ms. <strong>${data.name} ${data.fathersName} ${data.surname}</strong> is a student of Shashikant Sakharam Chaudhari Kanya Vidyalay, Yawal, Taluka-Yawal, Dist.-Jalgaon. She is currently enrolled in the <strong>${data.currentStandard}</strong> grade for the academic year <strong>${data.academicYear}</strong>.</p>
             <p>This certificate is issued to her for the purposes of ${createField('', data.purpose, 30)} requirements.</p>
             <p>According to her leaving certificate, her date of birth is ${createField('', formatDate(data.dateOfBirth), 20)}, her birthplace is ${createField('', data.placeOfBirth, 20)}, and her caste, as per the general register, is ${createField('', data.caste, 20)}.</p>
             <p>This certificate is issued at the request of ${createField('', data.requestedBy, 30)}.</p>

@@ -38,10 +38,20 @@ db.serialize(() => {
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     student_id INTEGER,
     type TEXT,
+    certificate_number INTEGER,
     data TEXT,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (student_id) REFERENCES students(id)
   )`)
+
+  db.run(`CREATE TABLE IF NOT EXISTS certificate_counters (
+    type TEXT PRIMARY KEY,
+    next_number INTEGER DEFAULT 1
+  )`)
+
+  // Initialize certificate counters if they don't exist
+  db.run(`INSERT OR IGNORE INTO certificate_counters (type, next_number) VALUES ('bonafide', 1)`)
+  db.run(`INSERT OR IGNORE INTO certificate_counters (type, next_number) VALUES ('leave', 1)`)
 })
 
 export const addStudent = (student) => {
@@ -93,14 +103,51 @@ export const deleteStudent = (id) => {
 
 export const saveCertificate = (studentId, type, data) => {
   return new Promise((resolve, reject) => {
-    db.run(
-      'INSERT INTO certificates (student_id, type, data) VALUES (?, ?, ?)',
-      [studentId, type, JSON.stringify(data)],
-      function (err) {
-        if (err) reject(err)
-        else resolve({ id: this.lastID, student_id: studentId, type, data })
-      }
-    )
+    db.serialize(() => {
+      db.get('SELECT next_number FROM certificate_counters WHERE type = ?', [type], (err, row) => {
+        if (err) {
+          reject(err)
+          return
+        }
+
+        const certificateNumber = row.next_number
+
+        db.run('BEGIN TRANSACTION')
+
+        db.run(
+          'INSERT INTO certificates (student_id, type, certificate_number, data) VALUES (?, ?, ?, ?)',
+          [studentId, type, certificateNumber, JSON.stringify(data)],
+          function (err) {
+            if (err) {
+              db.run('ROLLBACK')
+              reject(err)
+              return
+            }
+
+            db.run(
+              'UPDATE certificate_counters SET next_number = next_number + 1 WHERE type = ?',
+              [type],
+              (err) => {
+                if (err) {
+                  db.run('ROLLBACK')
+                  reject(err)
+                  return
+                }
+
+                db.run('COMMIT')
+                resolve({
+                  id: this.lastID,
+                  student_id: studentId,
+                  type,
+                  certificate_number: certificateNumber,
+                  data
+                })
+              }
+            )
+          }
+        )
+      })
+    })
   })
 }
 
@@ -119,5 +166,14 @@ export const getLatestCertificate = (studentId, type) => {
         }
       }
     )
+  })
+}
+
+export const getNextCertificateNumber = (type) => {
+  return new Promise((resolve, reject) => {
+    db.get('SELECT next_number FROM certificate_counters WHERE type = ?', [type], (err, row) => {
+      if (err) reject(err)
+      else resolve(row ? row.next_number : 1)
+    })
   })
 }

@@ -10,7 +10,8 @@ import {
   updateStudent,
   deleteStudent,
   saveCertificate,
-  getLatestCertificate
+  getLatestCertificate,
+  getNextCertificateNumber
 } from './dbOperations'
 
 function createWindow() {
@@ -66,7 +67,11 @@ function setupIpcHandlers() {
   // Leave Certificate operations
   ipcMain.handle('generate-draft-leave-certificate', async (_, data) => {
     try {
-      const pdfBuffer = await generateLeaveCertificate(data, true)
+      const nextNumber = await getNextCertificateNumber('leave')
+      const pdfBuffer = await generateLeaveCertificate(
+        { ...data, certificateNumber: nextNumber },
+        true
+      )
       return Buffer.from(pdfBuffer).toString('base64')
     } catch (error) {
       console.error('Error generating draft leave certificate:', error)
@@ -76,8 +81,14 @@ function setupIpcHandlers() {
 
   ipcMain.handle('generate-official-leave-certificate', async (_, data) => {
     try {
-      const pdfBuffer = await generateLeaveCertificate(data, false)
-      return Buffer.from(pdfBuffer).toString('base64')
+      const nextNumber = await getNextCertificateNumber('leave')
+      const pdfBuffer = await generateLeaveCertificate(
+        { ...data, certificateNumber: nextNumber },
+        false
+      )
+      const base64Pdf = Buffer.from(pdfBuffer).toString('base64')
+      await saveCertificate(data.studentId, 'leave', { ...data, certificateNumber: nextNumber })
+      return base64Pdf
     } catch (error) {
       console.error('Error generating official leave certificate:', error)
       throw error
@@ -87,7 +98,11 @@ function setupIpcHandlers() {
   // Bonafide Certificate operations
   ipcMain.handle('generate-draft-bonafide-certificate', async (_, data) => {
     try {
-      const pdfBuffer = await generateBonafideCertificate(data, true)
+      const nextNumber = await getNextCertificateNumber('bonafide')
+      const pdfBuffer = await generateBonafideCertificate(
+        { ...data, certificateNumber: nextNumber },
+        true
+      )
       return Buffer.from(pdfBuffer).toString('base64')
     } catch (error) {
       console.error('Error generating draft bonafide certificate:', error)
@@ -97,8 +112,14 @@ function setupIpcHandlers() {
 
   ipcMain.handle('generate-official-bonafide-certificate', async (_, data) => {
     try {
-      const pdfBuffer = await generateBonafideCertificate(data, false)
-      return Buffer.from(pdfBuffer).toString('base64')
+      const nextNumber = await getNextCertificateNumber('bonafide')
+      const pdfBuffer = await generateBonafideCertificate(
+        { ...data, certificateNumber: nextNumber },
+        false
+      )
+      const base64Pdf = Buffer.from(pdfBuffer).toString('base64')
+      await saveCertificate(data.studentId, 'bonafide', { ...data, certificateNumber: nextNumber })
+      return base64Pdf
     } catch (error) {
       console.error('Error generating official bonafide certificate:', error)
       throw error

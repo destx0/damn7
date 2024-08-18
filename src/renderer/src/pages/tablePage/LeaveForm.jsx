@@ -70,9 +70,6 @@ const LeaveForm = ({ studentData, pdfDataUrl, closeCertificate }) => {
   }
 
   const formFields = [
-    { name: 'leaveReason', label: 'Reason for Leave', type: 'textarea' },
-    { name: 'leaveStart', label: 'Leave Start Date', type: 'date' },
-    { name: 'leaveEnd', label: 'Leave End Date', type: 'date' },
     { name: 'nationality', label: 'Nationality', type: 'text' },
     { name: 'motherTongue', label: 'Mother Tongue', type: 'text' },
     { name: 'grn', label: 'GRN', type: 'text' },
