@@ -90,7 +90,8 @@ const TablePage = () => {
   const defaultColDef = useMemo(
     () => ({
       sortable: true,
-      filter: true,
+      filter: false,
+      width: 120,
       resizable: true,
       editable: false
     }),
@@ -141,10 +142,10 @@ const TablePage = () => {
             <UserPlus size={18} />
             <span>Add Student</span>
           </Button>
-          <div className="flex items-center space-x-2 px-3 py-1 bg-gray-700 rounded-full">
+          {/* <div className="flex items-center space-x-2 px-3 py-1 bg-gray-700 rounded-full">
             <UserCircle size={18} />
             <span>{user}</span>
-          </div>
+          </div> */}
           <Button
             onClick={handleLogout}
             variant="ghost"
