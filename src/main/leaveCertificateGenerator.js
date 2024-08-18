@@ -74,7 +74,7 @@ export const generateLeaveCertificate = async (data, isDraft = true) => {
   const createField = (label, value, size) => {
     const field = value || ''
     const padding = '&nbsp;'.repeat(Math.max(0, size - field.length))
-    return `<strong>${label}:</strong> <span style="display: inline-block; position: relative; width: ${size}ch;">${field}${padding}<span style="position: absolute; bottom: -5px; left: 0; right: 0; border-bottom: 1px solid black;"></span></span>`
+    return `<strong style="font-size: 18px;">${label}:</strong> <span style="display: inline-block; position: relative; width: ${size}ch; font-weight: 500;">${field}${padding}<span style="position: absolute; bottom: 5px; left: 0; right: 0; border-bottom: 1px solid black;"></span></span>`
   }
 
   const dateOfBirthInWords = dateToWords(data.dateOfBirth)
@@ -84,7 +84,7 @@ export const generateLeaveCertificate = async (data, isDraft = true) => {
       <head>
         <style>
           body { font-family: 'Times New Roman', Times, serif; margin: 0; padding: 10mm 10mm; color: #000; font-size: 13pt; }
-          .container { border: 2px solid #000; padding: 10mm; position: relative; width: 195mm; height: 297mm; box-sizing: border-box; }
+          .container { border: 2px solid #000; padding: 2mm; position: relative; width: 195mm; height: 297mm; box-sizing: border-box; }
           h1, h2, h3 { text-align: center; margin: 0; }
           .header { margin-bottom: 10px; }
           .content { line-height: 1.6; }
@@ -108,7 +108,7 @@ export const generateLeaveCertificate = async (data, isDraft = true) => {
             </div>
             <div style="display: flex; justify-content: space-between;">
               <span><strong>School Reg. No.</strong>- Edu. Depu.Dir/Sec-2/First Appru/</span>
-              <span>${createField('TEN', data.ten, 15)}</span>
+              <span>${createField('PEN', data.PENNo, 15)}</span>
             </div>
             <div style="display: flex; justify-content: space-between;">
               <span style="padding-left: 7.5em;">90-91/92/Div.Sec.Depu.Dir.Nashik/Datted 12-3-92</span>
