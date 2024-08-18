@@ -2,6 +2,10 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react'
 import { AgGridReact } from 'ag-grid-react'
 import 'ag-grid-community/styles/ag-grid.css'
 import 'ag-grid-community/styles/ag-theme-alpine.css'
+import 'ag-grid-community/styles/ag-grid.css'
+import 'ag-grid-community/styles/ag-theme-alpine.css'
+import 'ag-grid-community/styles/ag-theme-quartz.css'
+import '@/assets/ag.css'
 import { Button } from '@/components/ui/button'
 import { useNavigate } from 'react-router-dom'
 import useUserStore from '@/stores/useUserStore'
@@ -141,7 +145,7 @@ const TablePage = () => {
       </header>
       <div className="flex-1 overflow-hidden">
         {!showCertificate ? (
-          <div className="ag-theme-alpine h-full w-full">
+          <div className="ag-theme-quartz w-full h-full text-sm">
             <AgGridReact rowData={rowData} columnDefs={columnDefs} defaultColDef={defaultColDef} />
           </div>
         ) : (
