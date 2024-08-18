@@ -81,6 +81,14 @@ const TablePage = () => {
     }
   }, [])
 
+  const handleStudentUpdate = useCallback((updatedStudent) => {
+    setRowData((prevData) =>
+      prevData.map((student) =>
+        student.id === updatedStudent.id ? { ...student, ...updatedStudent } : student
+      )
+    )
+  }, [])
+
   const columnDefs = useMemo(
     () =>
       createColumnDefs(isAdmin, handleEditStudent, handleDeleteStudent, generateDraftCertificate),
@@ -142,10 +150,6 @@ const TablePage = () => {
             <UserPlus size={18} />
             <span>Add Student</span>
           </Button>
-          {/* <div className="flex items-center space-x-2 px-3 py-1 bg-gray-700 rounded-full">
-            <UserCircle size={18} />
-            <span>{user}</span>
-          </div> */}
           <Button
             onClick={handleLogout}
             variant="ghost"
@@ -180,12 +184,14 @@ const TablePage = () => {
                 studentData={selectedRow}
                 pdfDataUrl={pdfDataUrl}
                 closeCertificate={closeCertificate}
+                onStudentUpdate={handleStudentUpdate}
               />
             ) : (
               <BonafideForm
                 studentData={selectedRow}
                 pdfDataUrl={pdfDataUrl}
                 closeCertificate={closeCertificate}
+                onStudentUpdate={handleStudentUpdate}
               />
             )}
           </div>
