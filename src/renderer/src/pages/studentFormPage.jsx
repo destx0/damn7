@@ -85,35 +85,46 @@ const StudentFormPage = () => {
     }
   }
 
+  const handleBack = () => {
+    navigate('/table')
+  }
+
   return (
     <div className="flex flex-col h-screen w-screen">
       <div className="flex-grow overflow-y-auto p-6">
-        <h1 className="text-3xl font-bold mb-6">{id ? 'Edit' : 'Add'} Student</h1>
-        <form onSubmit={handleSubmit} className="space-y-6 max-w-4xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-            {fieldNames.map((field) => (
-              <div key={field}>
-                <Label htmlFor={field} className="text-lg font-medium">
-                  {fieldLabels[field]}
-                </Label>
-                <Input
-                  id={field}
-                  value={formData[field]}
-                  onChange={handleChange}
-                  required
-                  type={field === 'dateOfBirth' || field === 'dateOfAdmission' ? 'date' : 'text'}
-                  className="mt-1"
-                />
-              </div>
-            ))}
-          </div>
-          <div className="flex justify-end space-x-4 mt-8">
-            <Button type="button" onClick={() => navigate('/table')} variant="outline">
-              Cancel
+        <div className="max-w-4xl mx-auto">
+          <div className="flex justify-between items-center mb-6">
+            <h1 className="text-3xl font-bold">{id ? 'Edit' : 'Add'} Student</h1>
+            <Button onClick={handleBack} variant="outline">
+              Back
             </Button>
-            <Button type="submit">{id ? 'Update' : 'Add'} Student</Button>
           </div>
-        </form>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {fieldNames.map((field) => (
+                <div key={field}>
+                  <Label htmlFor={field} className="text-sm font-medium">
+                    {fieldLabels[field]}
+                  </Label>
+                  <Input
+                    id={field}
+                    value={formData[field]}
+                    onChange={handleChange}
+                    required
+                    type={field === 'dateOfBirth' || field === 'dateOfAdmission' ? 'date' : 'text'}
+                    className="mt-1"
+                  />
+                </div>
+              ))}
+            </div>
+            <div className="flex justify-end space-x-4 mt-8">
+              <Button type="button" onClick={handleBack} variant="outline">
+                Cancel
+              </Button>
+              <Button type="submit">{id ? 'Update' : 'Add'} Student</Button>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   )
