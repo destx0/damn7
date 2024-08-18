@@ -6,16 +6,13 @@ import { Textarea } from '@/components/ui/textarea'
 
 const LeaveForm = ({ studentData, pdfDataUrl, closeCertificate, onStudentUpdate }) => {
   const [formData, setFormData] = useState({
-    nationality: '',
-    motherTongue: '',
-    grn: '',
-    ten: '',
     currentStandard: '',
     progress: '',
     conduct: '',
     dateOfLeaving: '',
     reasonOfLeaving: '',
-    remarks: ''
+    remarks: '',
+    leaveCertificateGenerationDate: ''
   })
   const [currentPdfUrl, setCurrentPdfUrl] = useState(pdfDataUrl)
 
@@ -66,16 +63,17 @@ const LeaveForm = ({ studentData, pdfDataUrl, closeCertificate, onStudentUpdate 
   }
 
   const formFields = [
-    { name: 'nationality', label: 'Nationality', type: 'text' },
-    { name: 'motherTongue', label: 'Mother Tongue', type: 'text' },
-    { name: 'grn', label: 'GRN', type: 'text' },
-    { name: 'ten', label: 'TEN', type: 'text' },
     { name: 'currentStandard', label: 'Current Standard', type: 'text' },
     { name: 'progress', label: 'Progress', type: 'text' },
     { name: 'conduct', label: 'Conduct', type: 'text' },
     { name: 'dateOfLeaving', label: 'Date of Leaving', type: 'date' },
     { name: 'reasonOfLeaving', label: 'Reason of Leaving', type: 'textarea' },
-    { name: 'remarks', label: 'Remarks', type: 'textarea' }
+    { name: 'remarks', label: 'Remarks', type: 'textarea' },
+    {
+      name: 'leaveCertificateGenerationDate',
+      label: 'Leave Certificate Generation Date',
+      type: 'date'
+    }
   ]
 
   return (

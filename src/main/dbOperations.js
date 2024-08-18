@@ -50,7 +50,8 @@ export const initializeDatabase = () => {
             conduct TEXT,
             dateOfLeaving TEXT,
             reasonOfLeaving TEXT,
-            remarks TEXT
+            remarks TEXT,
+            leaveCertificateGenerationDate TEXT
           )`)
 
           db.run(`CREATE TABLE IF NOT EXISTS certificate_counters (

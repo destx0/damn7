@@ -11,7 +11,6 @@ const fieldNames = [
   'studentId',
   'aadharNo',
   'PENNo',
-  'UID',
   'GRN',
   'name',
   'surname',
@@ -28,14 +27,15 @@ const fieldNames = [
   'lastAttendedSchool',
   'lastSchoolStandard',
   'dateOfAdmission',
-  'admissionStandard'
+  'admissionStandard',
+  'nationality',
+  'motherTongue'
 ]
 
 const fieldLabels = {
   studentId: 'Student ID',
   aadharNo: 'Aadhar Number',
   PENNo: 'PEN Number',
-  UID: 'UID',
   GRN: 'GRN',
   name: 'Name',
   surname: 'Surname',
@@ -52,7 +52,9 @@ const fieldLabels = {
   lastAttendedSchool: 'Last Attended School',
   lastSchoolStandard: 'Last School Standard',
   dateOfAdmission: 'Date of Admission',
-  admissionStandard: 'Admission Standard'
+  admissionStandard: 'Admission Standard',
+  nationality: 'Nationality',
+  motherTongue: 'Mother Tongue'
 }
 
 const StudentFormPage = () => {
