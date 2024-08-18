@@ -13,9 +13,10 @@ const db = new sqlite3.Database(dbPath)
 
 db.serialize(() => {
   db.run(`CREATE TABLE IF NOT EXISTS students (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    studentId TEXT UNIQUE,
+    studentId TEXT PRIMARY KEY,
     aadharNo TEXT,
+    PENNo TEXT,
+    UID TEXT,
     name TEXT,
     surname TEXT,
     fathersName TEXT,
@@ -31,17 +32,17 @@ db.serialize(() => {
     lastAttendedSchool TEXT,
     lastSchoolStandard TEXT,
     dateOfAdmission TEXT,
-    admissionStandard TEXT
-  )`)
-
-  db.run(`CREATE TABLE IF NOT EXISTS certificates (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    student_id INTEGER,
-    type TEXT,
-    certificate_number INTEGER,
-    data TEXT,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (student_id) REFERENCES students(id)
+    admissionStandard TEXT,
+    nationality TEXT,
+    motherTongue TEXT,
+    grn TEXT,
+    ten TEXT,
+    currentStandard TEXT,
+    progress TEXT,
+    conduct TEXT,
+    dateOfLeaving TEXT,
+    reasonOfLeaving TEXT,
+    remarks TEXT
   )`)
 
   db.run(`CREATE TABLE IF NOT EXISTS certificate_counters (
@@ -64,7 +65,7 @@ export const addStudent = (student) => {
 
     db.run(`INSERT INTO students (${fields}) VALUES (${placeholders})`, values, function (err) {
       if (err) reject(err)
-      else resolve({ id: this.lastID, ...student })
+      else resolve(student)
     })
   })
 }
@@ -78,94 +79,35 @@ export const getStudents = () => {
   })
 }
 
-export const updateStudent = (id, student) => {
+export const getStudent = (studentId) => {
+  return new Promise((resolve, reject) => {
+    db.get('SELECT * FROM students WHERE studentId = ?', [studentId], (err, row) => {
+      if (err) reject(err)
+      else resolve(row)
+    })
+  })
+}
+
+export const updateStudent = (studentId, student) => {
   return new Promise((resolve, reject) => {
     const fields = Object.keys(student)
       .map((key) => `${key} = ?`)
       .join(', ')
-    const values = [...Object.values(student), id]
+    const values = [...Object.values(student), studentId]
 
-    db.run(`UPDATE students SET ${fields} WHERE id = ?`, values, function (err) {
+    db.run(`UPDATE students SET ${fields} WHERE studentId = ?`, values, function (err) {
       if (err) reject(err)
-      else resolve({ id, ...student })
+      else resolve({ studentId, ...student })
     })
   })
 }
 
-export const deleteStudent = (id) => {
+export const deleteStudent = (studentId) => {
   return new Promise((resolve, reject) => {
-    db.run('DELETE FROM students WHERE id = ?', [id], function (err) {
+    db.run('DELETE FROM students WHERE studentId = ?', [studentId], function (err) {
       if (err) reject(err)
-      else resolve(id)
+      else resolve(studentId)
     })
-  })
-}
-
-export const saveCertificate = (studentId, type, data) => {
-  return new Promise((resolve, reject) => {
-    db.serialize(() => {
-      db.get('SELECT next_number FROM certificate_counters WHERE type = ?', [type], (err, row) => {
-        if (err) {
-          reject(err)
-          return
-        }
-
-        const certificateNumber = row.next_number
-
-        db.run('BEGIN TRANSACTION')
-
-        db.run(
-          'INSERT INTO certificates (student_id, type, certificate_number, data) VALUES (?, ?, ?, ?)',
-          [studentId, type, certificateNumber, JSON.stringify(data)],
-          function (err) {
-            if (err) {
-              db.run('ROLLBACK')
-              reject(err)
-              return
-            }
-
-            db.run(
-              'UPDATE certificate_counters SET next_number = next_number + 1 WHERE type = ?',
-              [type],
-              (err) => {
-                if (err) {
-                  db.run('ROLLBACK')
-                  reject(err)
-                  return
-                }
-
-                db.run('COMMIT')
-                resolve({
-                  id: this.lastID,
-                  student_id: studentId,
-                  type,
-                  certificate_number: certificateNumber,
-                  data
-                })
-              }
-            )
-          }
-        )
-      })
-    })
-  })
-}
-
-export const getLatestCertificate = (studentId, type) => {
-  return new Promise((resolve, reject) => {
-    db.get(
-      'SELECT * FROM certificates WHERE student_id = ? AND type = ? ORDER BY created_at DESC LIMIT 1',
-      [studentId, type],
-      (err, row) => {
-        if (err) reject(err)
-        else {
-          if (row) {
-            row.data = JSON.parse(row.data)
-          }
-          resolve(row)
-        }
-      }
-    )
   })
 }
 
@@ -175,5 +117,18 @@ export const getNextCertificateNumber = (type) => {
       if (err) reject(err)
       else resolve(row ? row.next_number : 1)
     })
+  })
+}
+
+export const incrementCertificateCounter = (type) => {
+  return new Promise((resolve, reject) => {
+    db.run(
+      'UPDATE certificate_counters SET next_number = next_number + 1 WHERE type = ?',
+      [type],
+      function (err) {
+        if (err) reject(err)
+        else resolve()
+      }
+    )
   })
 }

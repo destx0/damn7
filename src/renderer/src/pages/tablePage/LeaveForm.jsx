@@ -4,11 +4,8 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 
-const LeaveForm = ({ studentData, pdfDataUrl, closeCertificate }) => {
+const LeaveForm = ({ studentData, pdfDataUrl, closeCertificate, onStudentUpdate }) => {
   const [formData, setFormData] = useState({
-    leaveReason: '',
-    leaveStart: '',
-    leaveEnd: '',
     nationality: '',
     motherTongue: '',
     grn: '',
@@ -23,21 +20,18 @@ const LeaveForm = ({ studentData, pdfDataUrl, closeCertificate }) => {
   const [currentPdfUrl, setCurrentPdfUrl] = useState(pdfDataUrl)
 
   useEffect(() => {
-    loadLatestCertificate()
+    loadStudentData()
   }, [])
 
-  const loadLatestCertificate = async () => {
+  const loadStudentData = async () => {
     try {
-      const latestCertificate = await window.api.getLatestCertificate(studentData.id, 'leave')
-      if (latestCertificate) {
-        setFormData((prevData) => ({
-          ...prevData,
-          ...latestCertificate.data
-        }))
-        setCurrentPdfUrl(latestCertificate.data.pdfUrl || pdfDataUrl)
-      }
+      const student = await window.api.getStudent(studentData.studentId)
+      setFormData((prevData) => ({
+        ...prevData,
+        ...student
+      }))
     } catch (error) {
-      console.error('Error loading latest leave certificate:', error)
+      console.error('Error loading student data:', error)
     }
   }
 
@@ -59,11 +53,9 @@ const LeaveForm = ({ studentData, pdfDataUrl, closeCertificate }) => {
       const newPdfUrl = `data:application/pdf;base64,${base64Data}`
       setCurrentPdfUrl(newPdfUrl)
 
-      // Save the certificate data
-      await window.api.saveCertificate(studentData.id, 'leave', {
-        ...certificateData,
-        pdfUrl: newPdfUrl
-      })
+      // Update student data in the students table
+      await window.api.updateStudent(studentData.studentId, formData)
+      onStudentUpdate({ ...studentData, ...formData })
     } catch (error) {
       console.error('Error generating official leave certificate:', error)
     }

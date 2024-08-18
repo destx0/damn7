@@ -7,11 +7,11 @@ import { generateBonafideCertificate } from './bonafideCertificateGenerator'
 import {
   addStudent,
   getStudents,
+  getStudent,
   updateStudent,
   deleteStudent,
-  saveCertificate,
-  getLatestCertificate,
-  getNextCertificateNumber
+  getNextCertificateNumber,
+  incrementCertificateCounter
 } from './dbOperations'
 
 function createWindow() {
@@ -49,22 +49,51 @@ function createWindow() {
 function setupIpcHandlers() {
   // Database operations
   ipcMain.handle('add-student', async (_, student) => {
-    return addStudent(student)
+    try {
+      return await addStudent(student)
+    } catch (error) {
+      console.error('Error adding student:', error)
+      throw error
+    }
   })
 
   ipcMain.handle('get-students', async () => {
-    return getStudents()
+    try {
+      return await getStudents()
+    } catch (error) {
+      console.error('Error getting students:', error)
+      throw error
+    }
   })
 
-  ipcMain.handle('update-student', async (_, id, student) => {
-    return updateStudent(id, student)
+  ipcMain.handle('get-student', async (_, studentId) => {
+    try {
+      return await getStudent(studentId)
+    } catch (error) {
+      console.error('Error getting student:', error)
+      throw error
+    }
   })
 
-  ipcMain.handle('delete-student', async (_, id) => {
-    return deleteStudent(id)
+  ipcMain.handle('update-student', async (_, studentId, student) => {
+    try {
+      return await updateStudent(studentId, student)
+    } catch (error) {
+      console.error('Error updating student:', error)
+      throw error
+    }
   })
 
-  // Leave Certificate operations
+  ipcMain.handle('delete-student', async (_, studentId) => {
+    try {
+      return await deleteStudent(studentId)
+    } catch (error) {
+      console.error('Error deleting student:', error)
+      throw error
+    }
+  })
+
+  // Certificate operations (as defined in your previous code)
   ipcMain.handle('generate-draft-leave-certificate', async (_, data) => {
     try {
       const nextNumber = await getNextCertificateNumber('leave')
@@ -87,7 +116,7 @@ function setupIpcHandlers() {
         false
       )
       const base64Pdf = Buffer.from(pdfBuffer).toString('base64')
-      await saveCertificate(data.studentId, 'leave', { ...data, certificateNumber: nextNumber })
+      await incrementCertificateCounter('leave')
       return base64Pdf
     } catch (error) {
       console.error('Error generating official leave certificate:', error)
@@ -95,7 +124,6 @@ function setupIpcHandlers() {
     }
   })
 
-  // Bonafide Certificate operations
   ipcMain.handle('generate-draft-bonafide-certificate', async (_, data) => {
     try {
       const nextNumber = await getNextCertificateNumber('bonafide')
@@ -118,29 +146,10 @@ function setupIpcHandlers() {
         false
       )
       const base64Pdf = Buffer.from(pdfBuffer).toString('base64')
-      await saveCertificate(data.studentId, 'bonafide', { ...data, certificateNumber: nextNumber })
+      await incrementCertificateCounter('bonafide')
       return base64Pdf
     } catch (error) {
       console.error('Error generating official bonafide certificate:', error)
-      throw error
-    }
-  })
-
-  // New IPC handlers for certificate operations
-  ipcMain.handle('save-certificate', async (_, studentId, type, data) => {
-    try {
-      return await saveCertificate(studentId, type, data)
-    } catch (error) {
-      console.error('Error saving certificate:', error)
-      throw error
-    }
-  })
-
-  ipcMain.handle('get-latest-certificate', async (_, studentId, type) => {
-    try {
-      return await getLatestCertificate(studentId, type)
-    } catch (error) {
-      console.error('Error getting latest certificate:', error)
       throw error
     }
   })
