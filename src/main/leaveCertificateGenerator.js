@@ -119,30 +119,29 @@ export const generateLeaveCertificate = async (data, isDraft = true) => {
               <span><strong>Board</strong>- Nashik</span>
               <span><strong>Index No.</strong>- 15.15.005</span>
             </div>
-            <h1 style="font-size: 24pt; margin: 10px 0;">Leave Certificate</h1>
+            <h1 style="font-size: 24pt; margin: 2px 0;">Leave Certificate</h1>
             <pre>
-${createField('Student ID', data.studentId, 25)} ${createField('U.I.D. No. (Aadhar Card No.)', data.aadharNo, 24)}
-<strong>Name of the student in full</strong> ${createField('(Name)', data.name, 20)} ${createField("(Father's Name)", data.fathersName, 20)}
+${createField('Student ID', data.studentId, 18)} ${createField('U.I.D. No. (Aadhar Card No.)', data.aadharNo, 24)}
+<strong>Name of the student in full</strong> ${createField('(Name)', data.name, 15)} ${createField("(Father's Name)", data.fathersName, 20)}
                                         ${createField('(Surname)', data.surname, 30)}
 ${createField("Mother's Name", data.mothersName, 40)}
-${createField('Nationality', data.nationality || 'Indian', 20)} ${createField('Mother tongue', data.motherTongue, 40)}
-${createField('Religion', data.religion, 15)} ${createField('Caste', data.caste, 20)} ${createField('Sub-caste', data.subCaste, 25)}
+${createField('Nationality', data.nationality || 'Indian', 20)} ${createField('Mother tongue', data.motherTongue, 35)}
+${createField('Religion', data.religion, 15)} ${createField('Caste', data.caste, 20)} ${createField('Sub-caste', data.subCaste, 20)}
 ${createField('Place of Birth', data.placeOfBirth, 10)} ${createField('Taluka', data.taluka, 10)} ${createField('Dist', data.district, 10)} ${createField('State', data.state, 12)} <strong>Country:</strong> India
-${createField('Date of Birth (DD/MM/YY) according to the Christian era', formatDate(data.dateOfBirth), 34)}
-${createField('Date of Birth (In words)', dateOfBirthInWords, 64)}
-<strong>Last school attended & standard:</strong>${createField('', data.lastAttendedSchool, 55)}
-${createField('', data.lastSchoolStandard, 85)}
+${createField('Date of Birth (DD/MM/YY) according to the Christian era', formatDate(data.dateOfBirth), 27)}
+${createField('Date of Birth (In words)', dateOfBirthInWords, 60)}
+<strong>Last school attended & standard:</strong>${createField('', data.lastAttendedSchool, 50)}
+${createField('', data.lastSchoolStandard, 80)}
 ${createField('Date of admission in this school', formatDate(data.dateOfAdmission), 24)} ${createField('Standard', data.admissionStandard, 25)}
-${createField('Progress', data.progress, 33)} ${createField('Conduct', data.conduct, 35)}
-${createField('Date of leaving school', formatDate(data.dateOfLeaving), 65)}
+${createField('Progress', data.progress, 27)} ${createField('Conduct', data.conduct, 30)}
+${createField('Date of leaving school', formatDate(data.dateOfLeaving), 57)}
 ${createField('Standard in which studying and since when (in words and figure)', data.currentStandard, 85)}
-${createField('Reason of leaving school', data.reasonOfLeaving, 64)}
-${createField('Remarks', data.remarks, 78)}
+${createField('Reason of leaving school', data.reasonOfLeaving, 58)}
+${createField('Remarks', data.remarks, 70)}
             </pre>
-            <p>This is to certify that the above-mentioned student has been granted leave from ${formatDate(data.leaveStart)} to ${formatDate(data.leaveEnd)}.</p>
-            <p>Reason for leave: ${data.leaveReason}</p>
+
           </div>
-          <div class="footer">
+          <div >
             <p style="font-weight: bold;">Certified that the above information is in accordance with the School Register.</p>
             <div style="display: flex; justify-content: space-between; margin-top: 40px;">
               <div><strong>Date:</strong> ${new Date().getDate()}</div>
@@ -154,7 +153,7 @@ ${createField('Remarks', data.remarks, 78)}
               <div><strong>Clerk</strong></div>
               <div><strong>Head Master</strong><br>(Seal)</div>
             </div>
-            <pre style="font-size: 10pt; margin-top: 20px;">* No change in any entry in this certificate shall be made except by the authority issuing it.
+            <pre style="font-size: 10pt; margin-top: 5px;">* No change in any entry in this certificate shall be made except by the authority issuing it.
 * Any infringement of the rule is liable to be dealt with by rustication or by other suitable punishment.</pre>
           </div>
           ${isDraft ? '<div class="draft">DRAFT</div>' : ''}
