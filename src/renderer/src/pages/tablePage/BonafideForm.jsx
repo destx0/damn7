@@ -74,6 +74,10 @@ const BonafideForm = ({ studentData, pdfDataUrl, closeCertificate, onStudentUpda
     <div className="flex w-full h-full">
       <div className="w-1/2 p-4 flex flex-col overflow-y-auto">
         <h2 className="text-xl mb-4">Bonafide Certificate Form</h2>
+        <div className="flex justify-between mb-4">
+          <Button onClick={generateOfficialCertificate}>Generate Official Certificate</Button>
+          <Button onClick={closeCertificate}>Close</Button>
+        </div>
         <div className="space-y-4 flex-grow">
           {formFields.map((field) => (
             <div key={field.name}>
@@ -100,10 +104,6 @@ const BonafideForm = ({ studentData, pdfDataUrl, closeCertificate, onStudentUpda
               )}
             </div>
           ))}
-        </div>
-        <div className="flex justify-between mt-4">
-          <Button onClick={generateOfficialCertificate}>Generate Official Certificate</Button>
-          <Button onClick={closeCertificate}>Close</Button>
         </div>
       </div>
       <div className="w-1/2 p-4">
