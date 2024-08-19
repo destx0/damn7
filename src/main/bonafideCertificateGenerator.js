@@ -75,15 +75,15 @@ export const generateBonafideCertificate = async (data, isDraft = true) => {
   const createField = (label, value, size) => {
     const field = value || ''
     const padding = '&nbsp;'.repeat(Math.max(0, size - field.length))
-    return `<strong>${label}:</strong> <span style="display: inline-block; position: relative; width: ${size}ch;">${field}${padding}<span style="position: absolute; bottom: -5px; left: 0; right: 0; border-bottom: 1px solid black;"></span></span>`
+    return `<strong style="font-size: 18px;">${label}</strong> <span style="display: inline-block; position: relative; width: ${size}ch; font-weight: 500;">${field}${padding}<span style="position: absolute; bottom: 5px; left: 0; right: 0; border-bottom: 1px solid black;"></span></span>`
   }
 
   const content = `
     <html>
       <head>
         <style>
-          body { font-family: 'Times New Roman', Times, serif; margin: 0; padding: 20mm 12mm; color: #000; font-size: 12pt; }
-          .container { border: 2px solid #000; padding: 10mm; position: relative; width: 210mm; height: 297mm; box-sizing: border-box; }
+          body { font-family: 'Times New Roman', Times, serif; margin: 0; padding: 10mm 10mm; color: #000; font-size: 14pt; }
+          .container {  padding: 0mm; position: relative; }
           h1, h2, h3 { text-align: center; margin: 0; }
           .header { margin-bottom: 10px; }
           .content { line-height: 1.6; }
@@ -94,20 +94,18 @@ export const generateBonafideCertificate = async (data, isDraft = true) => {
       <body>
         <div class="container">
           <div class="header">
-            <h2>Jaggannath Shikshan Prasarak Mandal's</h2>
-            <h1>Shashikant Sakharam Chaudhari Kanya Vidyalay, Yawal</h1>
-            <h3>Taluka- Yawal, Dist. Jalgaon</h3>
+            <h3>Jaggannath Shikshan Prasarak Mandal's</h3>
+            <h2>Shashikant Sakharam Chaudhari Kanya Vidyalay, Yawal, Dist. Jalgaon</h2>
           </div>
           <div class="content">
-            <h1 style="font-size: 24pt; margin: 20px 0;">Bonafide Certificate</h1>
+            <h1 style="font-size: 24pt; margin: 5px 0;">Bonafide Certificate</h1>
             <div style="display: flex; justify-content: space-between;">
-              ${createField('Certificate No.', certificateNumber, 10)}
+
               ${createField('General Register No.', data.grn, 20)}
               ${createField('Date', formatDate(data.dateOfBonafide), 20)}
             </div>
             <p>This is to certify that Ms. <strong>${data.name} ${data.fathersName} ${data.surname}</strong> is a student of Shashikant Sakharam Chaudhari Kanya Vidyalay, Yawal, Taluka-Yawal, Dist.-Jalgaon. She is currently enrolled in the <strong>${data.currentStandardForBonafide}</strong> grade for the academic year <strong>${data.academicYear}</strong>.</p>
-            <p>This certificate is issued to her for the purposes of ${createField('', data.reasonOfBonafide, 30)} requirements.</p>
-            <p>According to her leaving certificate, her date of birth is ${createField('', formatDate(data.dateOfBirth), 20)}, her birthplace is ${createField('', data.placeOfBirth, 20)}, and her caste, as per the general register, is ${createField('', data.caste, 20)}.</p>
+            <p>This certificate is issued to her for the purposes of ${createField('', data.reasonOfBonafide, 20)} requirements.According to her leaving certificate, her date of birth is ${createField('', formatDate(data.dateOfBirth), 12)}, her birthplace is ${createField('', data.placeOfBirth, 12)}, and her caste, as per the general register, is ${createField('', data.caste, 10)}.</p>
             <p>This certificate is issued at the request of ${createField('', data.requestOfBonafideBy, 30)}.</p>
           </div>
           <div class="footer">

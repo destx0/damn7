@@ -90,7 +90,7 @@ export const generateLeaveCertificate = async (data, isDraft = true) => {
           .container { border: 2px solid #000; padding: 2mm; position: relative; width: 195mm; height: 275mm; box-sizing: border-box; }
           h1, h2, h3 { text-align: center; margin: 0; }
           .header { margin-bottom: -10px; }
-          .content { line-height: 1.6;margin-top: -5px; }
+          .content { line-height: 1.6;margin-top: -5px; font-weight: 500;}
           .footer { margin-top: -40px; }
           .draft { position: absolute; font-size: 100px; color: #e0e0e0; transform: rotate(45deg); top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(45deg); }
           pre { font-family: inherit; white-space: pre-wrap; word-wrap: break-word; }
