@@ -84,11 +84,11 @@ export const generateLeaveCertificate = async (data, isDraft = true) => {
       <head>
         <style>
           body { font-family: 'Times New Roman', Times, serif; margin: 0; padding: 10mm 10mm; color: #000; font-size: 13pt; }
-          .container { border: 2px solid #000; padding: 2mm; position: relative; width: 195mm; height: 297mm; box-sizing: border-box; }
+          .container { border: 2px solid #000; padding: 2mm; position: relative; width: 195mm; height: 275mm; box-sizing: border-box; }
           h1, h2, h3 { text-align: center; margin: 0; }
-          .header { margin-bottom: 10px; }
-          .content { line-height: 1.6; }
-          .footer { margin-top: 20px; }
+          .header { margin-bottom: -10px; }
+          .content { line-height: 1.6;margin-top: -5px; }
+          .footer { margin-top: -40px; }
           .draft { position: absolute; font-size: 100px; color: #e0e0e0; transform: rotate(45deg); top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(45deg); }
           pre { font-family: inherit; white-space: pre-wrap; word-wrap: break-word; }
         </style>
@@ -99,7 +99,7 @@ export const generateLeaveCertificate = async (data, isDraft = true) => {
             <h3>Jaggannath Shikshan Prasarak Mandal's</h3>
             <h2>Shashikant Sakharam Chaudhari Kanya Vidyalay, Yawal</h2>
             <h3>Taluka- Yawal, Dist. Jalgaon</h3>
-            <p style="text-align: center;">Phone No. 02585-261290 &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; E Mail - mksyawal@yahoo.in</p>
+            <p style="text-align: center;margin-top: -0px;">Phone No. 02585-261290 &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; E Mail - mksyawal@yahoo.in</p>
           </div>
           <div class="content">
             <div style="display: flex; justify-content: space-between;">
@@ -108,19 +108,20 @@ export const generateLeaveCertificate = async (data, isDraft = true) => {
             </div>
             <div style="display: flex; justify-content: space-between;">
               <span><strong>School Reg. No.</strong>- Edu. Depu.Dir/Sec-2/First Appru/</span>
-              <span>${createField('PEN', data.PENNo, 15)}</span>
+              <span><strong>Medium:</strong> Marathi</span>
             </div>
             <div style="display: flex; justify-content: space-between;">
               <span style="padding-left: 7.5em;">90-91/92/Div.Sec.Depu.Dir.Nashik/Datted 12-3-92</span>
-              <span><strong>Medium:</strong> Marathi</span>
+
             </div>
             <div style="display: flex; justify-content: space-between;">
               <span><strong>U Dise No.</strong>- 27031508414</span>
               <span><strong>Board</strong>- Nashik</span>
               <span><strong>Index No.</strong>- 15.15.005</span>
             </div>
-            <h1 style="font-size: 24pt; margin: 2px 0;">Leave Certificate</h1>
-            <pre>
+            <h1 style="font-size: 24pt; margin-top: -10px;margin-bottom: -20px;">Leave Certificate</h1>
+            <pre style="margin-top: -10px;">
+${createField('PEN', data.PENNo, 75)}
 ${createField('Student ID', data.studentId, 18)} ${createField('U.I.D. No. (Aadhar Card No.)', data.aadharNo, 24)}
 <strong>Name of the student in full</strong> ${createField('(Name)', data.name, 15)} ${createField("(Father's Name)", data.fathersName, 20)}
                                         ${createField('(Surname)', data.surname, 30)}
@@ -141,17 +142,17 @@ ${createField('Remarks', data.remarks, 70)}
             </pre>
 
           </div>
-          <div >
+          <div class="footer">
             <p style="font-weight: bold;">Certified that the above information is in accordance with the School Register.</p>
-            <div style="display: flex; justify-content: space-between; margin-top: 40px;">
+            <div style="display: flex; justify-content: space-between; margin-top: -5px;">
               <div><strong>Date:</strong> ${new Date().getDate()}</div>
               <div><strong>Month:</strong> ${new Date().toLocaleString('default', { month: 'long' })}</div>
               <div><strong>Year:</strong> ${new Date().getFullYear()}</div>
             </div>
-            <div style="display: flex; justify-content: space-between; margin-top: 40px;">
+            <div style="display: flex; justify-content: space-between; margin-top: 60px;">
               <div><strong>Class Teacher</strong></div>
               <div><strong>Clerk</strong></div>
-              <div><strong>Head Master</strong><br>(Seal)</div>
+              <div><strong>Head Master(Seal)</strong></div>
             </div>
             <pre style="font-size: 10pt; margin-top: 5px;">* No change in any entry in this certificate shall be made except by the authority issuing it.
 * Any infringement of the rule is liable to be dealt with by rustication or by other suitable punishment.</pre>
