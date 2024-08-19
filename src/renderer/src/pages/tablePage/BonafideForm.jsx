@@ -4,6 +4,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import Datepicker from 'react-tailwindcss-datepicker'
+import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable'
 
 const BonafideForm = ({ studentData, pdfDataUrl, closeCertificate, onStudentUpdate }) => {
   const [formData, setFormData] = useState({
@@ -119,32 +120,37 @@ const BonafideForm = ({ studentData, pdfDataUrl, closeCertificate, onStudentUpda
   }
 
   return (
-    <div className="flex w-full h-full">
-      <div className="w-1/2 p-4 flex flex-col overflow-y-auto">
-        <h2 className="text-xl font-semibold mb-4">Bonafide Certificate Form</h2>
-        <div className="flex justify-between mb-4">
-          <Button onClick={generateOfficialCertificate}>Generate Official Certificate</Button>
-          <Button onClick={closeCertificate} variant="outline">
-            Close
-          </Button>
+    <ResizablePanelGroup direction="horizontal" className="w-full h-full rounded-lg border">
+      <ResizablePanel defaultSize={50} minSize={30}>
+        <div className="p-4 h-full flex flex-col">
+          <h2 className="text-xl font-semibold mb-4">Bonafide Certificate Form</h2>
+          <div className="flex justify-between mb-4">
+            <Button onClick={generateOfficialCertificate}>Generate Official Certificate</Button>
+            <Button onClick={closeCertificate} variant="outline">
+              Close
+            </Button>
+          </div>
+          <div className="space-y-4 flex-grow overflow-y-auto">
+            {formFields.map((field) => (
+              <div key={field.name} className="space-y-2">
+                <Label htmlFor={field.name}>{field.label}</Label>
+                {renderField(field)}
+              </div>
+            ))}
+          </div>
         </div>
-        <div className="space-y-4 flex-grow">
-          {formFields.map((field) => (
-            <div key={field.name} className="space-y-2">
-              <Label htmlFor={field.name}>{field.label}</Label>
-              {renderField(field)}
-            </div>
-          ))}
+      </ResizablePanel>
+      <ResizableHandle withHandle />
+      <ResizablePanel defaultSize={50} minSize={30}>
+        <div className="h-full p-4">
+          <iframe
+            src={currentPdfUrl}
+            className="w-full h-full border-none"
+            title="Bonafide Certificate PDF"
+          />
         </div>
-      </div>
-      <div className="w-1/2 p-4">
-        <iframe
-          src={currentPdfUrl}
-          className="w-full h-full border-none"
-          title="Bonafide Certificate PDF"
-        />
-      </div>
-    </div>
+      </ResizablePanel>
+    </ResizablePanelGroup>
   )
 }
 
