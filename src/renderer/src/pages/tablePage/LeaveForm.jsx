@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
 import {
   Select,
   SelectContent,
@@ -30,10 +29,27 @@ const LeaveForm = ({ studentData, pdfDataUrl, closeCertificate, onStudentUpdate 
     remarks: '',
     leaveCertificateGenerationDate: '',
     sscExamYear: '',
-    otherReason: ''
+    sscPassStatus: '',
+    otherReason: '',
+    customRemarks: ''
   })
   const [currentPdfUrl, setCurrentPdfUrl] = useState(pdfDataUrl)
   const [isReasonDialogOpen, setIsReasonDialogOpen] = useState(false)
+  const [isStandardDialogOpen, setIsStandardDialogOpen] = useState(false)
+  const [isRemarksDialogOpen, setIsRemarksDialogOpen] = useState(false)
+  const [selectedReason, setSelectedReason] = useState('')
+  const [selectedStandard, setSelectedStandard] = useState('')
+  const [selectedRemarks, setSelectedRemarks] = useState('')
+
+  const predefinedReasons = [
+    'Name struck off due to long absence',
+    "Guardian's request",
+    'Seat up for SSC exam at month of march',
+    'Other'
+  ]
+
+  const standardOptions = ['V', 'VI', 'VII', 'VIII', 'IX', 'X']
+  const remarksOptions = ['Dues nill', 'Custom']
 
   useEffect(() => {
     loadStudentData()
@@ -87,75 +103,118 @@ const LeaveForm = ({ studentData, pdfDataUrl, closeCertificate, onStudentUpdate 
     }
   }
 
-  const predefinedReasons = [
-    'Name struck off due to long absence',
-    "Guardian's request",
-    'Seat up for 5-G exam at month of march (1st)',
-    'Seat up for SSC exam at month of march',
-    'Other'
-  ]
+  const handleStandardSelect = (standard) => {
+    setSelectedStandard(standard)
+  }
+
+  const handleConfirmStandard = () => {
+    setFormData((prevData) => ({
+      ...prevData,
+      currentStandard: selectedStandard
+    }))
+    setIsStandardDialogOpen(false)
+  }
 
   const handleReasonSelect = (reason) => {
-    if (reason === 'Seat up for SSC exam at month of march') {
-      setFormData((prevData) => ({
-        ...prevData,
-        reasonOfLeaving: reason
-      }))
-    } else if (reason === 'Other') {
-      setFormData((prevData) => ({
-        ...prevData,
-        reasonOfLeaving: 'Other'
-      }))
-    } else {
-      setFormData((prevData) => ({
-        ...prevData,
-        reasonOfLeaving: reason
-      }))
-      setIsReasonDialogOpen(false)
-    }
+    setSelectedReason(reason)
   }
 
   const handleConfirmReason = () => {
-    if (formData.reasonOfLeaving === 'Seat up for SSC exam at month of march') {
+    if (selectedReason === 'Seat up for SSC exam at month of march') {
+      const passStatus = formData.sscPassStatus === 'pass' ? 'passed' : 'failed'
       setFormData((prevData) => ({
         ...prevData,
-        reasonOfLeaving: `Seat up for SSC exam at month of march ${formData.sscExamYear}`
+        reasonOfLeaving: `Sent up for SSC exam of March ${formData.sscExamYear} and ${passStatus} in it`
       }))
-    } else if (formData.reasonOfLeaving === 'Other') {
+    } else if (selectedReason === 'Other') {
       setFormData((prevData) => ({
         ...prevData,
         reasonOfLeaving: formData.otherReason
       }))
+    } else {
+      setFormData((prevData) => ({
+        ...prevData,
+        reasonOfLeaving: selectedReason
+      }))
     }
     setIsReasonDialogOpen(false)
+    setSelectedReason('')
   }
 
-  const formFields = [
-    { name: 'currentStandard', label: 'Current Standard', type: 'text' },
-    { name: 'progress', label: 'Progress', type: 'text' },
-    { name: 'conduct', label: 'Conduct', type: 'text' },
-    { name: 'dateOfLeaving', label: 'Date of Leaving', type: 'date' },
-    { name: 'reasonOfLeaving', label: 'Reason of Leaving', type: 'textarea' },
-    { name: 'remarks', label: 'Remarks', type: 'textarea' },
-    {
-      name: 'leaveCertificateGenerationDate',
-      label: 'Leave Certificate Generation Date',
-      type: 'date'
+  const handleRemarksSelect = (remarks) => {
+    setSelectedRemarks(remarks)
+  }
+
+  const handleConfirmRemarks = () => {
+    if (selectedRemarks === 'Custom') {
+      setFormData((prevData) => ({
+        ...prevData,
+        remarks: formData.customRemarks
+      }))
+    } else {
+      setFormData((prevData) => ({
+        ...prevData,
+        remarks: selectedRemarks
+      }))
     }
-  ]
+    setIsRemarksDialogOpen(false)
+    setSelectedRemarks('')
+  }
 
   const renderField = (field) => {
-    switch (field.type) {
-      case 'textarea':
-        return field.name === 'reasonOfLeaving' ? (
+    switch (field.name) {
+      case 'currentStandard':
+        return (
           <div className="flex items-center space-x-2">
-            <Textarea
+            <Input
               id={field.name}
               name={field.name}
               value={formData[field.name]}
               onChange={handleInputChange}
               placeholder={`Enter ${field.label.toLowerCase()}`}
               className="w-full"
+              readOnly
+            />
+            <Dialog open={isStandardDialogOpen} onOpenChange={setIsStandardDialogOpen}>
+              <DialogTrigger asChild>
+                <Button variant="outline" size="sm">
+                  Select
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Select Current Standard</DialogTitle>
+                </DialogHeader>
+                <div className="space-y-2">
+                  {standardOptions.map((standard, index) => (
+                    <Button
+                      key={index}
+                      onClick={() => handleStandardSelect(standard)}
+                      variant="outline"
+                      className={`w-full justify-start ${selectedStandard === standard ? 'bg-primary text-primary-foreground' : ''}`}
+                    >
+                      {standard}
+                    </Button>
+                  ))}
+                </div>
+                <Button onClick={handleConfirmStandard} className="w-full mt-4">
+                  Confirm Standard
+                </Button>
+              </DialogContent>
+            </Dialog>
+          </div>
+        )
+      case 'reasonOfLeaving':
+        return (
+          <div className="flex items-center space-x-2">
+            <Input
+              id={field.name}
+              name={field.name}
+              value={formData[field.name]}
+              onChange={handleInputChange}
+              placeholder={`Enter ${field.label.toLowerCase()}`}
+              className="w-full"
+              readOnly
             />
             <Dialog open={isReasonDialogOpen} onOpenChange={setIsReasonDialogOpen}>
               <DialogTrigger asChild>
@@ -173,13 +232,13 @@ const LeaveForm = ({ studentData, pdfDataUrl, closeCertificate, onStudentUpdate 
                       key={index}
                       onClick={() => handleReasonSelect(reason)}
                       variant="outline"
-                      className="w-full justify-start"
+                      className={`w-full justify-start ${selectedReason === reason ? 'bg-primary text-primary-foreground' : ''}`}
                     >
                       {reason}
                     </Button>
                   ))}
                 </div>
-                {formData.reasonOfLeaving === 'Seat up for SSC exam at month of march' && (
+                {selectedReason === 'Seat up for SSC exam at month of march' && (
                   <div className="space-y-2 mt-4">
                     <Label htmlFor="sscExamYear">SSC Exam Year</Label>
                     <Input
@@ -189,9 +248,30 @@ const LeaveForm = ({ studentData, pdfDataUrl, closeCertificate, onStudentUpdate 
                       onChange={handleInputChange}
                       placeholder="Enter SSC exam year"
                     />
+                    <Label htmlFor="sscPassStatus">SSC Pass Status</Label>
+                    <div className="flex space-x-2">
+                      <Button
+                        onClick={() =>
+                          setFormData((prevData) => ({ ...prevData, sscPassStatus: 'pass' }))
+                        }
+                        variant={formData.sscPassStatus === 'pass' ? 'default' : 'outline'}
+                        className="w-full"
+                      >
+                        Pass
+                      </Button>
+                      <Button
+                        onClick={() =>
+                          setFormData((prevData) => ({ ...prevData, sscPassStatus: 'fail' }))
+                        }
+                        variant={formData.sscPassStatus === 'fail' ? 'default' : 'outline'}
+                        className="w-full"
+                      >
+                        Fail
+                      </Button>
+                    </div>
                   </div>
                 )}
-                {formData.reasonOfLeaving === 'Other' && (
+                {selectedReason === 'Other' && (
                   <div className="space-y-2 mt-4">
                     <Label htmlFor="otherReason">Other Reason</Label>
                     <Input
@@ -209,17 +289,62 @@ const LeaveForm = ({ studentData, pdfDataUrl, closeCertificate, onStudentUpdate 
               </DialogContent>
             </Dialog>
           </div>
-        ) : (
-          <Textarea
-            id={field.name}
-            name={field.name}
-            value={formData[field.name]}
-            onChange={handleInputChange}
-            placeholder={`Enter ${field.label.toLowerCase()}`}
-            className="w-full"
-          />
         )
-      case 'date':
+      case 'remarks':
+        return (
+          <div className="flex items-center space-x-2">
+            <Input
+              id={field.name}
+              name={field.name}
+              value={formData[field.name]}
+              onChange={handleInputChange}
+              placeholder={`Enter ${field.label.toLowerCase()}`}
+              className="w-full"
+              readOnly
+            />
+            <Dialog open={isRemarksDialogOpen} onOpenChange={setIsRemarksDialogOpen}>
+              <DialogTrigger asChild>
+                <Button variant="outline" size="sm">
+                  Select
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Select Remarks</DialogTitle>
+                </DialogHeader>
+                <div className="space-y-2">
+                  {remarksOptions.map((remark, index) => (
+                    <Button
+                      key={index}
+                      onClick={() => handleRemarksSelect(remark)}
+                      variant="outline"
+                      className={`w-full justify-start ${selectedRemarks === remark ? 'bg-primary text-primary-foreground' : ''}`}
+                    >
+                      {remark}
+                    </Button>
+                  ))}
+                </div>
+                {selectedRemarks === 'Custom' && (
+                  <div className="space-y-2 mt-4">
+                    <Label htmlFor="customRemarks">Custom Remarks</Label>
+                    <Input
+                      id="customRemarks"
+                      name="customRemarks"
+                      value={formData.customRemarks}
+                      onChange={handleInputChange}
+                      placeholder="Enter custom remarks"
+                    />
+                  </div>
+                )}
+                <Button onClick={handleConfirmRemarks} className="w-full mt-4">
+                  Confirm Remarks
+                </Button>
+              </DialogContent>
+            </Dialog>
+          </div>
+        )
+      case 'dateOfLeaving':
+      case 'leaveCertificateGenerationDate':
         return (
           <Datepicker
             asSingle={true}
@@ -238,13 +363,27 @@ const LeaveForm = ({ studentData, pdfDataUrl, closeCertificate, onStudentUpdate 
             name={field.name}
             value={formData[field.name]}
             onChange={handleInputChange}
-            type={field.type}
+            type="text"
             placeholder={`Enter ${field.label.toLowerCase()}`}
             className="w-full"
           />
         )
     }
   }
+
+  const formFields = [
+    { name: 'currentStandard', label: 'Current Standard', type: 'select' },
+    { name: 'progress', label: 'Progress', type: 'text' },
+    { name: 'conduct', label: 'Conduct', type: 'text' },
+    { name: 'dateOfLeaving', label: 'Date of Leaving', type: 'date' },
+    { name: 'reasonOfLeaving', label: 'Reason of Leaving', type: 'text' },
+    { name: 'remarks', label: 'Remarks', type: 'text' },
+    {
+      name: 'leaveCertificateGenerationDate',
+      label: 'Leave Certificate Generation Date',
+      type: 'date'
+    }
+  ]
 
   return (
     <ResizablePanelGroup direction="horizontal" className="w-full h-full rounded-lg border">
@@ -257,7 +396,7 @@ const LeaveForm = ({ studentData, pdfDataUrl, closeCertificate, onStudentUpdate 
               Close
             </Button>
           </div>
-          <div className="space-y-4 flex-grow overflow-y-auto">
+          <div className="space-y-4 flex-grow overflow-y-auto px-4">
             {formFields.map((field) => (
               <div key={field.name} className="space-y-2">
                 <Label htmlFor={field.name}>{field.label}</Label>

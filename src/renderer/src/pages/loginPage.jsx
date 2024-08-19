@@ -21,8 +21,8 @@ const LoginPage = () => {
   const navigate = useNavigate()
   const setUser = useUserStore((state) => state.setUser)
 
-  const DEFAULT_ADMIN_PASSWORD = "'"
-  const DEFAULT_TEACHER_PASSWORD = "'"
+  const DEFAULT_ADMIN_PASSWORD = '123'
+  const DEFAULT_TEACHER_PASSWORD = '123'
 
   const handleLogin = (e, type) => {
     e.preventDefault()
