@@ -3,8 +3,22 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from '@/components/ui/select'
 import Datepicker from 'react-tailwindcss-datepicker'
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger
+} from '@/components/ui/dialog'
 
 const LeaveForm = ({ studentData, pdfDataUrl, closeCertificate, onStudentUpdate }) => {
   const [formData, setFormData] = useState({
@@ -14,9 +28,12 @@ const LeaveForm = ({ studentData, pdfDataUrl, closeCertificate, onStudentUpdate 
     dateOfLeaving: '',
     reasonOfLeaving: '',
     remarks: '',
-    leaveCertificateGenerationDate: ''
+    leaveCertificateGenerationDate: '',
+    sscExamYear: '',
+    otherReason: ''
   })
   const [currentPdfUrl, setCurrentPdfUrl] = useState(pdfDataUrl)
+  const [isReasonDialogOpen, setIsReasonDialogOpen] = useState(false)
 
   useEffect(() => {
     loadStudentData()
@@ -63,12 +80,54 @@ const LeaveForm = ({ studentData, pdfDataUrl, closeCertificate, onStudentUpdate 
       const newPdfUrl = `data:application/pdf;base64,${base64Data}`
       setCurrentPdfUrl(newPdfUrl)
 
-      // Update student data in the students table
       await window.api.updateStudent(studentData.studentId, formData)
       onStudentUpdate({ ...studentData, ...formData })
     } catch (error) {
       console.error('Error generating official leave certificate:', error)
     }
+  }
+
+  const predefinedReasons = [
+    'Name struck off due to long absence',
+    "Guardian's request",
+    'Seat up for 5-G exam at month of march (1st)',
+    'Seat up for SSC exam at month of march',
+    'Other'
+  ]
+
+  const handleReasonSelect = (reason) => {
+    if (reason === 'Seat up for SSC exam at month of march') {
+      setFormData((prevData) => ({
+        ...prevData,
+        reasonOfLeaving: reason
+      }))
+    } else if (reason === 'Other') {
+      setFormData((prevData) => ({
+        ...prevData,
+        reasonOfLeaving: 'Other'
+      }))
+    } else {
+      setFormData((prevData) => ({
+        ...prevData,
+        reasonOfLeaving: reason
+      }))
+      setIsReasonDialogOpen(false)
+    }
+  }
+
+  const handleConfirmReason = () => {
+    if (formData.reasonOfLeaving === 'Seat up for SSC exam at month of march') {
+      setFormData((prevData) => ({
+        ...prevData,
+        reasonOfLeaving: `Seat up for SSC exam at month of march ${formData.sscExamYear}`
+      }))
+    } else if (formData.reasonOfLeaving === 'Other') {
+      setFormData((prevData) => ({
+        ...prevData,
+        reasonOfLeaving: formData.otherReason
+      }))
+    }
+    setIsReasonDialogOpen(false)
   }
 
   const formFields = [
@@ -88,7 +147,69 @@ const LeaveForm = ({ studentData, pdfDataUrl, closeCertificate, onStudentUpdate 
   const renderField = (field) => {
     switch (field.type) {
       case 'textarea':
-        return (
+        return field.name === 'reasonOfLeaving' ? (
+          <div className="flex items-center space-x-2">
+            <Textarea
+              id={field.name}
+              name={field.name}
+              value={formData[field.name]}
+              onChange={handleInputChange}
+              placeholder={`Enter ${field.label.toLowerCase()}`}
+              className="w-full"
+            />
+            <Dialog open={isReasonDialogOpen} onOpenChange={setIsReasonDialogOpen}>
+              <DialogTrigger asChild>
+                <Button variant="outline" size="sm">
+                  Select
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Select Reason of Leaving</DialogTitle>
+                </DialogHeader>
+                <div className="space-y-2">
+                  {predefinedReasons.map((reason, index) => (
+                    <Button
+                      key={index}
+                      onClick={() => handleReasonSelect(reason)}
+                      variant="outline"
+                      className="w-full justify-start"
+                    >
+                      {reason}
+                    </Button>
+                  ))}
+                </div>
+                {formData.reasonOfLeaving === 'Seat up for SSC exam at month of march' && (
+                  <div className="space-y-2 mt-4">
+                    <Label htmlFor="sscExamYear">SSC Exam Year</Label>
+                    <Input
+                      id="sscExamYear"
+                      name="sscExamYear"
+                      value={formData.sscExamYear}
+                      onChange={handleInputChange}
+                      placeholder="Enter SSC exam year"
+                    />
+                  </div>
+                )}
+                {formData.reasonOfLeaving === 'Other' && (
+                  <div className="space-y-2 mt-4">
+                    <Label htmlFor="otherReason">Other Reason</Label>
+                    <Input
+                      id="otherReason"
+                      name="otherReason"
+                      value={formData.otherReason}
+                      onChange={handleInputChange}
+                      placeholder="Enter other reason"
+                    />
+                  </div>
+                )}
+                <Button onClick={handleConfirmReason} className="w-full mt-4">
+                  Confirm Reason
+                </Button>
+              </DialogContent>
+            </Dialog>
+          </div>
+        ) : (
           <Textarea
             id={field.name}
             name={field.name}
