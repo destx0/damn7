@@ -3,11 +3,62 @@ import { format } from 'date-fns'
 
 // Convert numbers to words (for dates)
 const numberToWords = (num) => {
-  // ... (rest of the numberToWords function remains the same)
+  const units = [
+    '',
+    'One',
+    'Two',
+    'Three',
+    'Four',
+    'Five',
+    'Six',
+    'Seven',
+    'Eight',
+    'Nine',
+    'Ten',
+    'Eleven',
+    'Twelve',
+    'Thirteen',
+    'Fourteen',
+    'Fifteen',
+    'Sixteen',
+    'Seventeen',
+    'Eighteen',
+    'Nineteen'
+  ]
+  const tens = [
+    '',
+    '',
+    'Twenty',
+    'Thirty',
+    'Forty',
+    'Fifty',
+    'Sixty',
+    'Seventy',
+    'Eighty',
+    'Ninety'
+  ]
+
+  if (num < 20) return units[num]
+  if (num < 100) return tens[Math.floor(num / 10)] + (num % 10 !== 0 ? ' ' + units[num % 10] : '')
+  if (num < 1000)
+    return (
+      units[Math.floor(num / 100)] +
+      ' Hundred' +
+      (num % 100 !== 0 ? ' and ' + numberToWords(num % 100) : '')
+    )
+  return (
+    numberToWords(Math.floor(num / 1000)) +
+    ' Thousand' +
+    (num % 1000 !== 0 ? ' ' + numberToWords(num % 1000) : '')
+  )
 }
 
 const dateToWords = (dateString) => {
-  // ... (rest of the dateToWords function remains the same)
+  const date = new Date(dateString)
+  const day = numberToWords(date.getDate())
+  const month = date.toLocaleString('default', { month: 'long' })
+  const year = numberToWords(date.getFullYear())
+  return `${day} ${month} ${year}`
 }
 
 export const generateBonafideCertificate = async (data, isDraft = true) => {
@@ -32,7 +83,7 @@ export const generateBonafideCertificate = async (data, isDraft = true) => {
       <head>
         <style>
           body { font-family: 'Times New Roman', Times, serif; margin: 0; padding: 10mm 10mm; color: #000; font-size: 14pt; }
-          .container {  padding: 0mm; position: relative; }
+          .container { padding: 0mm; position: relative; }
           h1, h2, h3 { text-align: center; margin: 0; }
           .header { margin-bottom: 10px; }
           .content { line-height: 1.6; }
@@ -47,12 +98,12 @@ export const generateBonafideCertificate = async (data, isDraft = true) => {
             <h2>Shashikant Sakharam Chaudhari Kanya Vidyalay, Yawal, Dist. Jalgaon</h2>
           </div>
           <div class="content">
-            <h1 style="font-size: 24pt; margin: 0px 0;">Bonafide Certificate</h1>
+            <h1 style="font-size: 24pt; margin: 5px 0;">Bonafide Certificate</h1>
             <div style="display: flex; justify-content: space-between;">
               ${createField('General Register No.', data.grn, 20)}
               ${createField('Date', formatDate(data.dateOfBonafide), 20)}
             </div>
-            <p>This is to certify that Ms. ${createField('', data.name, 20)}${createField('', data.surname, 20)} is a student of Shashikant Sakharam Chaudhari Kanya Vidyalay, Yawal, Taluka-Yawal, Dist.-Jalgaon. She is currently enrolled in the ${createField('', data.currentStandardForBonafide, 10)} grade for the academic year ${createField('', data.academicYear, 15)}.</p>
+            <p>This is to certify that Ms. ${createField('', data.name, 20)}} ${createField('', data.surname, 20)} is a student of Shashikant Sakharam Chaudhari Kanya Vidyalay, Yawal, Taluka-Yawal, Dist.-Jalgaon. She is currently enrolled in the ${createField('', data.currentStandardForBonafide, 10)} grade for the academic year ${createField('', data.academicYear, 15)}.</p>
             <p>This certificate is issued to her for the purposes of ${createField('', data.reasonOfBonafide, 20)} requirements. According to her leaving certificate, her date of birth is ${createField('', formatDate(data.dateOfBirth), 12)}, her birthplace is ${createField('', data.placeOfBirth, 20)}, and her caste, as per the general register, is ${createField('', data.caste, 15)}.</p>
             <p>This certificate is issued at the request of ${createField('', data.requestOfBonafideBy, 30)}.</p>
           </div>
