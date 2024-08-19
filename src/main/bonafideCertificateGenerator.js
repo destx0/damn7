@@ -1,6 +1,7 @@
 import puppeteer from 'puppeteer'
 import { format } from 'date-fns'
 
+// Convert numbers to words (for dates)
 const numberToWords = (num) => {
   const units = [
     '',
@@ -102,12 +103,12 @@ export const generateBonafideCertificate = async (data, isDraft = true) => {
             <div style="display: flex; justify-content: space-between;">
               ${createField('Certificate No.', certificateNumber, 10)}
               ${createField('General Register No.', data.grn, 20)}
-              ${createField('Date', formatDate(new Date()), 20)}
+              ${createField('Date', formatDate(data.dateOfBonafide), 20)}
             </div>
-            <p>This is to certify that Ms. <strong>${data.name} ${data.fathersName} ${data.surname}</strong> is a student of Shashikant Sakharam Chaudhari Kanya Vidyalay, Yawal, Taluka-Yawal, Dist.-Jalgaon. She is currently enrolled in the <strong>${data.currentStandard}</strong> grade for the academic year <strong>${data.academicYear}</strong>.</p>
-            <p>This certificate is issued to her for the purposes of ${createField('', data.purpose, 30)} requirements.</p>
+            <p>This is to certify that Ms. <strong>${data.name} ${data.fathersName} ${data.surname}</strong> is a student of Shashikant Sakharam Chaudhari Kanya Vidyalay, Yawal, Taluka-Yawal, Dist.-Jalgaon. She is currently enrolled in the <strong>${data.currentStandardForBonafide}</strong> grade for the academic year <strong>${data.academicYear}</strong>.</p>
+            <p>This certificate is issued to her for the purposes of ${createField('', data.reasonOfBonafide, 30)} requirements.</p>
             <p>According to her leaving certificate, her date of birth is ${createField('', formatDate(data.dateOfBirth), 20)}, her birthplace is ${createField('', data.placeOfBirth, 20)}, and her caste, as per the general register, is ${createField('', data.caste, 20)}.</p>
-            <p>This certificate is issued at the request of ${createField('', data.requestedBy, 30)}.</p>
+            <p>This certificate is issued at the request of ${createField('', data.requestOfBonafideBy, 30)}.</p>
           </div>
           <div class="footer">
             <div style="display: flex; justify-content: space-between; margin-top: 40px;">

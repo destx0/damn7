@@ -69,11 +69,7 @@ const LeaveForm = ({ studentData, pdfDataUrl, closeCertificate, onStudentUpdate 
     { name: 'dateOfLeaving', label: 'Date of Leaving', type: 'date' },
     { name: 'reasonOfLeaving', label: 'Reason of Leaving', type: 'textarea' },
     { name: 'remarks', label: 'Remarks', type: 'textarea' },
-    {
-      name: 'leaveCertificateGenerationDate',
-      label: 'Leave Certificate Generation Date',
-      type: 'date'
-    }
+    { name: 'leaveCertificateGenerationDate', label: 'Leave Certificate Generation Date', type: 'date' }
   ]
 
   return (

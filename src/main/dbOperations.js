@@ -51,8 +51,34 @@ export const initializeDatabase = () => {
             dateOfLeaving TEXT,
             reasonOfLeaving TEXT,
             remarks TEXT,
-            leaveCertificateGenerationDate TEXT
+            leaveCertificateGenerationDate TEXT,
+            academicYear TEXT,
+            reasonOfBonafide TEXT,
+            requestOfBonafideBy TEXT,
+            dateOfBonafide TEXT,
+            standardOfBonafide TEXT,
+            currentStandardForBonafide TEXT,
+            bonafideStandard TEXT
           )`)
+
+          // Add new columns if they don't exist
+          const newColumns = [
+            'academicYear TEXT',
+            'reasonOfBonafide TEXT',
+            'requestOfBonafideBy TEXT',
+            'dateOfBonafide TEXT',
+            'standardOfBonafide TEXT',
+            'currentStandardForBonafide TEXT',
+            'bonafideStandard TEXT'
+          ]
+
+          newColumns.forEach((column) => {
+            db.run(`ALTER TABLE students ADD COLUMN ${column}`, (err) => {
+              if (err && !err.message.includes('duplicate column name')) {
+                console.error(`Error adding column ${column}:`, err)
+              }
+            })
+          })
 
           db.run(`CREATE TABLE IF NOT EXISTS certificate_counters (
             type TEXT PRIMARY KEY,
