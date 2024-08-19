@@ -6,6 +6,7 @@ import { useNavigate, useParams, useLocation } from 'react-router-dom'
 import { ArrowLeft, UserPlus, Save } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { ScrollArea } from '@/components/ui/scroll-area'
+import Datepicker from 'react-tailwindcss-datepicker'
 
 const fieldNames = [
   'studentId',
@@ -57,6 +58,8 @@ const fieldLabels = {
   motherTongue: 'Mother Tongue'
 }
 
+const dateFields = ['dateOfBirth', 'dateOfAdmission']
+
 const StudentFormPage = () => {
   const [formData, setFormData] = useState(
     fieldNames.reduce((acc, field) => ({ ...acc, [field]: '' }), {})
@@ -76,6 +79,10 @@ const StudentFormPage = () => {
     setFormData({ ...formData, [e.target.id]: e.target.value })
   }
 
+  const handleDateChange = (field, value) => {
+    setFormData({ ...formData, [field]: value.startDate })
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     try {
@@ -92,6 +99,13 @@ const StudentFormPage = () => {
 
   const handleBack = () => {
     navigate('/table')
+  }
+
+  const formatLabel = (field) => {
+    return (
+      fieldLabels[field] ||
+      field.replace(/([A-Z])/g, ' $1').replace(/^./, (str) => str.toUpperCase())
+    )
   }
 
   return (
@@ -118,18 +132,27 @@ const StudentFormPage = () => {
                   {fieldNames.map((field) => (
                     <div key={field}>
                       <Label htmlFor={field} className="text-sm font-medium">
-                        {fieldLabels[field]}
+                        {formatLabel(field)}
                       </Label>
-                      <Input
-                        id={field}
-                        value={formData[field]}
-                        onChange={handleChange}
-                        required
-                        type={
-                          field === 'dateOfBirth' || field === 'dateOfAdmission' ? 'date' : 'text'
-                        }
-                        className="mt-1"
-                      />
+                      {dateFields.includes(field) ? (
+                        <Datepicker
+                          asSingle={true}
+                          useRange={false}
+                          value={{ startDate: formData[field], endDate: formData[field] }}
+                          onChange={(value) => handleDateChange(field, value)}
+                          displayFormat="DD-MM-YYYY"
+                          placeholder={`Select ${formatLabel(field)}`}
+                          inputClassName="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                        />
+                      ) : (
+                        <Input
+                          id={field}
+                          value={formData[field]}
+                          onChange={handleChange}
+                          required
+                          className="mt-1"
+                        />
+                      )}
                     </div>
                   ))}
                 </div>

@@ -10,7 +10,8 @@ module.exports = {
     './src/renderer/src/main.jsx',
     './src/renderer/src/App.jsx',
     './src/renderer/src/components/**/*.{js,jsx,ts,tsx}',
-    './src/renderer/src/components/ui/**/*.{js,jsx,ts,tsx}'
+    './src/renderer/src/components/ui/**/*.{js,jsx,ts,tsx}',
+    './node_modules/react-tailwindcss-datepicker/dist/index.esm.js'
   ],
   prefix: '',
   theme: {
