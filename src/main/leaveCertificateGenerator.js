@@ -78,6 +78,9 @@ export const generateLeaveCertificate = async (data, isDraft = true) => {
   }
 
   const dateOfBirthInWords = dateToWords(data.dateOfBirth)
+  const generationDate = data.leaveCertificateGenerationDate
+    ? new Date(data.leaveCertificateGenerationDate)
+    : new Date()
 
   const content = `
     <html>
@@ -131,7 +134,7 @@ ${createField('Religion', data.religion, 15)} ${createField('Caste', data.caste,
 ${createField('Place of Birth', data.placeOfBirth, 10)} ${createField('Taluka', data.taluka, 10)} ${createField('Dist', data.district, 10)} ${createField('State', data.state, 12)} <strong>Country:</strong> India
 ${createField('Date of Birth (DD/MM/YY) according to the Christian era', formatDate(data.dateOfBirth), 27)}
 ${createField('Date of Birth (In words)', dateOfBirthInWords, 60)}
-<strong>Last school attended & standard:</strong>${createField('', data.lastAttendedSchool, 50)}
+<strong>Last school attended & standard:</strong>${createField('', data.lastAttendedSchool, 42)}
 ${createField('', data.lastSchoolStandard, 80)}
 ${createField('Date of admission in this school', formatDate(data.dateOfAdmission), 24)} ${createField('Standard', data.admissionStandard, 25)}
 ${createField('Progress', data.progress, 27)} ${createField('Conduct', data.conduct, 30)}
@@ -140,14 +143,13 @@ ${createField('Standard in which studying and since when (in words and figure)',
 ${createField('Reason of leaving school', data.reasonOfLeaving, 58)}
 ${createField('Remarks', data.remarks, 70)}
             </pre>
-
           </div>
           <div class="footer">
             <p style="font-weight: bold;">Certified that the above information is in accordance with the School Register.</p>
             <div style="display: flex; justify-content: space-between; margin-top: -5px;">
-              <div><strong>Date:</strong> ${new Date().getDate()}</div>
-              <div><strong>Month:</strong> ${new Date().toLocaleString('default', { month: 'long' })}</div>
-              <div><strong>Year:</strong> ${new Date().getFullYear()}</div>
+              <div><strong>Date:</strong> ${generationDate.getDate()}</div>
+              <div><strong>Month:</strong> ${generationDate.toLocaleString('default', { month: 'long' })}</div>
+              <div><strong>Year:</strong> ${generationDate.getFullYear()}</div>
             </div>
             <div style="display: flex; justify-content: space-between; margin-top: 60px;">
               <div><strong>Class Teacher</strong></div>
