@@ -5,6 +5,13 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import Datepicker from 'react-tailwindcss-datepicker'
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger
+} from '@/components/ui/dialog'
 
 const BonafideForm = ({ studentData, pdfDataUrl, closeCertificate, onStudentUpdate }) => {
   const [formData, setFormData] = useState({
@@ -16,6 +23,19 @@ const BonafideForm = ({ studentData, pdfDataUrl, closeCertificate, onStudentUpda
     bonafideStandard: ''
   })
   const [currentPdfUrl, setCurrentPdfUrl] = useState(pdfDataUrl)
+  const [isStandardDialogOpen, setIsStandardDialogOpen] = useState(false)
+  const [isReasonDialogOpen, setIsReasonDialogOpen] = useState(false)
+  const [selectedStandard, setSelectedStandard] = useState('')
+  const [selectedReason, setSelectedReason] = useState('')
+
+  const standardOptions = ['V', 'VI', 'VII', 'VIII', 'IX', 'X']
+  const reasonOptions = [
+    'For Passport',
+    'For Scholarship',
+    'For Bank Account',
+    'For Admission',
+    'Other'
+  ]
 
   useEffect(() => {
     loadStudentData()
@@ -70,6 +90,38 @@ const BonafideForm = ({ studentData, pdfDataUrl, closeCertificate, onStudentUpda
     }
   }
 
+  const handleStandardSelect = (standard) => {
+    setSelectedStandard(standard)
+  }
+
+  const handleConfirmStandard = () => {
+    setFormData((prevData) => ({
+      ...prevData,
+      currentStandardForBonafide: selectedStandard,
+      bonafideStandard: selectedStandard
+    }))
+    setIsStandardDialogOpen(false)
+  }
+
+  const handleReasonSelect = (reason) => {
+    setSelectedReason(reason)
+  }
+
+  const handleConfirmReason = () => {
+    if (selectedReason === 'Other') {
+      setFormData((prevData) => ({
+        ...prevData,
+        reasonOfBonafide: formData.otherReason
+      }))
+    } else {
+      setFormData((prevData) => ({
+        ...prevData,
+        reasonOfBonafide: selectedReason
+      }))
+    }
+    setIsReasonDialogOpen(false)
+  }
+
   const formFields = [
     { name: 'academicYear', label: 'Academic Year', type: 'text' },
     { name: 'currentStandardForBonafide', label: 'Current Standard for Bonafide', type: 'text' },
@@ -80,7 +132,102 @@ const BonafideForm = ({ studentData, pdfDataUrl, closeCertificate, onStudentUpda
   ]
 
   const renderField = (field) => {
-    switch (field.type) {
+    switch (field.name) {
+      case 'currentStandardForBonafide':
+      case 'bonafideStandard':
+        return (
+          <div className="flex items-center space-x-2">
+            <Input
+              id={field.name}
+              name={field.name}
+              value={formData[field.name]}
+              onChange={handleInputChange}
+              placeholder={`Enter ${field.label.toLowerCase()}`}
+              className="w-full"
+              readOnly
+            />
+            <Dialog open={isStandardDialogOpen} onOpenChange={setIsStandardDialogOpen}>
+              <DialogTrigger asChild>
+                <Button variant="outline" size="sm">
+                  Select
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Select Standard</DialogTitle>
+                </DialogHeader>
+                <div className="space-y-2">
+                  {standardOptions.map((standard, index) => (
+                    <Button
+                      key={index}
+                      onClick={() => handleStandardSelect(standard)}
+                      variant="outline"
+                      className={`w-full justify-start ${selectedStandard === standard ? 'bg-primary text-primary-foreground' : ''}`}
+                    >
+                      {standard}
+                    </Button>
+                  ))}
+                </div>
+                <Button onClick={handleConfirmStandard} className="w-full mt-4">
+                  Confirm Standard
+                </Button>
+              </DialogContent>
+            </Dialog>
+          </div>
+        )
+      case 'reasonOfBonafide':
+        return (
+          <div className="flex items-center space-x-2">
+            <Input
+              id={field.name}
+              name={field.name}
+              value={formData[field.name]}
+              onChange={handleInputChange}
+              placeholder={`Enter ${field.label.toLowerCase()}`}
+              className="w-full"
+              readOnly
+            />
+            <Dialog open={isReasonDialogOpen} onOpenChange={setIsReasonDialogOpen}>
+              <DialogTrigger asChild>
+                <Button variant="outline" size="sm">
+                  Select
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Select Reason of Bonafide</DialogTitle>
+                </DialogHeader>
+                <div className="space-y-2">
+                  {reasonOptions.map((reason, index) => (
+                    <Button
+                      key={index}
+                      onClick={() => handleReasonSelect(reason)}
+                      variant="outline"
+                      className={`w-full justify-start ${selectedReason === reason ? 'bg-primary text-primary-foreground' : ''}`}
+                    >
+                      {reason}
+                    </Button>
+                  ))}
+                </div>
+                {selectedReason === 'Other' && (
+                  <div className="space-y-2 mt-4">
+                    <Label htmlFor="otherReason">Other Reason</Label>
+                    <Input
+                      id="otherReason"
+                      name="otherReason"
+                      value={formData.otherReason}
+                      onChange={handleInputChange}
+                      placeholder="Enter other reason"
+                    />
+                  </div>
+                )}
+                <Button onClick={handleConfirmReason} className="w-full mt-4">
+                  Confirm Reason
+                </Button>
+              </DialogContent>
+            </Dialog>
+          </div>
+        )
       case 'textarea':
         return (
           <Textarea
