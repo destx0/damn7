@@ -1,186 +1,133 @@
-import sqlite3 from 'sqlite3'
+import { MongoClient } from 'mongodb'
+import { MongoMemoryServer } from 'mongodb-memory-server'
 import { app } from 'electron'
 import path from 'path'
+
+let mongoServer
+let client
+let db
 
 // Get the app path
 const appPath = app.getAppPath()
 
 // Define the database file path
-const dbPath = path.join(appPath, 'students.sqlite')
+const dbPath = path.join(appPath, 'studentsDB')
 
 // Create a new database connection
-let db
+
 
 // Initialize the database
-export const initializeDatabase = () => {
-  return new Promise((resolve, reject) => {
-    db = new sqlite3.Database(dbPath, (err) => {
-      if (err) {
-        console.error('Error opening database:', err)
-        reject(err)
-      } else {
-        console.log('Database connected successfully')
-        db.serialize(() => {
-          db.run(`CREATE TABLE IF NOT EXISTS students (
-            studentId TEXT PRIMARY KEY,
-            aadharNo TEXT,
-            PENNo TEXT,
-            name TEXT,
-            surname TEXT,
-            fathersName TEXT,
-            mothersName TEXT,
-            religion TEXT,
-            caste TEXT,
-            subCaste TEXT,
-            placeOfBirth TEXT,
-            taluka TEXT,
-            district TEXT,
-            state TEXT,
-            dateOfBirth TEXT,
-            lastAttendedSchool TEXT,
-            lastSchoolStandard TEXT,
-            dateOfAdmission TEXT,
-            admissionStandard TEXT,
-            nationality TEXT,
-            motherTongue TEXT,
-            grn TEXT,
-            ten TEXT,
-            currentStandard TEXT,
-            progress TEXT,
-            conduct TEXT,
-            dateOfLeaving TEXT,
-            reasonOfLeaving TEXT,
-            remarks TEXT,
-            leaveCertificateGenerationDate TEXT,
-            academicYear TEXT,
-            reasonOfBonafide TEXT,
-            requestOfBonafideBy TEXT,
-            dateOfBonafide TEXT,
-            standardOfBonafide TEXT,
-            currentStandardForBonafide TEXT,
-            bonafideStandard TEXT
-          )`)
+export const initializeDatabase = async () => {
+  try {
+    // Create an in-memory MongoDB instance
+    mongoServer = await MongoMemoryServer.create()
+    const mongoUri = mongoServer.getUri()
 
-          // Add new columns if they don't exist
-          const newColumns = [
-            'academicYear TEXT',
-            'reasonOfBonafide TEXT',
-            'requestOfBonafideBy TEXT',
-            'dateOfBonafide TEXT',
-            'standardOfBonafide TEXT',
-            'currentStandardForBonafide TEXT',
-            'bonafideStandard TEXT'
-          ]
+    // Connect to the in-memory database
+    client = new MongoClient(mongoUri)
+    await client.connect()
+    db = client.db('studentsDB')
+    console.log('Database connected successfully')
 
-          newColumns.forEach((column) => {
-            db.run(`ALTER TABLE students ADD COLUMN ${column}`, (err) => {
-              if (err && !err.message.includes('duplicate column name')) {
-                console.error(`Error adding column ${column}:`, err)
-              }
-            })
-          })
+    // Create collections if they don't exist
+    await db.createCollection('students')
+    await db.createCollection('certificate_counters')
 
-          db.run(`CREATE TABLE IF NOT EXISTS certificate_counters (
-            type TEXT PRIMARY KEY,
-            next_number INTEGER DEFAULT 1
-          )`)
-
-          // Initialize certificate counters if they don't exist
-          db.run(
-            `INSERT OR IGNORE INTO certificate_counters (type, next_number) VALUES ('bonafide', 1)`
-          )
-          db.run(
-            `INSERT OR IGNORE INTO certificate_counters (type, next_number) VALUES ('leave', 1)`,
-            (err) => {
-              if (err) {
-                console.error('Error initializing certificate counters:', err)
-                reject(err)
-              } else {
-                console.log('Database initialized successfully')
-                resolve()
-              }
-            }
-          )
-        })
-      }
-    })
-  })
-}
-
-export const addStudent = (student) => {
-  return new Promise((resolve, reject) => {
-    const fields = Object.keys(student).join(', ')
-    const placeholders = Object.keys(student)
-      .map(() => '?')
-      .join(', ')
-    const values = Object.values(student)
-
-    db.run(`INSERT INTO students (${fields}) VALUES (${placeholders})`, values, function (err) {
-      if (err) reject(err)
-      else resolve(student)
-    })
-  })
-}
-
-export const getStudents = () => {
-  return new Promise((resolve, reject) => {
-    db.all('SELECT * FROM students', (err, rows) => {
-      if (err) reject(err)
-      else resolve(rows)
-    })
-  })
-}
-
-export const getStudent = (studentId) => {
-  return new Promise((resolve, reject) => {
-    db.get('SELECT * FROM students WHERE studentId = ?', [studentId], (err, row) => {
-      if (err) reject(err)
-      else resolve(row)
-    })
-  })
-}
-
-export const updateStudent = (studentId, student) => {
-  return new Promise((resolve, reject) => {
-    const fields = Object.keys(student)
-      .map((key) => `${key} = ?`)
-      .join(', ')
-    const values = [...Object.values(student), studentId]
-
-    db.run(`UPDATE students SET ${fields} WHERE studentId = ?`, values, function (err) {
-      if (err) reject(err)
-      else resolve({ studentId, ...student })
-    })
-  })
-}
-
-export const deleteStudent = (studentId) => {
-  return new Promise((resolve, reject) => {
-    db.run('DELETE FROM students WHERE studentId = ?', [studentId], function (err) {
-      if (err) reject(err)
-      else resolve(studentId)
-    })
-  })
-}
-
-export const getNextCertificateNumber = (type) => {
-  return new Promise((resolve, reject) => {
-    db.get('SELECT next_number FROM certificate_counters WHERE type = ?', [type], (err, row) => {
-      if (err) reject(err)
-      else resolve(row ? row.next_number : 1)
-    })
-  })
-}
-
-export const incrementCertificateCounter = (type) => {
-  return new Promise((resolve, reject) => {
-    db.run(
-      'UPDATE certificate_counters SET next_number = next_number + 1 WHERE type = ?',
-      [type],
-      function (err) {
-        if (err) reject(err)
-        else resolve()
-      }
+    // Initialize certificate counters if they don't exist
+    await db.collection('certificate_counters').updateOne(
+      { type: 'bonafide' },
+      { $setOnInsert: { next_number: 1 } },
+      { upsert: true }
     )
-  })
+    await db.collection('certificate_counters').updateOne(
+      { type: 'leave' },
+      { $setOnInsert: { next_number: 1 } },
+      { upsert: true }
+    )
+
+    console.log('Database initialized successfully')
+  } catch (err) {
+    console.error('Error initializing database:', err)
+    throw err
+  }
+}
+
+export const addStudent = async (student) => {
+  try {
+    const result = await db.collection('students').insertOne(student)
+    return { ...student, _id: result.insertedId }
+  } catch (err) {
+    console.error('Error adding student:', err)
+    throw err
+  }
+}
+
+export const getStudents = async () => {
+  try {
+    return await db.collection('students').find({}).toArray()
+  } catch (err) {
+    console.error('Error getting students:', err)
+    throw err
+  }
+}
+
+export const getStudent = async (studentId) => {
+  try {
+    return await db.collection('students').findOne({ studentId })
+  } catch (err) {
+    console.error('Error getting student:', err)
+    throw err
+  }
+}
+
+export const updateStudent = async (studentId, student) => {
+  try {
+    await db.collection('students').updateOne({ studentId }, { $set: student })
+    return { studentId, ...student }
+  } catch (err) {
+    console.error('Error updating student:', err)
+    throw err
+  }
+}
+
+export const deleteStudent = async (studentId) => {
+  try {
+    await db.collection('students').deleteOne({ studentId })
+    return studentId
+  } catch (err) {
+    console.error('Error deleting student:', err)
+    throw err
+  }
+}
+
+export const getNextCertificateNumber = async (type) => {
+  try {
+    const counter = await db.collection('certificate_counters').findOne({ type })
+    return counter ? counter.next_number : 1
+  } catch (err) {
+    console.error('Error getting next certificate number:', err)
+    throw err
+  }
+}
+
+export const incrementCertificateCounter = async (type) => {
+  try {
+    await db.collection('certificate_counters').updateOne(
+      { type },
+      { $inc: { next_number: 1 } }
+    )
+  } catch (err) {
+    console.error('Error incrementing certificate counter:', err)
+    throw err
+  }
+}
+
+// Clean up function to stop the MongoDB server when the app is closing
+export const closeDatabase = async () => {
+  if (client) {
+    await client.close()
+  }
+  if (mongoServer) {
+    await mongoServer.stop()
+  }
 }

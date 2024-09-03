@@ -12,7 +12,8 @@ import {
   deleteStudent,
   getNextCertificateNumber,
   incrementCertificateCounter,
-  initializeDatabase
+  initializeDatabase,
+  closeDatabase
 } from './dbOperations'
 
 // Function to create the main window
@@ -173,6 +174,10 @@ app.whenReady().then(async () => {
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
   })
+})
+
+app.on('will-quit', async () => {
+  await closeDatabase()
 })
 
 app.on('window-all-closed', () => {
