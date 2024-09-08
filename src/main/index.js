@@ -5,6 +5,7 @@ import icon from '../../resources/icon.png?asset'
 import { generateLeaveCertificate } from './leaveCertificateGenerator'
 import { generateBonafideCertificate } from './bonafideCertificateGenerator'
 import {
+  initializeDatabase,
   addStudent,
   getStudents,
   getStudent,
@@ -12,8 +13,8 @@ import {
   deleteStudent,
   getNextCertificateNumber,
   incrementCertificateCounter,
-  initializeDatabase,
-  closeDatabase
+  saveCertificate,
+  getLatestCertificate
 } from './dbOperations'
 
 // Function to create the main window
@@ -52,50 +53,13 @@ function createWindow() {
 // Function to set up IPC handlers
 function setupIpcHandlers() {
   // Database operations
-  ipcMain.handle('add-student', async (_, student) => {
-    try {
-      return await addStudent(student)
-    } catch (error) {
-      console.error('Error adding student:', error)
-      throw error
-    }
-  })
-
-  ipcMain.handle('get-students', async () => {
-    try {
-      return await getStudents()
-    } catch (error) {
-      console.error('Error getting students:', error)
-      throw error
-    }
-  })
-
-  ipcMain.handle('get-student', async (_, studentId) => {
-    try {
-      return await getStudent(studentId)
-    } catch (error) {
-      console.error('Error getting student:', error)
-      throw error
-    }
-  })
-
-  ipcMain.handle('update-student', async (_, studentId, student) => {
-    try {
-      return await updateStudent(studentId, student)
-    } catch (error) {
-      console.error('Error updating student:', error)
-      throw error
-    }
-  })
-
-  ipcMain.handle('delete-student', async (_, studentId) => {
-    try {
-      return await deleteStudent(studentId)
-    } catch (error) {
-      console.error('Error deleting student:', error)
-      throw error
-    }
-  })
+  ipcMain.handle('add-student', async (_, student) => await addStudent(student))
+  ipcMain.handle('get-students', async () => await getStudents())
+  ipcMain.handle('get-student', async (_, studentId) => await getStudent(studentId))
+  ipcMain.handle('update-student', async (_, studentId, student) => await updateStudent(studentId, student))
+  ipcMain.handle('delete-student', async (_, studentId) => await deleteStudent(studentId))
+  ipcMain.handle('get-next-certificate-number', async (_, type) => await getNextCertificateNumber(type))
+  ipcMain.handle('increment-certificate-counter', async (_, type) => await incrementCertificateCounter(type))
 
   // Certificate operations
   ipcMain.handle('generate-draft-leave-certificate', async (_, data) => {
@@ -157,28 +121,30 @@ function setupIpcHandlers() {
       throw error
     }
   })
+
+  // Add these new handlers
+  ipcMain.handle('save-certificate', async (_, studentId, type, data) =>
+    await saveCertificate(studentId, type, data)
+  )
+  ipcMain.handle('get-latest-certificate', async (_, studentId, type) =>
+    await getLatestCertificate(studentId, type)
+  )
 }
 
 // App lifecycle events
-app.whenReady().then(async () => {
-  try {
-    await initializeDatabase()
-    console.log('Database initialized successfully')
-    setupIpcHandlers()
-    createWindow()
-  } catch (error) {
-    console.error('Failed to initialize database:', error)
-    app.quit()
-  }
+app.whenReady().then(() => {
+  // Initialize the database
+  initializeDatabase().catch(console.error);
 
-  app.on('activate', () => {
-    if (BrowserWindow.getAllWindows().length === 0) createWindow()
-  })
+  // Set up IPC handlers
+  setupIpcHandlers();
+  createWindow();
 })
 
-app.on('will-quit', async () => {
-  await closeDatabase()
-})
+// Remove or comment out this event handler
+// app.on('will-quit', async () => {
+//   await closeDatabase()
+// })
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {

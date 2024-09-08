@@ -1,124 +1,126 @@
-import { MongoClient } from 'mongodb'
-import { app } from 'electron'
-import path from 'path'
+const Store = require('electron-store');
 
-let client
-let db
-
-// Get the app path
-const appPath = app.getAppPath()
-
-// Define the database file path
-const dbPath = path.join(appPath, 'studentsDB')
+const store = new Store();
 
 // Initialize the database
 export const initializeDatabase = async () => {
   try {
-    // Use a file-based MongoDB instance
-    const mongoUri = `mongodb://localhost:27017/studentsDB?dbPath=${dbPath}`
-
-    // Connect to the file-based database
-    client = new MongoClient(mongoUri)
-    await client.connect()
-    db = client.db('studentsDB')
-    console.log('Database connected successfully')
-
-    // Create collections if they don't exist
-    await db.createCollection('students')
-    await db.createCollection('certificate_counters')
-
     // Initialize certificate counters if they don't exist
-    await db.collection('certificate_counters').updateOne(
-      { type: 'bonafide' },
-      { $setOnInsert: { next_number: 1 } },
-      { upsert: true }
-    )
-    await db.collection('certificate_counters').updateOne(
-      { type: 'leave' },
-      { $setOnInsert: { next_number: 1 } },
-      { upsert: true }
-    )
-
-    console.log('Database initialized successfully')
+    if (!store.has('certificate_counters')) {
+      store.set('certificate_counters', {
+        bonafide: { next_number: 1 },
+        leave: { next_number: 1 }
+      });
+    }
+    console.log('Database initialized successfully');
   } catch (err) {
-    console.error('Error initializing database:', err)
-    throw err
+    console.error('Error initializing database:', err);
+    throw err;
   }
-}
+};
 
 export const addStudent = async (student) => {
   try {
-    const result = await db.collection('students').insertOne(student)
-    return { ...student, _id: result.insertedId }
+    const students = store.get('students', []);
+    students.push(student);
+    store.set('students', students);
+    return student;
   } catch (err) {
-    console.error('Error adding student:', err)
-    throw err
+    console.error('Error adding student:', err);
+    throw err;
   }
-}
+};
 
 export const getStudents = async () => {
   try {
-    return await db.collection('students').find({}).toArray()
+    return store.get('students', []);
   } catch (err) {
-    console.error('Error getting students:', err)
-    throw err
+    console.error('Error getting students:', err);
+    throw err;
   }
-}
+};
 
 export const getStudent = async (studentId) => {
   try {
-    return await db.collection('students').findOne({ studentId })
+    const students = store.get('students', []);
+    return students.find(student => student.studentId === studentId);
   } catch (err) {
-    console.error('Error getting student:', err)
-    throw err
+    console.error('Error getting student:', err);
+    throw err;
   }
-}
+};
 
-export const updateStudent = async (studentId, student) => {
+export const updateStudent = async (studentId, updatedStudent) => {
   try {
-    await db.collection('students').updateOne({ studentId }, { $set: student })
-    return { studentId, ...student }
+    const students = store.get('students', []);
+    const index = students.findIndex(student => student.studentId === studentId);
+    if (index !== -1) {
+      students[index] = { ...students[index], ...updatedStudent };
+      store.set('students', students);
+      return students[index];
+    }
+    throw new Error('Student not found');
   } catch (err) {
-    console.error('Error updating student:', err)
-    throw err
+    console.error('Error updating student:', err);
+    throw err;
   }
-}
+};
 
 export const deleteStudent = async (studentId) => {
   try {
-    await db.collection('students').deleteOne({ studentId })
-    return studentId
+    const students = store.get('students', []);
+    const updatedStudents = students.filter(student => student.studentId !== studentId);
+    store.set('students', updatedStudents);
+    return studentId;
   } catch (err) {
-    console.error('Error deleting student:', err)
-    throw err
+    console.error('Error deleting student:', err);
+    throw err;
   }
-}
+};
 
 export const getNextCertificateNumber = async (type) => {
   try {
-    const counter = await db.collection('certificate_counters').findOne({ type })
-    return counter ? counter.next_number : 1
+    const counters = store.get('certificate_counters');
+    return counters[type].next_number;
   } catch (err) {
-    console.error('Error getting next certificate number:', err)
-    throw err
+    console.error('Error getting next certificate number:', err);
+    throw err;
   }
-}
+};
 
 export const incrementCertificateCounter = async (type) => {
   try {
-    await db.collection('certificate_counters').updateOne(
-      { type },
-      { $inc: { next_number: 1 } }
-    )
+    const counters = store.get('certificate_counters');
+    counters[type].next_number += 1;
+    store.set('certificate_counters', counters);
   } catch (err) {
-    console.error('Error incrementing certificate counter:', err)
-    throw err
+    console.error('Error incrementing certificate counter:', err);
+    throw err;
   }
-}
+};
 
-// Clean up function to close the database connection when the app is closing
-export const closeDatabase = async () => {
-  if (client) {
-    await client.close()
+export const saveCertificate = async (studentId, type, data) => {
+  try {
+    const certificates = store.get('certificates', []);
+    const certificate = { studentId, type, timestamp: Date.now(), data };
+    certificates.push(certificate);
+    store.set('certificates', certificates);
+    return certificate;
+  } catch (err) {
+    console.error('Error saving certificate:', err);
+    throw err;
   }
-}
+};
+
+export const getLatestCertificate = async (studentId, type) => {
+  try {
+    const certificates = store.get('certificates', []);
+    const typeCertificates = certificates.filter(cert => cert.studentId === studentId && cert.type === type);
+    return typeCertificates.sort((a, b) => b.timestamp - a.timestamp)[0];
+  } catch (err) {
+    console.error('Error getting latest certificate:', err);
+    throw err;
+  }
+};
+
+// No need for a closeDatabase function with IndexedDB
