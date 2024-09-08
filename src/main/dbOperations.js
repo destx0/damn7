@@ -1,9 +1,7 @@
 import { MongoClient } from 'mongodb'
-import { MongoMemoryServer } from 'mongodb-memory-server'
 import { app } from 'electron'
 import path from 'path'
 
-let mongoServer
 let client
 let db
 
@@ -13,17 +11,13 @@ const appPath = app.getAppPath()
 // Define the database file path
 const dbPath = path.join(appPath, 'studentsDB')
 
-// Create a new database connection
-
-
 // Initialize the database
 export const initializeDatabase = async () => {
   try {
-    // Create an in-memory MongoDB instance
-    mongoServer = await MongoMemoryServer.create()
-    const mongoUri = mongoServer.getUri()
+    // Use a file-based MongoDB instance
+    const mongoUri = `mongodb://localhost:27017/studentsDB?dbPath=${dbPath}`
 
-    // Connect to the in-memory database
+    // Connect to the file-based database
     client = new MongoClient(mongoUri)
     await client.connect()
     db = client.db('studentsDB')
@@ -122,12 +116,9 @@ export const incrementCertificateCounter = async (type) => {
   }
 }
 
-// Clean up function to stop the MongoDB server when the app is closing
+// Clean up function to close the database connection when the app is closing
 export const closeDatabase = async () => {
   if (client) {
     await client.close()
-  }
-  if (mongoServer) {
-    await mongoServer.stop()
   }
 }
