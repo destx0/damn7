@@ -1,4 +1,4 @@
-import puppeteer from 'puppeteer'
+import html_to_pdf from 'html-pdf-node'
 import { format } from 'date-fns'
 
 const numberToWords = (num) => {
@@ -61,9 +61,6 @@ const dateToWords = (dateString) => {
 }
 
 export const generateLeaveCertificate = async (data, isDraft = true) => {
-  const browser = await puppeteer.launch()
-  const page = await browser.newPage()
-
   const certificateNumber = isDraft ? 'DRAFT' : data.certificateNumber.toString().padStart(4, '0')
 
   const formatDate = (dateString) => {
@@ -165,10 +162,14 @@ ${createField('Remarks', data.remarks, 70)}
     </html>
   `
 
-  await page.setContent(content)
-  const pdf = await page.pdf({ format: 'A4' })
+  const options = { format: 'A4' }
+  const file = { content }
 
-  await browser.close()
-
-  return pdf.buffer
+  try {
+    const pdfBuffer = await html_to_pdf.generatePdf(file, options)
+    return pdfBuffer
+  } catch (error) {
+    console.error('Error generating PDF:', error)
+    throw error
+  }
 }

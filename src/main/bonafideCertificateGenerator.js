@@ -1,4 +1,4 @@
-import puppeteer from 'puppeteer'
+import html_to_pdf from 'html-pdf-node'
 import { format } from 'date-fns'
 
 // Convert numbers to words (for dates)
@@ -62,9 +62,6 @@ const dateToWords = (dateString) => {
 }
 
 export const generateBonafideCertificate = async (data, isDraft = true) => {
-  const browser = await puppeteer.launch()
-  const page = await browser.newPage()
-
   const certificateNumber = isDraft ? 'DRAFT' : data.certificateNumber.toString().padStart(4, '0')
 
   const formatDate = (dateString) => {
@@ -103,7 +100,7 @@ export const generateBonafideCertificate = async (data, isDraft = true) => {
               ${createField('General Register No.', data.grn, 20)}
               ${createField('Date', formatDate(data.dateOfBonafide), 20)}
             </div>
-            <p>This is to certify that Ms. ${createField('', data.name, 20)}} ${createField('', data.surname, 20)} is a student of Shashikant Sakharam Chaudhari Kanya Vidyalay, Yawal, Taluka-Yawal, Dist.-Jalgaon. She is currently enrolled in the ${createField('', data.currentStandardForBonafide, 10)} grade for the academic year ${createField('', data.academicYear, 15)}.</p>
+            <p>This is to certify that Ms. ${createField('', data.name, 20)} ${createField('', data.surname, 20)} is a student of Shashikant Sakharam Chaudhari Kanya Vidyalay, Yawal, Taluka-Yawal, Dist.-Jalgaon. She is currently enrolled in the ${createField('', data.currentStandardForBonafide, 10)} grade for the academic year ${createField('', data.academicYear, 15)}.</p>
             <p>This certificate is issued to her for the purposes of ${createField('', data.reasonOfBonafide, 20)} requirements. According to her leaving certificate, her date of birth is ${createField('', formatDate(data.dateOfBirth), 12)}, her birthplace is ${createField('', data.placeOfBirth, 20)}, and her caste, as per the general register, is ${createField('', data.caste, 15)}.</p>
             <p>This certificate is issued at the request of ${createField('', data.requestOfBonafideBy, 30)}.</p>
           </div>
@@ -120,10 +117,14 @@ export const generateBonafideCertificate = async (data, isDraft = true) => {
     </html>
   `
 
-  await page.setContent(content)
-  const pdf = await page.pdf({ format: 'A4' })
+  const options = { format: 'A4' }
+  const file = { content }
 
-  await browser.close()
-
-  return pdf.buffer
+  try {
+    const pdfBuffer = await html_to_pdf.generatePdf(file, options)
+    return pdfBuffer
+  } catch (error) {
+    console.error('Error generating PDF:', error)
+    throw error
+  }
 }
