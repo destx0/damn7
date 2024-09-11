@@ -1,5 +1,6 @@
 import puppeteer from 'puppeteer'
 import { format } from 'date-fns'
+import { getPuppeteerConfig, setupPuppeteer } from './puppeteerConfig'
 
 const numberToWords = (num) => {
   const units = [
@@ -163,8 +164,8 @@ ${createField('Remarks', data.remarks, 70)}
   `
 
   try {
-    const browser = await puppeteer.launch({ headless: 'new' })
-    const page = await browser.newPage()
+    const browser = await puppeteer.launch(getPuppeteerConfig())
+    const page = await setupPuppeteer(browser)
     await page.setContent(content)
     const pdfBuffer = await page.pdf({ format: 'A4' })
     await browser.close()

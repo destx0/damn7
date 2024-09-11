@@ -1,5 +1,6 @@
 import puppeteer from 'puppeteer'
 import { format } from 'date-fns'
+import { getPuppeteerConfig, setupPuppeteer } from './puppeteerConfig'
 
 // Convert numbers to words (for dates)
 const numberToWords = (num) => {
@@ -118,8 +119,8 @@ export const generateBonafideCertificate = async (data, isDraft = true) => {
   `
 
   try {
-    const browser = await puppeteer.launch({ headless: 'new' })
-    const page = await browser.newPage()
+    const browser = await puppeteer.launch(getPuppeteerConfig())
+    const page = await setupPuppeteer(browser)
     await page.setContent(content)
     const pdfBuffer = await page.pdf({ format: 'A4' })
     await browser.close()

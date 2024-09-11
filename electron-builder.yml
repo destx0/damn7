@@ -10,7 +10,6 @@ files:
   - '!{.env,.env.*,.npmrc,pnpm-lock.yaml}'
 asarUnpack:
   - resources/**
-  - node_modules/**
 win:
   executableName: damn7
 nsis:
