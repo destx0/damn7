@@ -375,9 +375,9 @@ const LeaveForm = ({ studentData, pdfDataUrl, closeCertificate, onStudentUpdate 
     { name: 'currentStandard', label: 'Current Standard', type: 'select' },
     { name: 'progress', label: 'Progress', type: 'text' },
     { name: 'conduct', label: 'Conduct', type: 'text' },
-    { name: 'dateOfLeaving', label: 'Date of Leaving', type: 'date' },
     { name: 'reasonOfLeaving', label: 'Reason of Leaving', type: 'text' },
     { name: 'remarks', label: 'Remarks', type: 'text' },
+    { name: 'dateOfLeaving', label: 'Date of Leaving', type: 'date' },
     {
       name: 'leaveCertificateGenerationDate',
       label: 'Leave Certificate Generation Date',
@@ -396,7 +396,7 @@ const LeaveForm = ({ studentData, pdfDataUrl, closeCertificate, onStudentUpdate 
               Close
             </Button>
           </div>
-          <div className="space-y-4 flex-grow overflow-y-auto px-4">
+          <div className="space-y-4 flex-grow overflow-y-auto px-4 pb-10">
             {formFields.map((field) => (
               <div key={field.name} className="space-y-2">
                 <Label htmlFor={field.name}>{field.label}</Label>

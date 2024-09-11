@@ -105,11 +105,11 @@ export const generateLeaveCertificate = async (data, isDraft = true) => {
           <div class="content">
             <div style="display: flex; justify-content: space-between;">
               <span>${createField('Sr. No.', certificateNumber, 8)}</span>
-              <span>${createField('G. Register No.', data.GRN, 6)}</span>
+              <span>${createField('G. Register No.', data.GRN, 7)}</span>
             </div>
             <div style="display: flex; justify-content: space-between;">
               <span><strong>School Reg. No.</strong>- Edu. Depu.Dir/Sec-2/First Appru/</span>
-              <span><strong>Medium:</strong> Marathi</span>
+              <span>${createField('Medium', 'Marathi', 13)}</span>
             </div>
             <div style="display: flex; justify-content: space-between;">
               <span style="padding-left: 7.5em;">90-91/92/Div.Sec.Depu.Dir.Nashik/Datted 12-3-92</span>
@@ -118,10 +118,10 @@ export const generateLeaveCertificate = async (data, isDraft = true) => {
             <div style="display: flex; justify-content: space-between;">
               <span><strong>U Dise No.</strong>- 27031508414</span>
               <span><strong>Board</strong>- Nashik</span>
-              <span><strong>Index No.</strong>- 15.15.005</span>
+              <span>${createField('Index No.', '15.15.005', 12)}</span>
             </div>
-            <h1 style="font-size: 24pt; margin-top: -10px;margin-bottom: -10px;">Leaving Certificate</h1>
-            <pre style="margin-top: -10px;">
+            <h1 style="font-size: 24pt; margin-top: -10px;margin-bottom: 0px;">Leaving Certificate</h1>
+            <pre style="margin-top: 10px;">
 ${createField('PEN', data.PENNo, 75)}
 ${createField('Student ID', data.studentId, 18)} ${createField('U.I.D. No. (Aadhar Card No.)', data.aadharNo, 24)}
 <strong>Name of the student in full</strong> ${createField('(Name)', data.name, 15)} ${createField("(Father's Name)", data.fathersName, 20)}
