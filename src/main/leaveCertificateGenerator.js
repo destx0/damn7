@@ -120,7 +120,7 @@ export const generateLeaveCertificate = async (data, isDraft = true) => {
               <span><strong>Board</strong>- Nashik</span>
               <span><strong>Index No.</strong>- 15.15.005</span>
             </div>
-            <h1 style="font-size: 24pt; margin-top: -10px;margin-bottom: -20px;">Leaving Certificate</h1>
+            <h1 style="font-size: 24pt; margin-top: -10px;margin-bottom: -10px;">Leaving Certificate</h1>
             <pre style="margin-top: -10px;">
 ${createField('PEN', data.PENNo, 75)}
 ${createField('Student ID', data.studentId, 18)} ${createField('U.I.D. No. (Aadhar Card No.)', data.aadharNo, 24)}
@@ -132,9 +132,8 @@ ${createField('Religion', data.religion, 15)} ${createField('Caste', data.caste,
 ${createField('Place of Birth', data.placeOfBirth, 10)} ${createField('Taluka', data.taluka, 10)} ${createField('Dist', data.district, 10)} ${createField('State', data.state, 12)} <strong>Country:</strong> India
 ${createField('Date of Birth (DD/MM/YY) according to the Christian era', formatDate(data.dateOfBirth), 27)}
 ${createField('Date of Birth (In words)', dateOfBirthInWords, 60)}
-<strong>Last school attended & standard:</strong>${createField('', data.lastAttendedSchool, 42)}
-${createField('', data.lastSchoolStandard, 80)}
-${createField('Date of admission in this school', formatDate(data.dateOfAdmission), 24)} ${createField('Standard', data.admissionStandard, 25)}
+<strong>Last school attended & standard:</strong>${createField('', data.lastAttendedSchool, 42)}${createField('', data.lastSchoolStandard, 7)}
+${createField('Date of admission in this school', formatDate(data.dateOfAdmission), 24)} ${createField('Standard', data.admissionStandard, 15)}
 ${createField('Progress', data.progress, 27)} ${createField('Conduct', data.conduct, 30)}
 ${createField('Date of leaving school', formatDate(data.dateOfLeaving), 57)}
 ${createField('Standard in which studying and since when (in words and figure)', data.currentStandard, 85)}
