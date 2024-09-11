@@ -61,6 +61,29 @@ const dateToWords = (dateString) => {
   return `${day} ${month} ${year}`
 }
 
+const romanToOrdinal = {
+  V: 'Fifth',
+  VI: 'Sixth',
+  VII: 'Seventh',
+  VIII: 'Eighth',
+  IX: 'Ninth',
+  X: 'Tenth'
+}
+
+const convertRomanToOrdinal = (standard) => {
+  return romanToOrdinal[standard.toUpperCase()] || standard
+}
+
+const formatStandard = (standard) => {
+  if (!standard) return '' // Return empty string if standard is undefined or empty
+  const upperStandard = standard.toString().toUpperCase()
+  if (romanToOrdinal.hasOwnProperty(upperStandard)) {
+    const ordinal = romanToOrdinal[upperStandard]
+    return `${ordinal} ${standard}`
+  }
+  return standard
+}
+
 export const generateLeaveCertificate = async (data, isDraft = true) => {
   const certificateNumber = isDraft ? 'DRAFT' : data.certificateNumber.toString().padStart(4, '0')
 
@@ -136,7 +159,7 @@ ${createField('Date of Birth (In words)', dateOfBirthInWords, 60)}
 ${createField('Date of admission in this school', formatDate(data.dateOfAdmission), 24)} ${createField('Standard', data.admissionStandard, 15)}
 ${createField('Progress', data.progress, 27)} ${createField('Conduct', data.conduct, 30)}
 ${createField('Date of leaving school', formatDate(data.dateOfLeaving), 57)}
-${createField('Standard in which studying and since when (in words and figure)', data.currentStandard, 85)}
+${createField('Standard in which studying and since when (in words and figure)', formatStandard(data.currentStandard), 85)}
 ${createField('Reason of leaving school', data.reasonOfLeaving, 58)}
 ${createField('Remarks', data.remarks, 70)}
             </pre>
