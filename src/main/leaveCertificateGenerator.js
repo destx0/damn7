@@ -1,4 +1,4 @@
-import html_to_pdf from 'html-pdf-node'
+import puppeteer from 'puppeteer'
 import { format } from 'date-fns'
 
 const numberToWords = (num) => {
@@ -162,11 +162,12 @@ ${createField('Remarks', data.remarks, 70)}
     </html>
   `
 
-  const options = { format: 'A4' }
-  const file = { content }
-
   try {
-    const pdfBuffer = await html_to_pdf.generatePdf(file, options)
+    const browser = await puppeteer.launch({ headless: 'new' })
+    const page = await browser.newPage()
+    await page.setContent(content)
+    const pdfBuffer = await page.pdf({ format: 'A4' })
+    await browser.close()
     return pdfBuffer
   } catch (error) {
     console.error('Error generating PDF:', error)

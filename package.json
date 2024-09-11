@@ -65,6 +65,7 @@
     "jspdf": "^2.5.1",
     "lucide-react": "^0.417.0",
     "next-themes": "^0.3.0",
+    "puppeteer": "^19.11.1",
     "react-day-picker": "^8.10.1",
     "react-hook-form": "^7.52.2",
     "react-resizable-panels": "^2.0.22",
