@@ -73,7 +73,7 @@ export const generateBonafideCertificate = async (data, isDraft = true) => {
   const createField = (label, value, size) => {
     const field = value || ''
     const padding = '&nbsp;'.repeat(Math.max(0, size - field.length))
-    return `<strong style="font-size: 18px;">${label}</strong> <span style="display: inline-block; position: relative; width: ${size}ch; font-weight: 500;">${field}${padding}<span style="position: absolute; bottom: 5px; left: 0; right: 0; border-bottom: 1px solid black;"></span></span>`
+    return `<strong style="font-size: 18px;">${label}</strong> <span style="display: inline-block; position: relative; width: ${size}ch; font-weight: 700;">${field}${padding}<span style="position: absolute; bottom: 5px; left: 0; right: 0; border-bottom: 1px solid black;"></span></span>`
   }
 
   const content = `
