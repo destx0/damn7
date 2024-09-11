@@ -7,9 +7,7 @@ export const getPuppeteerConfig = () => {
   return {
     headless: 'new',
     args: ['--no-sandbox', '--disable-setuid-sandbox'],
-    executablePath: isDev
-      ? undefined
-      : join(app.getAppPath(), '..', 'chromium', 'chrome.exe')
+    executablePath: isDev ? undefined : undefined
   }
 }
 
