@@ -98,7 +98,7 @@ export const generateBonafideCertificate = async (data, isDraft = true) => {
           <div class="content">
             <h1 style="font-size: 24pt; margin: 5px 0;">Bonafide Certificate</h1>
             <div style="display: flex; justify-content: space-between;">
-              ${createField('General Register No.', data.grn, 20)}
+              ${createField('General Register No.', data.GRN, 20)}
               ${createField('Date', formatDate(data.dateOfBonafide), 20)}
             </div>
             <p>This is to certify that Ms. ${createField('', data.name, 20)} ${createField('', data.surname, 20)} is a student of Shashikant Sakharam Chaudhari Kanya Vidyalay, Yawal, Taluka-Yawal, Dist.-Jalgaon. She is currently enrolled in the ${createField('', data.currentStandardForBonafide, 10)} grade for the academic year ${createField('', data.academicYear, 15)}.</p>

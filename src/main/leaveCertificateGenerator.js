@@ -105,7 +105,7 @@ export const generateLeaveCertificate = async (data, isDraft = true) => {
           <div class="content">
             <div style="display: flex; justify-content: space-between;">
               <span>${createField('Sr. No.', certificateNumber, 8)}</span>
-              <span>${createField('G. Register No.', data.grn, 6)}</span>
+              <span>${createField('G. Register No.', data.GRN, 6)}</span>
             </div>
             <div style="display: flex; justify-content: space-between;">
               <span><strong>School Reg. No.</strong>- Edu. Depu.Dir/Sec-2/First Appru/</span>
@@ -120,7 +120,7 @@ export const generateLeaveCertificate = async (data, isDraft = true) => {
               <span><strong>Board</strong>- Nashik</span>
               <span><strong>Index No.</strong>- 15.15.005</span>
             </div>
-            <h1 style="font-size: 24pt; margin-top: -10px;margin-bottom: -20px;">Leave Certificate</h1>
+            <h1 style="font-size: 24pt; margin-top: -10px;margin-bottom: -20px;">Leaving Certificate</h1>
             <pre style="margin-top: -10px;">
 ${createField('PEN', data.PENNo, 75)}
 ${createField('Student ID', data.studentId, 18)} ${createField('U.I.D. No. (Aadhar Card No.)', data.aadharNo, 24)}
