@@ -179,7 +179,22 @@ const StudentFormPage = () => {
   };
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.id]: e.target.value })
+    const { id, value } = e.target;
+    if (id === 'aadharNo') {
+      // Allow only digits and limit to 12 characters
+      const sanitizedValue = value.replace(/\D/g, '').slice(0, 12);
+      setFormData({ ...formData, [id]: sanitizedValue });
+    } else {
+      setFormData({ ...formData, [id]: value });
+    }
+  }
+
+  const validateForm = () => {
+    if (formData.aadharNo && formData.aadharNo.length !== 12) {
+      alert('Aadhar Number must be exactly 12 digits long.');
+      return false;
+    }
+    return true;
   }
 
   const handleDateChange = (field, value) => {
@@ -187,7 +202,10 @@ const StudentFormPage = () => {
   }
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
+    e.preventDefault();
+    if (!validateForm()) {
+      return;
+    }
     try {
       if (studentId) {
         console.log('Updating student with ID:', studentId);
