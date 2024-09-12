@@ -120,7 +120,7 @@ export const generateLeaveCertificate = async (data, isDraft = true) => {
       <body>
         <div class="container">
           <div class="header">
-            <h3>Jaggannath Shikshan Prasarak Mandal's</h3>
+            <h3>Jagannath Shikshan Prasarak Mandal's</h3>
             <h2>Shashikant Sakharam Chaudhari Kanya Vidyalay, Yawal</h2>
             <h3>Taluka- Yawal, Dist. Jalgaon</h3>
             <p style="text-align: center;margin-top: -0px;">Phone No. 02585-261290 &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; E Mail - mksyawal@yahoo.in</p>
