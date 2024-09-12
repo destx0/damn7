@@ -31,19 +31,14 @@ const ActionMenu = ({ isAdmin, onEdit, onDelete, onLeaveCertificate, onBonafideC
   )
 }
 
-const createColumnDefs = (
-  isAdmin,
-  handleEditStudent,
-  handleDeleteStudent,
-  generateDraftCertificate
-) => [
+const createColumnDefs = (isAdmin, handleEditStudent, handleDeleteStudent, generateDraftCertificate) => [
   {
     headerName: '',
     cellRenderer: (params) => (
       <ActionMenu
         isAdmin={isAdmin}
         onEdit={() => handleEditStudent(params.data)}
-        onDelete={() => handleDeleteStudent(params.data.id)}
+        onDelete={() => handleDeleteStudent(params.data.studentId)}
         onLeaveCertificate={() => generateDraftCertificate(params.data, 'leave')}
         onBonafideCertificate={() => generateDraftCertificate(params.data, 'bonafide')}
       />

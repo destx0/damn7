@@ -10,7 +10,7 @@ import { useNavigate } from 'react-router-dom'
 import useUserStore from '@/stores/useUserStore'
 import LeaveForm from './LeaveForm'
 import BonafideForm from './BonafideForm'
-import { createColumnDefs } from './columnDefs'
+import { createColumnDefs } from './ColumnDefs'
 import { UserCircle, LogOut, UserPlus, Search } from 'lucide-react'
 
 const TablePage = () => {
@@ -46,13 +46,15 @@ const TablePage = () => {
   )
 
   const handleDeleteStudent = useCallback(
-    async (id) => {
+    async (studentId) => {
       if (userType === 'admin') {
         try {
-          await window.api.deleteStudent(id)
-          setRowData((prevData) => prevData.filter((student) => student.id !== id))
+          console.log('Attempting to delete student with ID:', studentId);
+          await window.api.deleteStudent(studentId);
+          console.log('Student deleted successfully');
+          setRowData((prevData) => prevData.filter((student) => student.studentId !== studentId));
         } catch (error) {
-          console.error('Error deleting student:', error)
+          console.error('Error deleting student:', error);
         }
       }
     },

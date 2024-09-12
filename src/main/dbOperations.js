@@ -68,9 +68,13 @@ export const updateStudent = async (studentId, updatedStudent) => {
 
 export const deleteStudent = async (studentId) => {
   try {
+    console.log('Deleting student with ID:', studentId);
     const students = store.get('students', []);
+    console.log('Current number of students:', students.length);
     const updatedStudents = students.filter(student => student.studentId !== studentId);
+    console.log('Number of students after filter:', updatedStudents.length);
     store.set('students', updatedStudents);
+    console.log('Students updated in store');
     return studentId;
   } catch (err) {
     console.error('Error deleting student:', err);

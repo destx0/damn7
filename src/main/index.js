@@ -57,7 +57,12 @@ function setupIpcHandlers() {
   ipcMain.handle('get-students', async () => await getStudents())
   ipcMain.handle('get-student', async (_, studentId) => await getStudent(studentId))
   ipcMain.handle('update-student', async (_, studentId, student) => await updateStudent(studentId, student))
-  ipcMain.handle('delete-student', async (_, studentId) => await deleteStudent(studentId))
+  ipcMain.handle('delete-student', async (_, studentId) => {
+    console.log('Received delete request for student ID:', studentId);
+    const result = await deleteStudent(studentId);
+    console.log('Delete operation result:', result);
+    return result;
+  })
   ipcMain.handle('get-next-certificate-number', async (_, type) => await getNextCertificateNumber(type))
   ipcMain.handle('increment-certificate-counter', async (_, type) => await incrementCertificateCounter(type))
 
