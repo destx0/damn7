@@ -92,7 +92,7 @@ export const generateBonafideCertificate = async (data, isDraft = true) => {
       <body>
         <div class="container">
           <div class="header">
-            <h3>Jaggannath Shikshan Prasarak Mandal's</h3>
+            <h3>Jagannath Shikshan Prasarak Mandal's</h3>
             <h2>Shashikant Sakharam Chaudhari Kanya Vidyalay, Yawal, Dist. Jalgaon</h2>
           </div>
           <div class="content">

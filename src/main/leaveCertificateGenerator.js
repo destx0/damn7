@@ -123,7 +123,7 @@ export const generateLeaveCertificate = async (data, isDraft = true) => {
             <h3>Jagannath Shikshan Prasarak Mandal's</h3>
             <h2>Shashikant Sakharam Chaudhari Kanya Vidyalay, Yawal</h2>
             <h3>Taluka- Yawal, Dist. Jalgaon</h3>
-            <p style="text-align: center;margin-top: -0px;">Phone No. 02585-261290 &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; E Mail - mksyawal@yahoo.in</p>
+            <p style="text-align: center;margin-top: -0px;">Medium - Marathi &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; E Mail - mksyawal@yahoo.in</p>
           </div>
           <div class="content">
             <div style="display: flex; justify-content: space-between;">
@@ -131,14 +131,9 @@ export const generateLeaveCertificate = async (data, isDraft = true) => {
               <span>${createField('G. Register No.', data.GRN, 7)}</span>
             </div>
             <div style="display: flex; justify-content: space-between;">
-              <span><strong>School Reg. No.</strong>- Edu. Depu.Dir/Sec-2/First Appru/</span>
-              <span>${createField('Medium', 'Marathi', 13)}</span>
+              <span><strong>School Reg. No.</strong>- Edu. Depu.Dir/Sec-2/First Appru/90-91/92/Div.Sec.Depu.Dir.Nashik/Datted 12-3-92</span>
             </div>
-            <div style="display: flex; justify-content: space-between;">
-              <span style="padding-left: 7.5em;">90-91/92/Div.Sec.Depu.Dir.Nashik/Datted 12-3-92</span>
-
-            </div>
-            <div style="display: flex; justify-content: space-between;">
+                       <div style="display: flex; justify-content: space-between;">
               <span><strong>U Dise No.</strong>- 27031508414</span>
               <span><strong>Board</strong>- Nashik</span>
               <span>${createField('Index No.', '15.15.005', 12)}</span>

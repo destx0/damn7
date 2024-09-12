@@ -159,10 +159,10 @@ const studentSchema = z.object({
   taluka: z.string().optional(),
   district: z.string().min(1, { message: "District is required" }),
   state: z.string().min(1, { message: "State is required" }),
-  dateOfBirth: z.string().min(1, { message: "Date of Birth is required" }),
+  dateOfBirth: z.date({ required_error: "Date of Birth is required" }),
   lastAttendedSchool: z.string().optional(),
   lastSchoolStandard: z.string().optional(),
-  dateOfAdmission: z.string().min(1, { message: "Date of Admission is required" }),
+  dateOfAdmission: z.date({ required_error: "Date of Admission is required" }),
   admissionStandard: z.string().min(1, { message: "Admission Standard is required" }),
   nationality: z.string().min(1, { message: "Nationality is required" }),
   motherTongue: z.string().min(1, { message: "Mother Tongue is required" })
@@ -229,7 +229,12 @@ const StudentFormPage = () => {
 
   const validateForm = () => {
     try {
-      studentSchema.parse(formData)
+      const formDataWithDates = {
+        ...formData,
+        dateOfBirth: formData.dateOfBirth ? new Date(formData.dateOfBirth) : undefined,
+        dateOfAdmission: formData.dateOfAdmission ? new Date(formData.dateOfAdmission) : undefined,
+      }
+      studentSchema.parse(formDataWithDates)
       setErrors({})
       return true
     } catch (error) {
@@ -245,7 +250,7 @@ const StudentFormPage = () => {
   }
 
   const handleDateChange = (field, value) => {
-    setFormData({ ...formData, [field]: value.startDate })
+    setFormData({ ...formData, [field]: value.startDate ? new Date(value.startDate) : null })
   }
 
   const handleSubmit = async (e) => {
@@ -332,7 +337,10 @@ const StudentFormPage = () => {
                         <Datepicker
                           asSingle={true}
                           useRange={false}
-                          value={{ startDate: formData[field], endDate: formData[field] }}
+                          value={{
+                            startDate: formData[field] ? new Date(formData[field]) : null,
+                            endDate: formData[field] ? new Date(formData[field]) : null
+                          }}
                           onChange={(value) => handleDateChange(field, value)}
                           displayFormat="DD-MM-YYYY"
                           placeholder={`Select ${formatLabel(field)}`}
