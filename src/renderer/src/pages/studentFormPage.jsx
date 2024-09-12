@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { z } from 'zod'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -141,6 +142,32 @@ const dialogOptions = {
   motherTongue: ['Marathi', 'Hindi', 'English', 'Gujarati', 'Urdu']
 }
 
+// Define the Zod schema
+const studentSchema = z.object({
+  studentId: z.string().regex(/^\d+$/, { message: "Student ID must be numeric" }).optional(),
+  aadharNo: z.string().regex(/^\d{12}$/, { message: "Aadhar Number must be exactly 12 digits" }),
+  PENNo: z.string().regex(/^\d{11}$/, { message: "PEN Number must be exactly 11 digits" }).optional(),
+  GRN: z.string().regex(/^\d+$/, { message: "GRN must be numeric" }).optional(),
+  name: z.string().regex(/^[a-zA-Z\s]+$/, { message: "Name must contain only letters and spaces" }).min(1, { message: "Name is required" }),
+  surname: z.string().regex(/^[a-zA-Z\s]+$/, { message: "Surname must contain only letters and spaces" }).min(1, { message: "Surname is required" }),
+  fathersName: z.string().regex(/^[a-zA-Z\s]+$/, { message: "Father's Name must contain only letters and spaces" }).min(1, { message: "Father's Name is required" }),
+  mothersName: z.string().regex(/^[a-zA-Z\s]+$/, { message: "Mother's Name must contain only letters and spaces" }).min(1, { message: "Mother's Name is required" }),
+  religion: z.string().min(1, { message: "Religion is required" }),
+  caste: z.string().optional(),
+  subCaste: z.string().optional(),
+  placeOfBirth: z.string().min(1, { message: "Place of Birth is required" }),
+  taluka: z.string().optional(),
+  district: z.string().min(1, { message: "District is required" }),
+  state: z.string().min(1, { message: "State is required" }),
+  dateOfBirth: z.string().min(1, { message: "Date of Birth is required" }),
+  lastAttendedSchool: z.string().optional(),
+  lastSchoolStandard: z.string().optional(),
+  dateOfAdmission: z.string().min(1, { message: "Date of Admission is required" }),
+  admissionStandard: z.string().min(1, { message: "Admission Standard is required" }),
+  nationality: z.string().min(1, { message: "Nationality is required" }),
+  motherTongue: z.string().min(1, { message: "Mother Tongue is required" })
+})
+
 const StudentFormPage = () => {
   const [formData, setFormData] = useState(
     fieldNames.reduce((acc, field) => ({ ...acc, [field]: '' }), {})
@@ -152,6 +179,8 @@ const StudentFormPage = () => {
   const navigate = useNavigate()
   const { studentId } = useParams()
   const location = useLocation()
+
+  const [errors, setErrors] = useState({})
 
   useEffect(() => {
     if (studentId && location.state?.student) {
@@ -180,21 +209,39 @@ const StudentFormPage = () => {
 
   const handleChange = (e) => {
     const { id, value } = e.target;
-    if (id === 'aadharNo') {
-      // Allow only digits and limit to 12 characters
-      const sanitizedValue = value.replace(/\D/g, '').slice(0, 12);
-      setFormData({ ...formData, [id]: sanitizedValue });
-    } else {
-      setFormData({ ...formData, [id]: value });
+    let sanitizedValue = value;
+
+    if (['studentId', 'aadharNo', 'PENNo', 'GRN'].includes(id)) {
+      // Allow only digits
+      sanitizedValue = value.replace(/\D/g, '');
+      if (id === 'PENNo') {
+        sanitizedValue = sanitizedValue.slice(0, 11);
+      } else if (id === 'aadharNo') {
+        sanitizedValue = sanitizedValue.slice(0, 12);
+      }
+    } else if (['name', 'surname', 'fathersName', 'mothersName'].includes(id)) {
+      // Allow only letters and spaces
+      sanitizedValue = value.replace(/[^a-zA-Z\s]/g, '');
     }
+
+    setFormData({ ...formData, [id]: sanitizedValue });
   }
 
   const validateForm = () => {
-    if (formData.aadharNo && formData.aadharNo.length !== 12) {
-      alert('Aadhar Number must be exactly 12 digits long.');
-      return false;
+    try {
+      studentSchema.parse(formData)
+      setErrors({})
+      return true
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        const newErrors = {}
+        error.errors.forEach((err) => {
+          newErrors[err.path[0]] = err.message
+        })
+        setErrors(newErrors)
+      }
+      return false
     }
-    return true;
   }
 
   const handleDateChange = (field, value) => {
@@ -356,9 +403,27 @@ const StudentFormPage = () => {
                           id={field}
                           value={formData[field]}
                           onChange={handleChange}
-                          required
-                          className="mt-1"
+                          required={!['caste', 'subCaste', 'taluka', 'lastAttendedSchool', 'lastSchoolStandard', 'studentId', 'PENNo', 'GRN'].includes(field)}
+                          className={`mt-1 ${errors[field] ? 'border-red-500' : ''}`}
+                          maxLength={field === 'aadharNo' ? 12 : field === 'PENNo' ? 11 : undefined}
+                          pattern={
+                            field === 'aadharNo' ? "\\d{12}" :
+                            field === 'PENNo' ? "\\d{11}" :
+                            ['studentId', 'GRN'].includes(field) ? "\\d+" :
+                            ['name', 'surname', 'fathersName', 'mothersName'].includes(field) ? "[a-zA-Z\\s]+" :
+                            undefined
+                          }
+                          title={
+                            field === 'aadharNo' ? "Aadhar Number must be exactly 12 digits" :
+                            field === 'PENNo' ? "PEN Number must be exactly 11 digits" :
+                            ['studentId', 'GRN'].includes(field) ? "Must be numeric" :
+                            ['name', 'surname', 'fathersName', 'mothersName'].includes(field) ? "Must contain only letters and spaces" :
+                            undefined
+                          }
                         />
+                      )}
+                      {errors[field] && (
+                        <p className="text-red-500 text-sm mt-1">{errors[field]}</p>
                       )}
                     </div>
                   ))}

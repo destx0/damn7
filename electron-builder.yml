@@ -1,5 +1,5 @@
-appId: com.electron.app
-productName: damn7
+appId: com.damn7.app
+productName: damn007
 directories:
   output: dist
   buildResources: build
@@ -17,7 +17,7 @@ asarUnpack:
   - chromium/**/*
 
 win:
-  executableName: damn7
+  executableName: damn007
 nsis:
   artifactName: ${name}-${version}-setup.${ext}
   shortcutName: ${productName}
