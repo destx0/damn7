@@ -69,7 +69,7 @@ const fieldLabels = {
 const dateFields = ['dateOfBirth', 'dateOfAdmission']
 
 const dialogOptions = {
-  religion: ['Hinduism', 'Islam', 'Christianity', 'Sikhism', 'Buddhism'],
+  religion: ['Hindu', 'Islam', 'Christianity', 'Sikhism', 'Buddhism'],
   state: [
     'Maharashtra',
     'Gujarat',
