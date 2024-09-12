@@ -137,6 +137,7 @@ const dialogOptions = {
   ],
   nationality: ['Indian'],
   admissionStandard: ['V', 'VI', 'VII', 'VIII', 'IX', 'X'],
+  lastSchoolStandard: ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X'],
   motherTongue: ['Marathi', 'Hindi', 'English', 'Gujarati', 'Urdu']
 }
 
