@@ -55,6 +55,7 @@ const createColumnDefs = (
   { headerName: 'Student ID', field: 'studentId', pinned: 'left', width: 120 },
   { headerName: 'GRN', field: 'GRN', pinned: 'left', width: 80 },
   { headerName: 'Aadhar No', field: 'aadharNo' },
+  { headerName: 'PEN No', field: 'PENNo' },
   { headerName: 'Name', field: 'name' },
   { headerName: 'Surname', field: 'surname' },
   { headerName: "Father's Name", field: 'fathersName' },
@@ -70,7 +71,9 @@ const createColumnDefs = (
   { headerName: 'Last Attended School', field: 'lastAttendedSchool' },
   { headerName: 'Last School Standard', field: 'lastSchoolStandard' },
   { headerName: 'Date of Admission', field: 'dateOfAdmission', filter: 'agDateColumnFilter' },
-  { headerName: 'Admission Standard', field: 'admissionStandard' }
+  { headerName: 'Admission Standard', field: 'admissionStandard' },
+  { headerName: 'Nationality', field: 'nationality' },
+  { headerName: 'Mother Tongue', field: 'motherTongue' }
 ]
 
 export { createColumnDefs, ActionMenu }

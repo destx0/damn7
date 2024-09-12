@@ -31,15 +31,21 @@ const LeaveForm = ({ studentData, pdfDataUrl, closeCertificate, onStudentUpdate 
     sscExamYear: '',
     sscPassStatus: '',
     otherReason: '',
-    customRemarks: ''
+    customRemarks: '',
+    customProgress: '',
+    customConduct: ''
   })
   const [currentPdfUrl, setCurrentPdfUrl] = useState(pdfDataUrl)
   const [isReasonDialogOpen, setIsReasonDialogOpen] = useState(false)
   const [isStandardDialogOpen, setIsStandardDialogOpen] = useState(false)
   const [isRemarksDialogOpen, setIsRemarksDialogOpen] = useState(false)
+  const [isProgressDialogOpen, setIsProgressDialogOpen] = useState(false)
+  const [isConductDialogOpen, setIsConductDialogOpen] = useState(false)
   const [selectedReason, setSelectedReason] = useState('')
   const [selectedStandard, setSelectedStandard] = useState('')
   const [selectedRemarks, setSelectedRemarks] = useState('')
+  const [selectedProgress, setSelectedProgress] = useState('')
+  const [selectedConduct, setSelectedConduct] = useState('')
 
   const predefinedReasons = [
     'Name struck off due to long absence',
@@ -50,6 +56,8 @@ const LeaveForm = ({ studentData, pdfDataUrl, closeCertificate, onStudentUpdate 
 
   const standardOptions = ['V', 'VI', 'VII', 'VIII', 'IX', 'X']
   const remarksOptions = ['Dues nill', 'Custom']
+  const progressOptions = ['Fair', 'Good', 'Excellent', 'Custom']
+  const conductOptions = ['Fair', 'Good', 'Excellent', 'Custom']
 
   useEffect(() => {
     loadStudentData()
@@ -159,6 +167,46 @@ const LeaveForm = ({ studentData, pdfDataUrl, closeCertificate, onStudentUpdate 
     }
     setIsRemarksDialogOpen(false)
     setSelectedRemarks('')
+  }
+
+  const handleProgressSelect = (progress) => {
+    setSelectedProgress(progress)
+  }
+
+  const handleConfirmProgress = () => {
+    if (selectedProgress === 'Custom') {
+      setFormData((prevData) => ({
+        ...prevData,
+        progress: formData.customProgress
+      }))
+    } else {
+      setFormData((prevData) => ({
+        ...prevData,
+        progress: selectedProgress
+      }))
+    }
+    setIsProgressDialogOpen(false)
+    setSelectedProgress('')
+  }
+
+  const handleConductSelect = (conduct) => {
+    setSelectedConduct(conduct)
+  }
+
+  const handleConfirmConduct = () => {
+    if (selectedConduct === 'Custom') {
+      setFormData((prevData) => ({
+        ...prevData,
+        conduct: formData.customConduct
+      }))
+    } else {
+      setFormData((prevData) => ({
+        ...prevData,
+        conduct: selectedConduct
+      }))
+    }
+    setIsConductDialogOpen(false)
+    setSelectedConduct('')
   }
 
   const renderField = (field) => {
@@ -343,6 +391,87 @@ const LeaveForm = ({ studentData, pdfDataUrl, closeCertificate, onStudentUpdate 
             </Dialog>
           </div>
         )
+      case 'progress':
+      case 'conduct':
+        return (
+          <div className="flex items-center space-x-2">
+            <Input
+              id={field.name}
+              name={field.name}
+              value={formData[field.name]}
+              onChange={handleInputChange}
+              placeholder={`Enter ${field.label.toLowerCase()}`}
+              className="w-full"
+              readOnly
+            />
+            <Dialog
+              open={field.name === 'progress' ? isProgressDialogOpen : isConductDialogOpen}
+              onOpenChange={
+                field.name === 'progress' ? setIsProgressDialogOpen : setIsConductDialogOpen
+              }
+            >
+              <DialogTrigger asChild>
+                <Button variant="outline" size="sm">
+                  Select
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Select {field.label}</DialogTitle>
+                </DialogHeader>
+                <div className="space-y-2">
+                  {(field.name === 'progress' ? progressOptions : conductOptions).map(
+                    (option, index) => (
+                      <Button
+                        key={index}
+                        onClick={() =>
+                          field.name === 'progress'
+                            ? handleProgressSelect(option)
+                            : handleConductSelect(option)
+                        }
+                        variant="outline"
+                        className={`w-full justify-start ${
+                          (field.name === 'progress' ? selectedProgress : selectedConduct) ===
+                          option
+                            ? 'bg-primary text-primary-foreground'
+                            : ''
+                        }`}
+                      >
+                        {option}
+                      </Button>
+                    )
+                  )}
+                </div>
+                {(field.name === 'progress' ? selectedProgress : selectedConduct) === 'Custom' && (
+                  <div className="space-y-2 mt-4">
+                    <Label
+                      htmlFor={`custom${field.name.charAt(0).toUpperCase() + field.name.slice(1)}`}
+                    >
+                      Custom {field.label}
+                    </Label>
+                    <Input
+                      id={`custom${field.name.charAt(0).toUpperCase() + field.name.slice(1)}`}
+                      name={`custom${field.name.charAt(0).toUpperCase() + field.name.slice(1)}`}
+                      value={
+                        formData[
+                          `custom${field.name.charAt(0).toUpperCase() + field.name.slice(1)}`
+                        ]
+                      }
+                      onChange={handleInputChange}
+                      placeholder={`Enter custom ${field.label.toLowerCase()}`}
+                    />
+                  </div>
+                )}
+                <Button
+                  onClick={field.name === 'progress' ? handleConfirmProgress : handleConfirmConduct}
+                  className="w-full mt-4"
+                >
+                  Confirm {field.label}
+                </Button>
+              </DialogContent>
+            </Dialog>
+          </div>
+        )
       case 'dateOfLeaving':
       case 'leaveCertificateGenerationDate':
         return (
@@ -377,7 +506,7 @@ const LeaveForm = ({ studentData, pdfDataUrl, closeCertificate, onStudentUpdate 
     { name: 'conduct', label: 'Conduct', type: 'text' },
     { name: 'reasonOfLeaving', label: 'Reason of Leaving', type: 'text' },
     { name: 'remarks', label: 'Remarks', type: 'text' },
-    { name: 'dateOfLeaving', label: 'Date of Leaving', type: 'date' },
+    { name: 'dateOfLeaving', label: 'Date of Leaving School', type: 'date' },
     {
       name: 'leaveCertificateGenerationDate',
       label: 'Leave Certificate Generation Date',
