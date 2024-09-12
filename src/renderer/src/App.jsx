@@ -13,7 +13,7 @@ function App() {
         <Route path="/" element={<LoginPage />} />
         <Route path="/table" element={<TablePage />} />
         <Route path="/add-student" element={<StudentFormPage />} />
-        <Route path="/edit-student/:id" element={<StudentFormPage />} />
+        <Route path="/edit-student/:studentId" element={<StudentFormPage />} />
       </Routes>
     </Router>
   )

@@ -149,14 +149,33 @@ const StudentFormPage = () => {
   const [searchTerm, setSearchTerm] = useState('')
 
   const navigate = useNavigate()
-  const { id } = useParams()
+  const { studentId } = useParams()
   const location = useLocation()
 
   useEffect(() => {
-    if (id && location.state?.student) {
+    if (studentId && location.state?.student) {
+      console.log('Initializing form with student data:', location.state.student);
       setFormData(location.state.student)
+    } else if (studentId) {
+      console.log('Fetching student data for ID:', studentId);
+      fetchStudentData(studentId);
     }
-  }, [id, location.state])
+  }, [studentId, location.state])
+
+  const fetchStudentData = async (id) => {
+    try {
+      const student = await window.api.getStudent(id);
+      console.log('Fetched student data:', student);
+      if (student) {
+        setFormData(student);
+      } else {
+        console.error('Student not found');
+        // Handle the case when student is not found
+      }
+    } catch (error) {
+      console.error('Error fetching student data:', error);
+    }
+  };
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value })
@@ -169,14 +188,20 @@ const StudentFormPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault()
     try {
-      if (id) {
-        await window.api.updateStudent(id, formData)
+      if (studentId) {
+        console.log('Updating student with ID:', studentId);
+        console.log('Updated data:', formData);
+        const updatedStudent = await window.api.updateStudent(studentId, formData)
+        console.log('Student updated successfully:', updatedStudent)
       } else {
-        await window.api.addStudent(formData)
+        console.log('Adding new student');
+        console.log('New student data:', formData);
+        const newStudent = await window.api.addStudent(formData)
+        console.log('New student added successfully:', newStudent)
       }
       navigate('/table')
     } catch (error) {
-      console.error(`Error ${id ? 'updating' : 'adding'} student:`, error)
+      console.error(`Error ${studentId ? 'updating' : 'adding'} student:`, error)
     }
   }
 
@@ -220,8 +245,8 @@ const StudentFormPage = () => {
               Cancel
             </Button>
             <Button onClick={handleSubmit} className="bg-green-600 hover:bg-green-700">
-              {id ? <Save className="mr-2 h-4 w-4" /> : <UserPlus className="mr-2 h-4 w-4" />}
-              {id ? 'Update' : 'Add'} Student
+              {studentId ? <Save className="mr-2 h-4 w-4" /> : <UserPlus className="mr-2 h-4 w-4" />}
+              {studentId ? 'Update' : 'Add'} Student
             </Button>
           </div>
         </div>

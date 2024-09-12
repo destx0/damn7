@@ -39,7 +39,8 @@ const TablePage = () => {
   const handleEditStudent = useCallback(
     (student) => {
       if (userType === 'admin') {
-        navigate(`/edit-student/${student.id}`, { state: { student } })
+        console.log('Editing student:', student);
+        navigate(`/edit-student/${student.studentId}`, { state: { student } })
       }
     },
     [navigate, userType]
@@ -86,7 +87,7 @@ const TablePage = () => {
   const handleStudentUpdate = useCallback((updatedStudent) => {
     setRowData((prevData) =>
       prevData.map((student) =>
-        student.id === updatedStudent.id ? { ...student, ...updatedStudent } : student
+        student.studentId === updatedStudent.studentId ? { ...student, ...updatedStudent } : student
       )
     )
   }, [])
