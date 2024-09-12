@@ -31,7 +31,12 @@ const ActionMenu = ({ isAdmin, onEdit, onDelete, onLeaveCertificate, onBonafideC
   )
 }
 
-const createColumnDefs = (isAdmin, handleEditStudent, handleDeleteStudent, generateDraftCertificate) => [
+const createColumnDefs = (
+  isAdmin,
+  handleEditStudent,
+  handleDeleteStudent,
+  generateDraftCertificate
+) => [
   {
     headerName: '',
     cellRenderer: (params) => (
@@ -48,6 +53,7 @@ const createColumnDefs = (isAdmin, handleEditStudent, handleDeleteStudent, gener
     cellStyle: { display: 'flex', justifyContent: 'center', alignItems: 'center' }
   },
   { headerName: 'Student ID', field: 'studentId', pinned: 'left', width: 120 },
+  { headerName: 'GRN', field: 'GRN', pinned: 'left', width: 80 },
   { headerName: 'Aadhar No', field: 'aadharNo' },
   { headerName: 'Name', field: 'name' },
   { headerName: 'Surname', field: 'surname' },
