@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -13,7 +14,11 @@ import {
   DialogTrigger
 } from '@/components/ui/dialog'
 
-const BonafideForm = ({ studentData, pdfDataUrl, closeCertificate, onStudentUpdate }) => {
+const BonafideForm = () => {
+  const location = useLocation()
+  const navigate = useNavigate()
+  const { pdfDataUrl, studentData } = location.state || {}
+
   const [formData, setFormData] = useState({
     academicYear: '',
     reasonOfBonafide: '',
@@ -264,6 +269,10 @@ const BonafideForm = ({ studentData, pdfDataUrl, closeCertificate, onStudentUpda
           />
         )
     }
+  }
+
+  const closeCertificate = () => {
+    navigate('/table')
   }
 
   return (

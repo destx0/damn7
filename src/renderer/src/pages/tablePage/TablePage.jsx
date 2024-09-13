@@ -67,20 +67,17 @@ const TablePage = () => {
       let base64Data
       if (type === 'leave') {
         base64Data = await window.api.generateDraftLeaveCertificate(data)
+        navigate(`/leave-form/${data.studentId}`, { state: { pdfDataUrl: `data:application/pdf;base64,${base64Data}`, studentData: data } })
       } else if (type === 'bonafide') {
         base64Data = await window.api.generateDraftBonafideCertificate(data)
+        navigate(`/bonafide-form/${data.studentId}`, { state: { pdfDataUrl: `data:application/pdf;base64,${base64Data}`, studentData: data } })
       } else {
         throw new Error('Unknown certificate type')
       }
-      const dataUrl = `data:application/pdf;base64,${base64Data}`
-      setPdfDataUrl(dataUrl)
-      setSelectedRow(data)
-      setCertificateType(type)
-      setShowCertificate(true)
     } catch (error) {
       console.error(`Error generating draft ${type} certificate:`, error)
     }
-  }, [])
+  }, [navigate])
 
   const handleStudentUpdate = useCallback((updatedStudent) => {
     setRowData((prevData) =>
