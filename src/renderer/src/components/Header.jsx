@@ -1,12 +1,24 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { UserPlus, LogOut, Search } from 'lucide-react'
+import { UserPlus, LogOut, Search, RefreshCw } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import logo from '@/assets/logo.png'
 
-const Header = ({ quickFilterText, onQuickFilterChanged, handleLogout }) => {
+const Header = ({ quickFilterText, onQuickFilterChanged, handleLogout, handleRefresh }) => {
   const navigate = useNavigate()
+  const [isRefreshing, setIsRefreshing] = useState(false)
+
+  const handleRefreshClick = async () => {
+    setIsRefreshing(true)
+    const startTime = Date.now()
+    await handleRefresh()
+    const elapsedTime = Date.now() - startTime
+    const remainingTime = Math.max(2000 - elapsedTime, 0)
+    setTimeout(() => {
+      setIsRefreshing(false)
+    }, remainingTime)
+  }
 
   return (
     <header className="flex justify-between items-center p-4 bg-gray-800 text-white shadow-md">
@@ -39,6 +51,15 @@ const Header = ({ quickFilterText, onQuickFilterChanged, handleLogout }) => {
         >
           <LogOut size={18} />
           <span>Logout</span>
+        </Button>
+        <Button
+          onClick={handleRefreshClick}
+          variant="ghost"
+          className="flex items-center space-x-2 hover:bg-gray-700"
+          disabled={isRefreshing}
+        >
+          <RefreshCw size={18} className={isRefreshing ? 'animate-spin' : ''} />
+          <span>{isRefreshing ? 'Refreshing...' : 'Refresh'}</span>
         </Button>
       </div>
     </header>

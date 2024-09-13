@@ -21,18 +21,18 @@ const TablePage = () => {
   const navigate = useNavigate()
   const { user, userType, clearUser } = useUserStore()
 
-  useEffect(() => {
-    fetchStudents()
-  }, [])
-
-  const fetchStudents = async () => {
+  const fetchStudents = useCallback(async () => {
     try {
       const students = await window.api.getStudents()
       setRowData(students)
     } catch (error) {
       console.error('Error fetching students:', error)
     }
-  }
+  }, [])
+
+  useEffect(() => {
+    fetchStudents()
+  }, [fetchStudents])
 
   const handleEditStudent = useCallback(
     (student) => {
@@ -120,6 +120,13 @@ const TablePage = () => {
     setQuickFilterText(e.target.value)
   }, [])
 
+  const handleRefresh = useCallback(() => {
+    return new Promise(async (resolve) => {
+      await fetchStudents()
+      resolve()
+    })
+  }, [fetchStudents])
+
   if (!user) {
     navigate('/')
     return null
@@ -131,6 +138,7 @@ const TablePage = () => {
         quickFilterText={quickFilterText}
         onQuickFilterChanged={onQuickFilterChanged}
         handleLogout={handleLogout}
+        handleRefresh={handleRefresh}
       />
       <div className="flex-1 overflow-hidden">
         {!showCertificate ? (
