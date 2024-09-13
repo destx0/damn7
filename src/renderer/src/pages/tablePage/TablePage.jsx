@@ -4,14 +4,12 @@ import 'ag-grid-community/styles/ag-grid.css'
 import 'ag-grid-community/styles/ag-theme-alpine.css'
 import 'ag-grid-community/styles/ag-theme-quartz.css'
 import '@/assets/ag.css'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 import { useNavigate } from 'react-router-dom'
 import useUserStore from '@/stores/useUserStore'
 import LeaveForm from './LeaveForm'
 import BonafideForm from './BonafideForm'
 import { createColumnDefs } from './ColumnDefs'
-import { UserCircle, LogOut, UserPlus, Search } from 'lucide-react'
+import Header from '@/components/Header'
 
 const TablePage = () => {
   const [rowData, setRowData] = useState([])
@@ -132,37 +130,11 @@ const TablePage = () => {
 
   return (
     <div className="flex flex-col w-screen h-screen">
-      <header className="flex justify-between items-center p-4 bg-gray-800 text-white shadow-md">
-        <h1 className="text-2xl font-bold">Student Certificates</h1>
-        <div className="flex items-center space-x-4">
-          <div className="flex items-center">
-            <Search className="h-4 w-4 mr-2" />
-            <Input
-              type="text"
-              placeholder="Quick filter..."
-              value={quickFilterText}
-              onChange={onQuickFilterChanged}
-              className="px-2 py-1 text-black"
-            />
-          </div>
-          <Button
-            onClick={() => navigate('/add-student')}
-            variant="ghost"
-            className="flex items-center space-x-2 hover:bg-gray-700"
-          >
-            <UserPlus size={18} />
-            <span>Add Student</span>
-          </Button>
-          <Button
-            onClick={handleLogout}
-            variant="ghost"
-            className="flex items-center space-x-2 hover:bg-gray-700"
-          >
-            <LogOut size={18} />
-            <span>Logout</span>
-          </Button>
-        </div>
-      </header>
+      <Header
+        quickFilterText={quickFilterText}
+        onQuickFilterChanged={onQuickFilterChanged}
+        handleLogout={handleLogout}
+      />
       <div className="flex-1 overflow-hidden">
         {!showCertificate ? (
           <div className="ag-theme-quartz w-full h-full text-sm">
