@@ -141,16 +141,17 @@ export const generateLeaveCertificate = async (data, isDraft = true) => {
             <h1 style="font-size: 24pt; margin-top: -10px;margin-bottom: 0px;">Leaving Certificate</h1>
             <pre style="margin-top: 10px;">
 ${createField('PEN', data.PENNo, 75)}
-${createField('Student ID', data.studentId, 18)} ${createField('U.I.D. No. (Aadhar Card No.)', data.aadharNo, 24)}
+${createField('Student ID', data.studentId, 25)} ${createField('U.I.D. No. (Aadhar Card No.)', data.aadharNo, 17)}
 <strong>Name of the student in full</strong> ${createField('(Name)', data.name, 15)} ${createField("(Father's Name)", data.fathersName, 20)}
                                         ${createField('(Surname)', data.surname, 30)}
 ${createField("Mother's Name", data.mothersName, 40)}
 ${createField('Nationality', data.nationality || 'Indian', 20)} ${createField('Mother tongue', data.motherTongue, 35)}
 ${createField('Religion', data.religion, 15)} ${createField('Caste', data.caste, 20)} ${createField('Sub-caste', data.subCaste, 20)}
-${createField('Place of Birth', data.placeOfBirth, 10)} ${createField('Taluka', data.taluka, 10)} ${createField('Dist', data.district, 10)} ${createField('State', data.state, 12)} <strong>Country:</strong> India
+${createField('Place of Birth', data.placeOfBirth, 20)} ${createField('Taluka', data.taluka, 17)} ${createField('Dist', data.district, 17)}
+${createField('State', data.state, 20)} <strong>Country:</strong> India
 ${createField('Date of Birth (DD/MM/YY) according to the Christian era', formatDate(data.dateOfBirth), 27)}
 ${createField('Date of Birth (In words)', dateOfBirthInWords, 60)}
-<strong>Last school attended & standard:</strong>${createField('', data.lastAttendedSchool, 42)}${createField('', data.lastSchoolStandard, 7)}
+<strong>Last school attended & standard</strong>${createField('', data.lastAttendedSchool, 42)}${createField('', data.lastSchoolStandard, 7)}
 ${createField('Date of admission in this school', formatDate(data.dateOfAdmission), 24)} ${createField('Standard', data.admissionStandard, 15)}
 ${createField('Progress', data.progress, 27)} ${createField('Conduct', data.conduct, 30)}
 ${createField('Date of leaving school', formatDate(data.dateOfLeaving), 57)}
@@ -161,9 +162,9 @@ ${createField('Remarks', data.remarks, 70)}
           </div>
           <div class="footer">
             <p style="font-weight: bold;">Certified that the above information is in accordance with the School Register.</p>
-            <div style="display: flex; justify-content: space-between; margin-top: -5px;">
-              <div><strong>Date:</strong> ${generationDate.getDate()}</div>
-              <div><strong>Month:</strong> ${generationDate.toLocaleString('default', { month: 'long' })}</div>
+            <div style="display: flex; justify-content: flex-start; margin-top: -5px;">
+              <div style="margin-right: 40px;"><strong>Date:</strong> ${generationDate.getDate()}</div>
+              <div style="margin-right: 40px;"><strong>Month:</strong> ${generationDate.toLocaleString('default', { month: 'long' })}</div>
               <div><strong>Year:</strong> ${generationDate.getFullYear()}</div>
             </div>
             <div style="display: flex; justify-content: space-between; margin-top: 60px;">
