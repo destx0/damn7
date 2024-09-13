@@ -1,7 +1,7 @@
 import puppeteer from 'puppeteer'
 import { format } from 'date-fns'
 import { getPuppeteerConfig, setupPuppeteer } from './puppeteerConfig'
-import { dateToWords, numberToWords } from './dateUtils'
+import { dateToWords } from './dateUtils'
 
 const romanToOrdinal = {
   V: 'Fifth',
