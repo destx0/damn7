@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react'
-import { z } from 'zod'
+import { useNavigate, useParams, useLocation } from 'react-router-dom'
+import { ArrowLeft, UserPlus, Save, Search } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { useNavigate, useParams, useLocation } from 'react-router-dom'
-import { ArrowLeft, UserPlus, Save, Search } from 'lucide-react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import Datepicker from 'react-tailwindcss-datepicker'
 import {
@@ -15,158 +14,10 @@ import {
   DialogTitle,
   DialogTrigger
 } from '@/components/ui/dialog'
-
-const fieldNames = [
-  'studentId',
-  'aadharNo',
-  'PENNo',
-  'GRN',
-  'name',
-  'surname',
-  'fathersName',
-  'mothersName',
-  'religion',
-  'caste',
-  'subCaste',
-  'placeOfBirth',
-  'taluka',
-  'district',
-  'state',
-  'dateOfBirth',
-  'lastAttendedSchool',
-  'lastSchoolStandard',
-  'dateOfAdmission',
-  'admissionStandard',
-  'nationality',
-  'motherTongue'
-]
-
-const fieldLabels = {
-  studentId: 'Student ID',
-  aadharNo: 'Aadhar Number',
-  PENNo: 'PEN Number',
-  GRN: 'GRN',
-  name: 'Name',
-  surname: 'Surname',
-  fathersName: "Father's Name",
-  mothersName: "Mother's Name",
-  religion: 'Religion',
-  caste: 'Caste',
-  subCaste: 'Sub-caste',
-  placeOfBirth: 'Place of Birth',
-  taluka: 'Taluka',
-  district: 'District',
-  state: 'State',
-  dateOfBirth: 'Date of Birth',
-  lastAttendedSchool: 'Last Attended School',
-  lastSchoolStandard: 'Last School Standard',
-  dateOfAdmission: 'Date of Admission',
-  admissionStandard: 'Admission Standard',
-  nationality: 'Nationality',
-  motherTongue: 'Mother Tongue'
-}
-
-const dateFields = ['dateOfBirth', 'dateOfAdmission']
-
-const dialogOptions = {
-  religion: ['Hindu', 'Islam', 'Christianity', 'Sikhism', 'Buddhism'],
-  state: [
-    'Maharashtra',
-    'Gujarat',
-    'Madhya Pradesh',
-    'Goa',
-    'Karnataka',
-    'Andhra Pradesh',
-    'Arunachal Pradesh',
-    'Assam',
-    'Bihar',
-    'Chhattisgarh',
-    'Haryana',
-    'Himachal Pradesh',
-    'Jharkhand',
-    'Kerala',
-    'Manipur',
-    'Meghalaya',
-    'Mizoram',
-    'Nagaland',
-    'Odisha',
-    'Punjab',
-    'Rajasthan',
-    'Sikkim',
-    'Tamil Nadu',
-    'Telangana',
-    'Tripura',
-    'Uttar Pradesh',
-    'Uttarakhand',
-    'West Bengal'
-  ],
-  district: [
-    'Jalgaon',
-    'Mumbai City',
-    'Mumbai Suburban',
-    'Pune',
-    'Thane',
-    'Nagpur',
-    'Nashik',
-    'Aurangabad',
-    'Solapur',
-    'Amravati',
-    'Kolhapur',
-    'Latur',
-    'Akola',
-    'Chandrapur',
-    'Parbhani',
-    'Yavatmal',
-    'Satara',
-    'Sangli',
-    'Wardha',
-    'Beed',
-    'Bhandara',
-    'Buldhana',
-    'Dhule',
-    'Gadchiroli',
-    'Gondia',
-    'Hingoli',
-    'Jalna',
-    'Nanded',
-    'Nandurbar',
-    'Osmanabad',
-    'Raigad',
-    'Ratnagiri',
-    'Sindhudurg',
-    'Washim'
-  ],
-  nationality: ['Indian'],
-  admissionStandard: ['V', 'VI', 'VII', 'VIII', 'IX', 'X'],
-  lastSchoolStandard: ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X'],
-  motherTongue: ['Marathi', 'Hindi', 'English', 'Gujarati', 'Urdu']
-}
-
-// Define the Zod schema
-const studentSchema = z.object({
-  studentId: z.string().regex(/^\d+$/, { message: "Student ID must be numeric" }).optional(),
-  aadharNo: z.string().regex(/^\d{12}$/, { message: "Aadhar Number must be exactly 12 digits" }),
-  PENNo: z.string().regex(/^\d{11}$/, { message: "PEN Number must be exactly 11 digits" }).optional(),
-  GRN: z.string().regex(/^\d+$/, { message: "GRN must be numeric" }).optional(),
-  name: z.string().regex(/^[a-zA-Z\s]+$/, { message: "Name must contain only letters and spaces" }).min(1, { message: "Name is required" }),
-  surname: z.string().regex(/^[a-zA-Z\s]+$/, { message: "Surname must contain only letters and spaces" }).min(1, { message: "Surname is required" }),
-  fathersName: z.string().regex(/^[a-zA-Z\s]+$/, { message: "Father's Name must contain only letters and spaces" }).min(1, { message: "Father's Name is required" }),
-  mothersName: z.string().regex(/^[a-zA-Z\s]+$/, { message: "Mother's Name must contain only letters and spaces" }).min(1, { message: "Mother's Name is required" }),
-  religion: z.string().min(1, { message: "Religion is required" }),
-  caste: z.string().optional(),
-  subCaste: z.string().optional(),
-  placeOfBirth: z.string().min(1, { message: "Place of Birth is required" }),
-  taluka: z.string().optional(),
-  district: z.string().min(1, { message: "District is required" }),
-  state: z.string().min(1, { message: "State is required" }),
-  dateOfBirth: z.date({ required_error: "Date of Birth is required" }),
-  lastAttendedSchool: z.string().optional(),
-  lastSchoolStandard: z.string().optional(),
-  dateOfAdmission: z.date({ required_error: "Date of Admission is required" }),
-  admissionStandard: z.string().min(1, { message: "Admission Standard is required" }),
-  nationality: z.string().min(1, { message: "Nationality is required" }),
-  motherTongue: z.string().min(1, { message: "Mother Tongue is required" })
-})
+import { fieldNames, fieldLabels, dateFields, dialogOptions } from '@/constants/studentFormConstants'
+import { studentSchema } from '@/schemas/studentSchema'
+import { formatLabel, sanitizeValue } from '@/utils/studentFormUtils'
+import { z } from 'zod'  // Add this import
 
 const StudentFormPage = () => {
   const [formData, setFormData] = useState(
@@ -175,12 +26,11 @@ const StudentFormPage = () => {
   const [openDialog, setOpenDialog] = useState('')
   const [customValue, setCustomValue] = useState('')
   const [searchTerm, setSearchTerm] = useState('')
+  const [errors, setErrors] = useState({})
 
   const navigate = useNavigate()
   const { studentId } = useParams()
   const location = useLocation()
-
-  const [errors, setErrors] = useState({})
 
   useEffect(() => {
     if (studentId && location.state?.student) {
@@ -200,7 +50,6 @@ const StudentFormPage = () => {
         setFormData(student);
       } else {
         console.error('Student not found');
-        // Handle the case when student is not found
       }
     } catch (error) {
       console.error('Error fetching student data:', error);
@@ -209,21 +58,7 @@ const StudentFormPage = () => {
 
   const handleChange = (e) => {
     const { id, value } = e.target;
-    let sanitizedValue = value;
-
-    if (['studentId', 'aadharNo', 'PENNo', 'GRN'].includes(id)) {
-      // Allow only digits
-      sanitizedValue = value.replace(/\D/g, '');
-      if (id === 'PENNo') {
-        sanitizedValue = sanitizedValue.slice(0, 11);
-      } else if (id === 'aadharNo') {
-        sanitizedValue = sanitizedValue.slice(0, 12);
-      }
-    } else if (['name', 'surname', 'fathersName', 'mothersName'].includes(id)) {
-      // Allow only letters and spaces
-      sanitizedValue = value.replace(/[^a-zA-Z\s]/g, '');
-    }
-
+    const sanitizedValue = sanitizeValue(id, value);
     setFormData({ ...formData, [id]: sanitizedValue });
   }
 
@@ -280,13 +115,6 @@ const StudentFormPage = () => {
     navigate('/table')
   }
 
-  const formatLabel = (field) => {
-    return (
-      fieldLabels[field] ||
-      field.replace(/([A-Z])/g, ' $1').replace(/^./, (str) => str.toUpperCase())
-    )
-  }
-
   const handleOptionSelect = (field, value) => {
     setFormData({ ...formData, [field]: value })
     setOpenDialog('')
@@ -331,7 +159,7 @@ const StudentFormPage = () => {
                   {fieldNames.map((field) => (
                     <div key={field}>
                       <Label htmlFor={field} className="text-sm font-medium">
-                        {formatLabel(field)}
+                        {formatLabel(field, fieldLabels)}
                       </Label>
                       {dateFields.includes(field) ? (
                         <Datepicker
@@ -343,7 +171,7 @@ const StudentFormPage = () => {
                           }}
                           onChange={(value) => handleDateChange(field, value)}
                           displayFormat="DD-MM-YYYY"
-                          placeholder={`Select ${formatLabel(field)}`}
+                          placeholder={`Select ${formatLabel(field, fieldLabels)}`}
                           inputClassName="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                         />
                       ) : dialogOptions[field] ? (
@@ -364,13 +192,13 @@ const StudentFormPage = () => {
                             </DialogTrigger>
                             <DialogContent className="max-w-[400px]">
                               <DialogHeader>
-                                <DialogTitle>Select {formatLabel(field)}</DialogTitle>
+                                <DialogTitle>Select {formatLabel(field, fieldLabels)}</DialogTitle>
                               </DialogHeader>
                               <div className="space-y-4">
                                 <div className="flex items-center space-x-2">
                                   <Search className="w-4 h-4 opacity-50" />
                                   <Input
-                                    placeholder={`Search ${formatLabel(field)}`}
+                                    placeholder={`Search ${formatLabel(field, fieldLabels)}`}
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
                                     className="flex-1"
@@ -391,13 +219,13 @@ const StudentFormPage = () => {
                                   </div>
                                 </ScrollArea>
                                 <div className="pt-4 border-t">
-                                  <Label htmlFor="customValue">Custom {formatLabel(field)}</Label>
+                                  <Label htmlFor="customValue">Custom {formatLabel(field, fieldLabels)}</Label>
                                   <div className="flex space-x-2 mt-2">
                                     <Input
                                       id="customValue"
                                       value={customValue}
                                       onChange={(e) => setCustomValue(e.target.value)}
-                                      placeholder={`Enter custom ${formatLabel(field)}`}
+                                      placeholder={`Enter custom ${formatLabel(field, fieldLabels)}`}
                                     />
                                     <Button onClick={handleCustomSubmit}>Add</Button>
                                   </div>

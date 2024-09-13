@@ -1,5 +1,4 @@
-import Versions from './components/Versions'
-import electronLogo from './assets/electron.svg'
+
 import LoginPage from './pages/loginPage'
 import TablePage from './pages/tablePage/TablePage'
 import StudentFormPage from './pages/studentFormPage'

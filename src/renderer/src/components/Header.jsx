@@ -3,13 +3,16 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { UserPlus, LogOut, Search } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
+import logo from '@/assets/logo.png'
 
 const Header = ({ quickFilterText, onQuickFilterChanged, handleLogout }) => {
   const navigate = useNavigate()
 
   return (
     <header className="flex justify-between items-center p-4 bg-gray-800 text-white shadow-md">
-      <h1 className="text-2xl font-bold">Student Certificates</h1>
+      <div className="flex items-center">
+        <img src={logo} alt="Logo" className="h-8 w-8 mr-2" />
+      </div>
       <div className="flex items-center space-x-4">
         <div className="flex items-center">
           <Search className="h-4 w-4 mr-2" />
