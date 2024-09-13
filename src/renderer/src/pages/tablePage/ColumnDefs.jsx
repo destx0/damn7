@@ -73,7 +73,21 @@ const createColumnDefs = (
   { headerName: 'Date of Admission', field: 'dateOfAdmission', filter: 'agDateColumnFilter' },
   { headerName: 'Admission Standard', field: 'admissionStandard' },
   { headerName: 'Nationality', field: 'nationality' },
-  { headerName: 'Mother Tongue', field: 'motherTongue' }
+  { headerName: 'Mother Tongue', field: 'motherTongue' },
+  { headerName: 'Current Standard', field: 'currentStandard' },
+  { headerName: 'Progress', field: 'progress' },
+  { headerName: 'Conduct', field: 'conduct' },
+  { headerName: 'Date of Leaving', field: 'dateOfLeaving', filter: 'agDateColumnFilter' },
+  { headerName: 'Reason of Leaving', field: 'reasonOfLeaving' },
+  { headerName: 'Remarks', field: 'remarks' },
+  { headerName: 'Leave Certificate Date', field: 'leaveCertificateGenerationDate', filter: 'agDateColumnFilter' },
+  { headerName: 'SSC Exam Year', field: 'sscExamYear' },
+  { headerName: 'SSC Pass Status', field: 'sscPassStatus' },
+  { headerName: 'Academic Year', field: 'academicYear' },
+  { headerName: 'Bonafide Reason', field: 'reasonOfBonafide' },
+  { headerName: 'Bonafide Requested By', field: 'requestOfBonafideBy' },
+  { headerName: 'Bonafide Date', field: 'dateOfBonafide', filter: 'agDateColumnFilter' },
+  { headerName: 'Bonafide Standard', field: 'bonafideStandard' }
 ]
 
 export { createColumnDefs, ActionMenu }
