@@ -81,3 +81,10 @@ export const dateToWords = (dateString) => {
   const yearWord = yearToWords(year)
   return `${dayWord} ${month}, ${yearWord}`
 }
+
+export const monthYear = (dateString) => {
+  const date = new Date(dateString);
+  const month = date.toLocaleString('default', { month: 'long' });
+  const year = date.getFullYear();
+  return `${month}, ${year}`;
+};

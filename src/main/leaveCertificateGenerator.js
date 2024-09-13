@@ -1,7 +1,7 @@
 import puppeteer from 'puppeteer'
 import { format } from 'date-fns'
 import { getPuppeteerConfig, setupPuppeteer } from './puppeteerConfig'
-import { dateToWords } from './dateUtils'
+import { dateToWords, monthYear } from './dateUtils'
 
 const romanToOrdinal = {
   V: 'Fifth',
@@ -94,7 +94,7 @@ ${createField('Date of admission in this school', formatDate(data.dateOfAdmissio
 ${createField('Progress', data.progress, 27)} ${createField('Conduct', data.conduct, 30)}
 ${createField('Date of leaving school', formatDate(data.dateOfLeaving), 57)}
 ${createField('Standard in which studying and since when (in words and figure)', formatStandard(data.currentStandard), 20)}
-${createField('Since', formatDate(data.dateOfAdmission), 76)}
+${createField('Since', monthYear(data.dateOfAdmission), 76)}
 ${createField('Reason of leaving school', data.reasonOfLeaving, 58)}
 ${createField('Remarks', data.remarks, 70)}
             </pre>
