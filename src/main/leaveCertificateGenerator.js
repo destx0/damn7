@@ -78,25 +78,25 @@ export const generateLeaveCertificate = async (data, isDraft = true) => {
             </div>
             <h1 style="font-size: 24pt; margin-top: -10px;margin-bottom: 0px;">Leaving Certificate</h1>
             <pre style="margin-top: 10px;">
-${createField('PEN', data.PENNo, 75)}
-${createField('Student ID', data.studentId, 25)} ${createField('U.I.D. No. (Aadhar Card No.)', data.aadharNo, 17)}
+${createField('PEN', data.PENNo, 77)}
+${createField('Student ID', data.studentId, 26)} ${createField('U.I.D. No. (Aadhar Card No.)', data.aadharNo, 17)}
 <strong>Name of the student in full</strong> ${createField('(Name)', data.name, 15)} ${createField("(Father's Name)", data.fathersName, 20)}
-                                        ${createField('(Surname)', data.surname, 30)}
-${createField("Mother's Name", data.mothersName, 40)}
-${createField('Nationality', data.nationality || 'Indian', 20)} ${createField('Mother tongue', data.motherTongue, 35)}
-${createField('Religion', data.religion, 15)} ${createField('Caste', data.caste, 20)} ${createField('Sub-caste', data.subCaste, 20)}
-${createField('Place of Birth', data.placeOfBirth, 20)} ${createField('Taluka', data.taluka, 17)} ${createField('Dist', data.district, 17)}
-${createField('State', data.state, 20)} <strong>Country:</strong> India
-${createField('Date of Birth (DD/MM/YY) according to the Christian era', formatDate(data.dateOfBirth), 27)}
+                                        ${createField('(Surname)', data.surname, 51)}
+${createField("Mother's Name", data.mothersName, 67)}
+${createField('Nationality', data.nationality || 'Indian', 20)} ${createField('Mother tongue', data.motherTongue, 36)}
+${createField('Religion', data.religion, 15)} ${createField('Caste', data.caste, 22)} ${createField('Sub-caste', data.subCaste, 20)}
+${createField('Place of Birth', data.placeOfBirth, 20)} ${createField('Taluka', data.taluka, 17)} ${createField('Dist', data.district, 18)}
+${createField('State', data.state, 27)} ${createField('Country', 'India', 40)}
+${createField('Date of Birth (DD/MM/YY) according to the Christian era', formatDate(data.dateOfBirth), 29)}
 ${createField('Date of Birth (In words)', dateOfBirthInWords, 60)}
-<strong>Last school attended & standard</strong>${createField('', data.lastAttendedSchool, 42)}${createField('', data.lastSchoolStandard, 7)}
-${createField('Date of admission in this school', formatDate(data.dateOfAdmission), 24)} ${createField('Standard', data.admissionStandard, 15)}
-${createField('Progress', data.progress, 27)} ${createField('Conduct', data.conduct, 30)}
-${createField('Date of leaving school', formatDate(data.dateOfLeaving), 57)}
-${createField('Standard in which studying and since when (in words and figure)', formatStandard(data.currentStandard), 20)}
+<strong>Last school attended & standard</strong>${createField('', data.lastAttendedSchool, 42)}${createField('', data.lastSchoolStandard, 9)}
+${createField('Date of admission in this school', formatDate(data.dateOfAdmission), 24)} ${createField('Standard', data.admissionStandard, 19)}
+${createField('Progress', data.progress, 33)} ${createField('Conduct', data.conduct, 30)}
+${createField('Date of leaving school', formatDate(data.dateOfLeaving), 60)}
+${createField('Standard in which studying and since when (in words and figure)', formatStandard(data.currentStandard), 22)}
 ${createField('Since', monthYear(data.dateOfAdmission), 76)}
 ${createField('Reason of leaving school', data.reasonOfLeaving, 58)}
-${createField('Remarks', data.remarks, 70)}
+${createField('Remarks', data.remarks, 72)}
             </pre>
           </div>
           <div class="footer">
