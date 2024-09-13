@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react'
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import { AgGridReact } from 'ag-grid-react'
 import 'ag-grid-community/styles/ag-grid.css'
 import 'ag-grid-community/styles/ag-theme-alpine.css'
@@ -127,6 +127,19 @@ const TablePage = () => {
     })
   }, [fetchStudents])
 
+  const handleExportData = useCallback(() => {
+    if (gridRef.current && gridRef.current.api) {
+      const params = {
+        fileName: 'student_data.csv',
+        suppressQuotes: true,
+        columnSeparator: ','
+      }
+      gridRef.current.api.exportDataAsCsv(params)
+    }
+  }, [])
+
+  const gridRef = useRef(null)
+
   if (!user) {
     navigate('/')
     return null
@@ -139,11 +152,13 @@ const TablePage = () => {
         onQuickFilterChanged={onQuickFilterChanged}
         handleLogout={handleLogout}
         handleRefresh={handleRefresh}
+        handleExportData={handleExportData}
       />
       <div className="flex-1 overflow-hidden">
         {!showCertificate ? (
           <div className="ag-theme-quartz w-full h-full text-sm">
             <AgGridReact
+              ref={gridRef}
               rowData={rowData}
               columnDefs={columnDefs}
               defaultColDef={defaultColDef}

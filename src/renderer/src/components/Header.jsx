@@ -1,11 +1,11 @@
 import React, { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { UserPlus, LogOut, Search, RefreshCw } from 'lucide-react'
+import { UserPlus, LogOut, Search, RefreshCw, Download } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import logo from '@/assets/logo.png'
 
-const Header = ({ quickFilterText, onQuickFilterChanged, handleLogout, handleRefresh }) => {
+const Header = ({ quickFilterText, onQuickFilterChanged, handleLogout, handleRefresh, handleExportData }) => {
   const navigate = useNavigate()
   const [isRefreshing, setIsRefreshing] = useState(false)
 
@@ -43,6 +43,14 @@ const Header = ({ quickFilterText, onQuickFilterChanged, handleLogout, handleRef
         >
           <UserPlus size={18} />
           <span>Add Student</span>
+        </Button>
+        <Button
+          onClick={handleExportData}
+          variant="ghost"
+          className="flex items-center space-x-2 hover:bg-gray-700"
+        >
+          <Download size={18} />
+          <span>Export Data</span>
         </Button>
         <Button
           onClick={handleLogout}
