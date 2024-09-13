@@ -70,16 +70,12 @@ const romanToOrdinal = {
   X: 'Tenth'
 }
 
-const convertRomanToOrdinal = (standard) => {
-  return romanToOrdinal[standard.toUpperCase()] || standard
-}
-
 const formatStandard = (standard) => {
   if (!standard) return '' // Return empty string if standard is undefined or empty
   const upperStandard = standard.toString().toUpperCase()
   if (romanToOrdinal.hasOwnProperty(upperStandard)) {
     const ordinal = romanToOrdinal[upperStandard]
-    return `${ordinal} ${standard}`
+    return `Std ${ordinal} ${standard}`
   }
   return standard
 }
@@ -155,7 +151,8 @@ ${createField('Date of Birth (In words)', dateOfBirthInWords, 60)}
 ${createField('Date of admission in this school', formatDate(data.dateOfAdmission), 24)} ${createField('Standard', data.admissionStandard, 15)}
 ${createField('Progress', data.progress, 27)} ${createField('Conduct', data.conduct, 30)}
 ${createField('Date of leaving school', formatDate(data.dateOfLeaving), 57)}
-${createField('Standard in which studying and since when (in words and figure)', formatStandard(data.currentStandard), 85)}
+${createField('Standard in which studying and since when (in words and figure)', formatStandard(data.currentStandard), 20)}
+${createField('Since', formatStandard(data.dateOfAdmission), 76)}
 ${createField('Reason of leaving school', data.reasonOfLeaving, 58)}
 ${createField('Remarks', data.remarks, 70)}
             </pre>
