@@ -10,6 +10,8 @@ import LeaveForm from './LeaveForm'
 import BonafideForm from './BonafideForm'
 import { createColumnDefs } from './ColumnDefs'
 import Header from '@/components/Header'
+import { Toaster, toast } from 'react-hot-toast'
+import DuplicateResolutionDialog from '@/components/DuplicateResolutionDialog'
 
 const TablePage = () => {
   const [rowData, setRowData] = useState([])
@@ -20,6 +22,7 @@ const TablePage = () => {
   const [quickFilterText, setQuickFilterText] = useState('')
   const navigate = useNavigate()
   const { user, userType, clearUser } = useUserStore()
+  const [duplicateStudents, setDuplicateStudents] = useState(null)
 
   const fetchStudents = useCallback(async () => {
     try {
@@ -132,13 +135,71 @@ const TablePage = () => {
       const params = {
         fileName: 'student_data.csv',
         suppressQuotes: true,
-        columnSeparator: ','
+        columnSeparator: ',',
       }
+
+      // Check if columnApi is available
+      if (gridRef.current.columnApi) {
+        params.columnKeys = gridRef.current.columnApi.getAllColumns()
+          .filter(column => column.colDef.field) // Only include columns with a field
+          .map(column => column.getColId())
+      }
+
       gridRef.current.api.exportDataAsCsv(params)
+    } else {
+      console.error('Grid API is not available')
     }
   }, [])
 
+  const handleImportData = async () => {
+    try {
+      const result = await window.api.importData()
+      if (result.success) {
+        if (result.message.includes('Duplicate students found')) {
+          // Duplicates will be handled by the event listener
+        } else {
+          toast.success(result.message)
+          handleRefresh()
+        }
+      } else {
+        toast.error(result.message)
+      }
+    } catch (error) {
+      console.error('Error importing data:', error)
+      toast.error('Failed to import data')
+    }
+  }
+
+  const handleResolveDuplicates = async (resolvedStudents) => {
+    try {
+      const result = await window.api.resolveDuplicates(resolvedStudents)
+      if (result.success) {
+        toast.success(result.message)
+        handleRefresh()
+      } else {
+        toast.error(result.message)
+      }
+    } catch (error) {
+      console.error('Error resolving duplicates:', error)
+      toast.error('Failed to resolve duplicates')
+    } finally {
+      setDuplicateStudents(null)
+    }
+  }
+
   const gridRef = useRef(null)
+
+  useEffect(() => {
+    // Listen for duplicate students event
+    const handleDuplicateStudents = (_, duplicates) => {
+      setDuplicateStudents(duplicates)
+    }
+    window.electron.ipcRenderer.on('duplicate-students-found', handleDuplicateStudents)
+
+    return () => {
+      window.electron.ipcRenderer.removeListener('duplicate-students-found', handleDuplicateStudents)
+    }
+  }, [])
 
   if (!user) {
     navigate('/')
@@ -147,12 +208,14 @@ const TablePage = () => {
 
   return (
     <div className="flex flex-col w-screen h-screen">
+      <Toaster position="top-right" />
       <Header
         quickFilterText={quickFilterText}
         onQuickFilterChanged={onQuickFilterChanged}
         handleLogout={handleLogout}
         handleRefresh={handleRefresh}
         handleExportData={handleExportData}
+        handleImportData={handleImportData}
       />
       <div className="flex-1 overflow-hidden">
         {!showCertificate ? (
@@ -196,6 +259,13 @@ const TablePage = () => {
         <div className="p-4 bg-red-100 text-red-700">
           Note: Only admins can edit or delete student data.
         </div>
+      )}
+      {duplicateStudents && (
+        <DuplicateResolutionDialog
+          duplicates={duplicateStudents}
+          onResolve={handleResolveDuplicates}
+          onCancel={() => setDuplicateStudents(null)}
+        />
       )}
     </div>
   )

@@ -16,6 +16,7 @@ import {
   saveCertificate,
   getLatestCertificate
 } from './dbOperations'
+import { handleImportData, resolveDuplicates } from './ImportHandler'
 
 // Function to create the main window
 function createWindow() {
@@ -145,6 +146,12 @@ function setupIpcHandlers() {
   ipcMain.handle('get-latest-certificate', async (_, studentId, type) =>
     await getLatestCertificate(studentId, type)
   )
+
+  // Import data handler
+  ipcMain.handle('import-data', handleImportData)
+
+  // Add a new IPC handler for resolving duplicates
+  ipcMain.handle('resolve-duplicates', (_, resolvedStudents) => resolveDuplicates(resolvedStudents))
 }
 
 // App lifecycle events
