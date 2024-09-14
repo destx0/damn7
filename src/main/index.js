@@ -161,6 +161,24 @@ app.whenReady().then(() => {
 
   // Set up IPC handlers
   setupIpcHandlers();
+
+  // Set app user model id for windows
+  electronApp.setAppUserModelId('com.electron')
+
+  // Set the app icon
+  if (process.platform === 'win32') {
+    app.setAppUserModelId(app.getName())
+  }
+
+  // Use the icon.png as the app icon
+  const iconPath = join(__dirname, '../../resources/icon.png')
+  if (process.platform === 'win32') {
+    app.setAsDefaultProtocolClient(app.getName())
+  }
+  if (process.platform === 'darwin') {
+    app.dock.setIcon(iconPath)
+  }
+
   createWindow();
 })
 
