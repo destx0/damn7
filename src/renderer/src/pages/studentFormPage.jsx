@@ -94,15 +94,19 @@ const StudentFormPage = () => {
       return;
     }
     try {
+      const updatedFormData = {
+        ...formData,
+        lastUpdated: new Date().toISOString()
+      };
       if (studentId) {
         console.log('Updating student with ID:', studentId);
-        console.log('Updated data:', formData);
-        const updatedStudent = await window.api.updateStudent(studentId, formData)
+        console.log('Updated data:', updatedFormData);
+        const updatedStudent = await window.api.updateStudent(studentId, updatedFormData)
         console.log('Student updated successfully:', updatedStudent)
       } else {
         console.log('Adding new student');
-        console.log('New student data:', formData);
-        const newStudent = await window.api.addStudent(formData)
+        console.log('New student data:', updatedFormData);
+        const newStudent = await window.api.addStudent(updatedFormData)
         console.log('New student added successfully:', newStudent)
       }
       navigate('/table')

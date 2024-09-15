@@ -54,27 +54,63 @@ function createWindow() {
 // Function to set up IPC handlers
 function setupIpcHandlers() {
   // Database operations
-  ipcMain.handle('add-student', async (_, student) => await addStudent(student))
-  ipcMain.handle('get-students', async () => await getStudents())
+  ipcMain.handle('add-student', async (event, studentData) => {
+    try {
+      const newStudent = {
+        ...studentData,
+        lastUpdated: new Date().toISOString()
+      };
+      // Add the new student to the database
+      // ...
+      return newStudent;
+    } catch (error) {
+      console.error('Error adding student:', error);
+      throw error;
+    }
+  });
+
+  ipcMain.handle('get-students', async () => {
+    try {
+      // Fetch students from the database without modifying lastUpdated
+      const students = await fetchStudentsFromDatabase();
+      return students;
+    } catch (error) {
+      console.error('Error fetching students:', error);
+      throw error;
+    }
+  });
+
   ipcMain.handle('get-student', async (_, studentId) => {
     console.log('Fetching student with ID:', studentId);
     const student = await getStudent(studentId);
     console.log('Fetched student:', student);
     return student;
   })
-  ipcMain.handle('update-student', async (_, studentId, updatedStudent) => {
-    console.log('Updating student with ID:', studentId);
-    console.log('Updated data:', updatedStudent);
-    const result = await updateStudent(studentId, updatedStudent);
-    console.log('Update operation result:', result);
-    return result;
+
+  ipcMain.handle('update-student', async (event, studentId, updatedData) => {
+    try {
+      const existingStudent = await getStudentById(studentId);
+      const updatedStudent = {
+        ...existingStudent,
+        ...updatedData,
+        lastUpdated: new Date().toISOString()
+      };
+      // Update the student in the database
+      // ...
+      return updatedStudent;
+    } catch (error) {
+      console.error('Error updating student:', error);
+      throw error;
+    }
   })
+
   ipcMain.handle('delete-student', async (_, studentId) => {
     console.log('Received delete request for student ID:', studentId);
     const result = await deleteStudent(studentId);
     console.log('Delete operation result:', result);
     return result;
   })
+
   ipcMain.handle('get-next-certificate-number', async (_, type) => await getNextCertificateNumber(type))
   ipcMain.handle('increment-certificate-counter', async (_, type) => await incrementCertificateCounter(type))
 

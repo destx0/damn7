@@ -83,13 +83,28 @@ const BonafideForm = () => {
         ...studentData,
         ...formData
       }
+
+      // Check if data has changed
+      const hasDataChanged = Object.keys(formData).some(key => formData[key] !== studentData[key]);
+
+      if (hasDataChanged) {
+        certificateData.lastUpdated = new Date().toISOString();
+      }
+
       const base64Data = await window.api.generateOfficialBonafideCertificate(certificateData)
       const newPdfUrl = `data:application/pdf;base64,${base64Data}`
       setCurrentPdfUrl(newPdfUrl)
 
-      // Update student data in the students table
-      await window.api.updateStudent(studentData.studentId, formData)
-      onStudentUpdate({ ...studentData, ...formData })
+      // Update student data in the students table only if data has changed
+      if (hasDataChanged) {
+        await window.api.updateStudent(studentData.studentId, {
+          ...formData,
+          lastUpdated: new Date().toISOString()
+        })
+        onStudentUpdate({ ...studentData, ...formData, lastUpdated: new Date().toISOString() })
+      } else {
+        onStudentUpdate({ ...studentData, ...formData })
+      }
     } catch (error) {
       console.error('Error generating official bonafide certificate:', error)
     }

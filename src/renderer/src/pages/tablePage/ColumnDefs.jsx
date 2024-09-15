@@ -87,7 +87,19 @@ const createColumnDefs = (
   { headerName: 'Bonafide Reason', field: 'reasonOfBonafide', hide: true },
   { headerName: 'Bonafide Requested By', field: 'requestOfBonafideBy', hide: true },
   { headerName: 'Bonafide Date', field: 'dateOfBonafide', filter: 'agDateColumnFilter', hide: true },
-  { headerName: 'Bonafide Standard', field: 'bonafideStandard', hide: true }
+  { headerName: 'Bonafide Standard', field: 'bonafideStandard', hide: true },
+  {
+    headerName: 'Last Updated',
+    field: 'lastUpdated',
+    filter: 'agDateColumnFilter',
+    valueFormatter: (params) => {
+      if (params.value) {
+        const date = new Date(params.value);
+        return date.toLocaleString(); // This will format the date and time
+      }
+      return '';
+    }
+  }
 ]
 
 export { createColumnDefs, ActionMenu }

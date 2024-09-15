@@ -27,6 +27,7 @@ const TablePage = () => {
   const fetchStudents = useCallback(async () => {
     try {
       const students = await window.api.getStudents()
+      // Remove the lastUpdated field modification
       setRowData(students)
     } catch (error) {
       console.error('Error fetching students:', error)
@@ -85,7 +86,9 @@ const TablePage = () => {
   const handleStudentUpdate = useCallback((updatedStudent) => {
     setRowData((prevData) =>
       prevData.map((student) =>
-        student.studentId === updatedStudent.studentId ? { ...student, ...updatedStudent } : student
+        student.studentId === updatedStudent.studentId
+          ? { ...student, ...updatedStudent, lastUpdated: new Date().toISOString() }
+          : student
       )
     )
   }, [])
