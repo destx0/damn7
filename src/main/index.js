@@ -59,60 +59,66 @@ function setupIpcHandlers() {
       const newStudent = {
         ...studentData,
         lastUpdated: new Date().toISOString()
-      };
+      }
       // Add the new student to the database
       // ...
-      return newStudent;
+      return newStudent
     } catch (error) {
-      console.error('Error adding student:', error);
-      throw error;
+      console.error('Error adding student:', error)
+      throw error
     }
-  });
+  })
 
   ipcMain.handle('get-students', async () => {
     try {
-      // Fetch students from the database without modifying lastUpdated
-      const students = await fetchStudentsFromDatabase();
+      // Use getStudents from dbOperations instead of fetchStudentsFromDatabase
+      const students = await getStudents();
       return students;
     } catch (error) {
       console.error('Error fetching students:', error);
       throw error;
     }
-  });
+  })
 
   ipcMain.handle('get-student', async (_, studentId) => {
-    console.log('Fetching student with ID:', studentId);
-    const student = await getStudent(studentId);
-    console.log('Fetched student:', student);
-    return student;
+    console.log('Fetching student with ID:', studentId)
+    const student = await getStudent(studentId)
+    console.log('Fetched student:', student)
+    return student
   })
 
   ipcMain.handle('update-student', async (event, studentId, updatedData) => {
     try {
-      const existingStudent = await getStudentById(studentId);
+      const existingStudent = await getStudentById(studentId)
       const updatedStudent = {
         ...existingStudent,
         ...updatedData,
         lastUpdated: new Date().toISOString()
-      };
+      }
       // Update the student in the database
       // ...
-      return updatedStudent;
+      return updatedStudent
     } catch (error) {
-      console.error('Error updating student:', error);
-      throw error;
+      console.error('Error updating student:', error)
+      throw error
     }
   })
 
   ipcMain.handle('delete-student', async (_, studentId) => {
-    console.log('Received delete request for student ID:', studentId);
-    const result = await deleteStudent(studentId);
-    console.log('Delete operation result:', result);
-    return result;
+    console.log('Received delete request for student ID:', studentId)
+    const result = await deleteStudent(studentId)
+    console.log('Delete operation result:', result)
+    return result
   })
 
-  ipcMain.handle('get-next-certificate-number', async (_, type) => await getNextCertificateNumber(type))
-  ipcMain.handle('increment-certificate-counter', async (_, type) => await incrementCertificateCounter(type))
+  ipcMain.handle(
+    'get-next-certificate-number',
+    async (_, type) => await getNextCertificateNumber(type)
+  )
+  ipcMain.handle(
+    'increment-certificate-counter',
+    async (_, type) => await incrementCertificateCounter(type)
+  )
 
   // Certificate operations
   ipcMain.handle('generate-draft-leave-certificate', async (_, data) => {
@@ -176,11 +182,13 @@ function setupIpcHandlers() {
   })
 
   // Add these new handlers
-  ipcMain.handle('save-certificate', async (_, studentId, type, data) =>
-    await saveCertificate(studentId, type, data)
+  ipcMain.handle(
+    'save-certificate',
+    async (_, studentId, type, data) => await saveCertificate(studentId, type, data)
   )
-  ipcMain.handle('get-latest-certificate', async (_, studentId, type) =>
-    await getLatestCertificate(studentId, type)
+  ipcMain.handle(
+    'get-latest-certificate',
+    async (_, studentId, type) => await getLatestCertificate(studentId, type)
   )
 
   // Import data handler
@@ -193,10 +201,10 @@ function setupIpcHandlers() {
 // App lifecycle events
 app.whenReady().then(() => {
   // Initialize the database
-  initializeDatabase().catch(console.error);
+  initializeDatabase().catch(console.error)
 
   // Set up IPC handlers
-  setupIpcHandlers();
+  setupIpcHandlers()
 
   // Set app user model id for windows
   electronApp.setAppUserModelId('com.electron')
@@ -215,7 +223,7 @@ app.whenReady().then(() => {
     app.dock.setIcon(iconPath)
   }
 
-  createWindow();
+  createWindow()
 })
 
 // Remove or comment out this event handler
