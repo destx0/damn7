@@ -132,6 +132,20 @@ const LeaveForm = () => {
     }
   }
 
+  const refreshDraftCertificate = async () => {
+    try {
+      const certificateData = {
+        ...studentData,
+        ...formData
+      }
+      const base64Data = await window.api.generateDraftLeaveCertificate(certificateData)
+      const newPdfUrl = `data:application/pdf;base64,${base64Data}`
+      setCurrentPdfUrl(newPdfUrl)
+    } catch (error) {
+      console.error('Error refreshing draft leave certificate:', error)
+    }
+  }
+
   const handleStandardSelect = (standard) => {
     setSelectedStandard(standard)
   }
@@ -546,6 +560,7 @@ const LeaveForm = () => {
           <h2 className="text-xl font-semibold mb-4">Leave Certificate Form</h2>
           <div className="flex justify-between mb-4">
             <Button onClick={generateOfficialCertificate}>Generate Official Certificate</Button>
+            <Button onClick={refreshDraftCertificate} variant="secondary">Refresh Draft</Button>
             <Button onClick={closeCertificate} variant="outline">
               Close
             </Button>

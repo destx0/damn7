@@ -110,6 +110,20 @@ const BonafideForm = () => {
     }
   }
 
+  const refreshDraftCertificate = async () => {
+    try {
+      const certificateData = {
+        ...studentData,
+        ...formData
+      }
+      const base64Data = await window.api.generateDraftBonafideCertificate(certificateData)
+      const newPdfUrl = `data:application/pdf;base64,${base64Data}`
+      setCurrentPdfUrl(newPdfUrl)
+    } catch (error) {
+      console.error('Error refreshing draft bonafide certificate:', error)
+    }
+  }
+
   const handleStandardSelect = (standard) => {
     setSelectedStandard(standard)
   }
@@ -297,6 +311,7 @@ const BonafideForm = () => {
           <h2 className="text-xl font-semibold mb-4">Bonafide Certificate Form</h2>
           <div className="flex justify-between mb-4">
             <Button onClick={generateOfficialCertificate}>Generate Official Certificate</Button>
+            <Button onClick={refreshDraftCertificate} variant="secondary">Refresh Draft</Button>
             <Button onClick={closeCertificate} variant="outline">
               Close
             </Button>
