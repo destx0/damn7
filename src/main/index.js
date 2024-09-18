@@ -14,7 +14,8 @@ import {
   getNextCertificateNumber,
   incrementCertificateCounter,
   saveCertificate,
-  getLatestCertificate
+  getLatestCertificate,
+  getStudentById  // Add this import
 } from './dbOperations'
 import { handleImportData, resolveDuplicates } from './ImportHandler'
 
@@ -95,9 +96,8 @@ function setupIpcHandlers() {
         ...updatedData,
         lastUpdated: new Date().toISOString()
       }
-      // Update the student in the database
-      // ...
-      return updatedStudent
+      const result = await updateStudent(studentId, updatedStudent)
+      return result
     } catch (error) {
       console.error('Error updating student:', error)
       throw error
@@ -196,6 +196,28 @@ function setupIpcHandlers() {
 
   // Add a new IPC handler for resolving duplicates
   ipcMain.handle('resolve-duplicates', (_, resolvedStudents) => resolveDuplicates(resolvedStudents))
+
+  // New handlers for get-student-by-id and update-student
+  ipcMain.handle('get-student-by-id', async (event, studentId) => {
+    try {
+      const student = await getStudentById(studentId);
+      return student;
+    } catch (error) {
+      console.error('Error getting student by ID:', error);
+      throw error;
+    }
+  });
+
+  // Remove this duplicate handler
+  // ipcMain.handle('update-student', async (event, studentId, updatedStudent) => {
+  //   try {
+  //     const result = await updateStudent(studentId, updatedStudent);
+  //     return result;
+  //   } catch (error) {
+  //     console.error('Error updating student:', error);
+  //     throw error;
+  //   }
+  // });
 }
 
 // App lifecycle events

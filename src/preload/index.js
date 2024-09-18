@@ -29,7 +29,9 @@ const api = {
   importData: () => ipcRenderer.invoke('import-data'),
 
   // Add the resolveDuplicates function
-  resolveDuplicates: (resolvedStudents) => ipcRenderer.invoke('resolve-duplicates', resolvedStudents)
+  resolveDuplicates: (resolvedStudents) => ipcRenderer.invoke('resolve-duplicates', resolvedStudents),
+
+  getStudentById: (studentId) => ipcRenderer.invoke("get-student-by-id", studentId),
 };
 
 // Use `contextBridge` APIs to expose Electron APIs to

@@ -53,6 +53,20 @@ export const getStudent = async (studentId) => {
   }
 };
 
+export const getStudentById = async (studentId) => {
+  try {
+    const students = store.get('students', []);
+    const student = students.find(s => s.studentId === studentId);
+    if (!student) {
+      throw new Error('Student not found');
+    }
+    return student;
+  } catch (err) {
+    console.error('Error getting student by ID:', err);
+    throw err;
+  }
+};
+
 export const updateStudent = async (studentId, updatedStudent) => {
   try {
     console.log('Updating student with ID:', studentId);
@@ -60,7 +74,8 @@ export const updateStudent = async (studentId, updatedStudent) => {
     const students = store.get('students', []);
     const index = students.findIndex(student => student.studentId === studentId);
     if (index !== -1) {
-      students[index] = { ...students[index], ...updatedStudent };
+      const existingStudent = await getStudentById(studentId);
+      students[index] = { ...existingStudent, ...updatedStudent };
       store.set('students', students);
       console.log('Student updated successfully');
       return students[index];

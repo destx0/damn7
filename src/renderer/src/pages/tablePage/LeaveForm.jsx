@@ -19,12 +19,14 @@ import {
   DialogTitle,
   DialogTrigger
 } from '@/components/ui/dialog'
+import { toast } from 'react-hot-toast'
 
 const LeaveForm = () => {
   const location = useLocation()
   const navigate = useNavigate()
-  const { pdfDataUrl, studentData } = location.state || {}
+  const { pdfDataUrl, studentData: initialStudentData } = location.state || {}
 
+  const [studentData, setStudentData] = useState(initialStudentData || {})
   const [formData, setFormData] = useState({
     currentStandard: '',
     progress: '',
@@ -72,6 +74,7 @@ const LeaveForm = () => {
     try {
       if (studentData && studentData.studentId) {
         const student = await window.api.getStudent(studentData.studentId)
+        setStudentData(student)
         setFormData((prevData) => ({
           ...prevData,
           ...student
@@ -553,6 +556,29 @@ const LeaveForm = () => {
     navigate('/table')
   }
 
+  const handleSave = async () => {
+    try {
+      // Check if data has changed
+      const hasDataChanged = Object.keys(formData).some(key => formData[key] !== studentData[key]);
+
+      if (hasDataChanged) {
+        const updatedData = {
+          ...formData,
+          lastUpdated: new Date().toISOString()
+        };
+        await window.api.updateStudent(studentData.studentId, updatedData);
+        toast.success('Student data saved successfully');
+        // Update the local studentData state
+        setStudentData(prevData => ({ ...prevData, ...updatedData }));
+      } else {
+        toast.info('No changes to save');
+      }
+    } catch (error) {
+      console.error('Error saving student data:', error);
+      toast.error('Failed to save student data');
+    }
+  };
+
   return (
     <ResizablePanelGroup direction="horizontal" className="w-full h-full rounded-lg border">
       <ResizablePanel defaultSize={50} minSize={30}>
@@ -561,6 +587,7 @@ const LeaveForm = () => {
           <div className="flex justify-between mb-4">
             <Button onClick={generateOfficialCertificate}>Generate Official Certificate</Button>
             <Button onClick={refreshDraftCertificate} variant="secondary">Refresh Draft</Button>
+            <Button onClick={handleSave} variant="outline">Save</Button>
             <Button onClick={closeCertificate} variant="outline">
               Close
             </Button>
