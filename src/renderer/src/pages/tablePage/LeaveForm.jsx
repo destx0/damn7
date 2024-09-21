@@ -53,6 +53,7 @@ const LeaveForm = () => {
   const [selectedRemarks, setSelectedRemarks] = useState('')
   const [selectedProgress, setSelectedProgress] = useState('')
   const [selectedConduct, setSelectedConduct] = useState('')
+  const [generatedCount, setGeneratedCount] = useState(0)
 
   const predefinedReasons = [
     'Name struck off due to long absence',
@@ -68,6 +69,7 @@ const LeaveForm = () => {
 
   useEffect(() => {
     loadStudentData()
+    loadGeneratedCount()
   }, [])
 
   const loadStudentData = async () => {
@@ -84,6 +86,15 @@ const LeaveForm = () => {
       }
     } catch (error) {
       console.error('Error loading student data:', error)
+    }
+  }
+
+  const loadGeneratedCount = async () => {
+    try {
+      const count = await window.api.getLeaveGeneratedCount()
+      setGeneratedCount(count)
+    } catch (error) {
+      console.error('Error loading generated count:', error)
     }
   }
 
@@ -119,6 +130,10 @@ const LeaveForm = () => {
       const base64Data = await window.api.generateOfficialLeaveCertificate(certificateData)
       const newPdfUrl = `data:application/pdf;base64,${base64Data}`
       setCurrentPdfUrl(newPdfUrl)
+
+      // Update the generated count
+      const newCount = await window.api.getLeaveGeneratedCount()
+      setGeneratedCount(newCount)
 
       // Update student data in the students table only if data has changed
       if (hasDataChanged) {
@@ -583,7 +598,10 @@ const LeaveForm = () => {
     <>
       <div className="flex justify-between m-4">
         <h2 className="text-xl font-semibold mb-4">Leave Certificate Form</h2>
-        <Button onClick={generateOfficialCertificate}>Generate Official Certificate</Button>
+        <div>
+          <span className="mr-4">Generated Count: {generatedCount}</span>
+          <Button onClick={generateOfficialCertificate}>Generate Official Certificate</Button>
+        </div>
         <Button onClick={refreshDraftCertificate} variant="secondary">
           Refresh Draft
         </Button>

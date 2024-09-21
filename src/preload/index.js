@@ -36,6 +36,10 @@ const api = {
   // Add these new functions for bonafide generated count
   getBonafideGeneratedCount: () => ipcRenderer.invoke("get-bonafide-generated-count"),
   incrementBonafideGeneratedCount: () => ipcRenderer.invoke("increment-bonafide-generated-count"),
+
+  // Add these new functions for leave generated count
+  getLeaveGeneratedCount: () => ipcRenderer.invoke("get-leave-generated-count"),
+  incrementLeaveGeneratedCount: () => ipcRenderer.invoke("increment-leave-generated-count"),
 };
 
 // Use `contextBridge` APIs to expose Electron APIs to

@@ -22,6 +22,10 @@ import {
   incrementBonafideGeneratedCount,
   getBonafideGeneratedCount
 } from './dbOperations'
+import {
+  incrementLeaveGeneratedCount,
+  getLeaveGeneratedCount
+} from './dbOperations'
 
 // Function to create the main window
 function createWindow() {
@@ -148,6 +152,7 @@ function setupIpcHandlers() {
       )
       const base64Pdf = Buffer.from(pdfBuffer).toString('base64')
       await incrementCertificateCounter('leave')
+      await incrementLeaveGeneratedCount() // Increment the generated count
       return base64Pdf
     } catch (error) {
       console.error('Error generating official leave certificate:', error)
@@ -201,6 +206,25 @@ function setupIpcHandlers() {
       return await incrementBonafideGeneratedCount()
     } catch (error) {
       console.error('Error incrementing bonafide generated count:', error)
+      throw error
+    }
+  })
+
+  // Add these new handlers for leave generated count
+  ipcMain.handle('get-leave-generated-count', async () => {
+    try {
+      return await getLeaveGeneratedCount()
+    } catch (error) {
+      console.error('Error getting leave generated count:', error)
+      throw error
+    }
+  })
+
+  ipcMain.handle('increment-leave-generated-count', async () => {
+    try {
+      return await incrementLeaveGeneratedCount()
+    } catch (error) {
+      console.error('Error incrementing leave generated count:', error)
       throw error
     }
   })

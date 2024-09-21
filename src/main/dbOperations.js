@@ -9,7 +9,7 @@ export const initializeDatabase = async () => {
     if (!store.has('certificate_counters')) {
       store.set('certificate_counters', {
         bonafide: { next_number: 1, generated_count: 0 },
-        leave: { next_number: 1 }
+        leave: { next_number: 1, generated_count: 0 }
       });
     }
     console.log('Database initialized successfully');
@@ -169,6 +169,30 @@ export const getBonafideGeneratedCount = async () => {
     return counters.bonafide.generated_count;
   } catch (err) {
     console.error('Error getting bonafide generated count:', err);
+    throw err;
+  }
+};
+
+// Add a new function to increment the leave generated count
+export const incrementLeaveGeneratedCount = async () => {
+  try {
+    const counters = store.get('certificate_counters');
+    counters.leave.generated_count += 1;
+    store.set('certificate_counters', counters);
+    return counters.leave.generated_count;
+  } catch (err) {
+    console.error('Error incrementing leave generated count:', err);
+    throw err;
+  }
+};
+
+// Add a new function to get the current leave generated count
+export const getLeaveGeneratedCount = async () => {
+  try {
+    const counters = store.get('certificate_counters');
+    return counters.leave.generated_count;
+  } catch (err) {
+    console.error('Error getting leave generated count:', err);
     throw err;
   }
 };
