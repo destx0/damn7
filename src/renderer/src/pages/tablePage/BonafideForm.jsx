@@ -71,7 +71,7 @@ const BonafideForm = () => {
 
   const loadGeneratedCount = async () => {
     try {
-      const count = await window.api.getBonafideGeneratedCount()
+      const count = await window.api.getBonafideGeneratedCount(studentData.studentId)
       setGeneratedCount(count)
     } catch (error) {
       console.error('Error loading generated count:', error)
@@ -112,7 +112,7 @@ const BonafideForm = () => {
       setCurrentPdfUrl(newPdfUrl)
 
       // Update the generated count
-      const newCount = await window.api.getBonafideGeneratedCount()
+      const newCount = await window.api.getBonafideGeneratedCount(studentData.studentId)
       setGeneratedCount(newCount)
 
       // Update student data in the students table only if data has changed

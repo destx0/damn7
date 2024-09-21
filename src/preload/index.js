@@ -34,11 +34,11 @@ const api = {
   getStudentById: (studentId) => ipcRenderer.invoke("get-student-by-id", studentId),
 
   // Add these new functions for bonafide generated count
-  getBonafideGeneratedCount: () => ipcRenderer.invoke("get-bonafide-generated-count"),
+  getBonafideGeneratedCount: (studentId) => ipcRenderer.invoke("get-bonafide-generated-count", studentId),
   incrementBonafideGeneratedCount: () => ipcRenderer.invoke("increment-bonafide-generated-count"),
 
   // Add these new functions for leave generated count
-  getLeaveGeneratedCount: () => ipcRenderer.invoke("get-leave-generated-count"),
+  getLeaveGeneratedCount: (studentId) => ipcRenderer.invoke("get-leave-generated-count", studentId),
   incrementLeaveGeneratedCount: () => ipcRenderer.invoke("increment-leave-generated-count"),
 };
 

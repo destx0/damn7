@@ -149,48 +149,67 @@ export const getLatestCertificate = async (studentId, type) => {
   }
 };
 
-// Add a new function to increment the bonafide generated count
-export const incrementBonafideGeneratedCount = async () => {
+// Modify these functions to work with individual student counters
+export const incrementBonafideGeneratedCount = async (studentId) => {
   try {
-    const counters = store.get('certificate_counters');
-    counters.bonafide.generated_count += 1;
-    store.set('certificate_counters', counters);
-    return counters.bonafide.generated_count;
+    const students = store.get('students', []);
+    const studentIndex = students.findIndex(s => s.studentId === studentId);
+    if (studentIndex !== -1) {
+      if (!students[studentIndex].bonafideGeneratedCount) {
+        students[studentIndex].bonafideGeneratedCount = 0;
+      }
+      students[studentIndex].bonafideGeneratedCount += 1;
+      store.set('students', students);
+      return students[studentIndex].bonafideGeneratedCount;
+    }
+    throw new Error('Student not found');
   } catch (err) {
     console.error('Error incrementing bonafide generated count:', err);
     throw err;
   }
 };
 
-// Add a new function to get the current bonafide generated count
-export const getBonafideGeneratedCount = async () => {
+export const getBonafideGeneratedCount = async (studentId) => {
   try {
-    const counters = store.get('certificate_counters');
-    return counters.bonafide.generated_count;
+    const students = store.get('students', []);
+    const student = students.find(s => s.studentId === studentId);
+    if (student) {
+      return student.bonafideGeneratedCount || 0;
+    }
+    throw new Error('Student not found');
   } catch (err) {
     console.error('Error getting bonafide generated count:', err);
     throw err;
   }
 };
 
-// Add a new function to increment the leave generated count
-export const incrementLeaveGeneratedCount = async () => {
+export const incrementLeaveGeneratedCount = async (studentId) => {
   try {
-    const counters = store.get('certificate_counters');
-    counters.leave.generated_count += 1;
-    store.set('certificate_counters', counters);
-    return counters.leave.generated_count;
+    const students = store.get('students', []);
+    const studentIndex = students.findIndex(s => s.studentId === studentId);
+    if (studentIndex !== -1) {
+      if (!students[studentIndex].leaveGeneratedCount) {
+        students[studentIndex].leaveGeneratedCount = 0;
+      }
+      students[studentIndex].leaveGeneratedCount += 1;
+      store.set('students', students);
+      return students[studentIndex].leaveGeneratedCount;
+    }
+    throw new Error('Student not found');
   } catch (err) {
     console.error('Error incrementing leave generated count:', err);
     throw err;
   }
 };
 
-// Add a new function to get the current leave generated count
-export const getLeaveGeneratedCount = async () => {
+export const getLeaveGeneratedCount = async (studentId) => {
   try {
-    const counters = store.get('certificate_counters');
-    return counters.leave.generated_count;
+    const students = store.get('students', []);
+    const student = students.find(s => s.studentId === studentId);
+    if (student) {
+      return student.leaveGeneratedCount || 0;
+    }
+    throw new Error('Student not found');
   } catch (err) {
     console.error('Error getting leave generated count:', err);
     throw err;

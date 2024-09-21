@@ -15,17 +15,13 @@ import {
   incrementCertificateCounter,
   saveCertificate,
   getLatestCertificate,
-  getStudentById  // Add this import
-} from './dbOperations'
-import { handleImportData, resolveDuplicates } from './ImportHandler'
-import {
+  getStudentById,
   incrementBonafideGeneratedCount,
-  getBonafideGeneratedCount
-} from './dbOperations'
-import {
+  getBonafideGeneratedCount,
   incrementLeaveGeneratedCount,
   getLeaveGeneratedCount
 } from './dbOperations'
+import { handleImportData, resolveDuplicates } from './ImportHandler'
 
 // Function to create the main window
 function createWindow() {
@@ -152,7 +148,7 @@ function setupIpcHandlers() {
       )
       const base64Pdf = Buffer.from(pdfBuffer).toString('base64')
       await incrementCertificateCounter('leave')
-      await incrementLeaveGeneratedCount() // Increment the generated count
+      await incrementLeaveGeneratedCount(data.studentId) // Pass studentId
       return base64Pdf
     } catch (error) {
       console.error('Error generating official leave certificate:', error)
@@ -183,7 +179,7 @@ function setupIpcHandlers() {
       )
       const base64Pdf = Buffer.from(pdfBuffer).toString('base64')
       await incrementCertificateCounter('bonafide')
-      await incrementBonafideGeneratedCount() // Increment the generated count
+      await incrementBonafideGeneratedCount(data.studentId) // Pass studentId
       return base64Pdf
     } catch (error) {
       console.error('Error generating official bonafide certificate:', error)
@@ -192,39 +188,20 @@ function setupIpcHandlers() {
   })
 
   // Add these new handlers for bonafide generated count
-  ipcMain.handle('get-bonafide-generated-count', async () => {
+  ipcMain.handle('get-bonafide-generated-count', async (_, studentId) => {
     try {
-      return await getBonafideGeneratedCount()
+      return await getBonafideGeneratedCount(studentId)
     } catch (error) {
       console.error('Error getting bonafide generated count:', error)
       throw error
     }
   })
 
-  ipcMain.handle('increment-bonafide-generated-count', async () => {
+  ipcMain.handle('get-leave-generated-count', async (_, studentId) => {
     try {
-      return await incrementBonafideGeneratedCount()
-    } catch (error) {
-      console.error('Error incrementing bonafide generated count:', error)
-      throw error
-    }
-  })
-
-  // Add these new handlers for leave generated count
-  ipcMain.handle('get-leave-generated-count', async () => {
-    try {
-      return await getLeaveGeneratedCount()
+      return await getLeaveGeneratedCount(studentId)
     } catch (error) {
       console.error('Error getting leave generated count:', error)
-      throw error
-    }
-  })
-
-  ipcMain.handle('increment-leave-generated-count', async () => {
-    try {
-      return await incrementLeaveGeneratedCount()
-    } catch (error) {
-      console.error('Error incrementing leave generated count:', error)
       throw error
     }
   })

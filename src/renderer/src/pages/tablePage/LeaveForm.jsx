@@ -91,7 +91,7 @@ const LeaveForm = () => {
 
   const loadGeneratedCount = async () => {
     try {
-      const count = await window.api.getLeaveGeneratedCount()
+      const count = await window.api.getLeaveGeneratedCount(studentData.studentId)
       setGeneratedCount(count)
     } catch (error) {
       console.error('Error loading generated count:', error)
@@ -132,7 +132,7 @@ const LeaveForm = () => {
       setCurrentPdfUrl(newPdfUrl)
 
       // Update the generated count
-      const newCount = await window.api.getLeaveGeneratedCount()
+      const newCount = await window.api.getLeaveGeneratedCount(studentData.studentId)
       setGeneratedCount(newCount)
 
       // Update student data in the students table only if data has changed
@@ -141,9 +141,6 @@ const LeaveForm = () => {
           ...formData,
           lastUpdated: new Date().toISOString()
         })
-        onStudentUpdate({ ...studentData, ...formData, lastUpdated: new Date().toISOString() })
-      } else {
-        onStudentUpdate({ ...studentData, ...formData })
       }
     } catch (error) {
       console.error('Error generating official leave certificate:', error)

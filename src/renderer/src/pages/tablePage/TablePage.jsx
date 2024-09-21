@@ -27,8 +27,17 @@ const TablePage = () => {
   const fetchStudents = useCallback(async () => {
     try {
       const students = await window.api.getStudents()
-      // Remove the lastUpdated field modification
-      setRowData(students)
+      // Fetch certificate counts for each student
+      const studentsWithCounts = await Promise.all(students.map(async (student) => {
+        const bonafideCount = await window.api.getBonafideGeneratedCount(student.studentId)
+        const leaveCount = await window.api.getLeaveGeneratedCount(student.studentId)
+        return {
+          ...student,
+          bonafideGeneratedCount: bonafideCount,
+          leaveGeneratedCount: leaveCount
+        }
+      }))
+      setRowData(studentsWithCounts)
     } catch (error) {
       console.error('Error fetching students:', error)
     }

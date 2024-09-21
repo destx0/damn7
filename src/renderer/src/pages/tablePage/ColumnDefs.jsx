@@ -89,6 +89,22 @@ const createColumnDefs = (
   { headerName: 'Bonafide Date', field: 'dateOfBonafide', filter: 'agDateColumnFilter', hide: true },
   { headerName: 'Bonafide Standard', field: 'bonafideStandard', hide: true },
   {
+    headerName: 'Bonafide Certificates Generated',
+    field: 'bonafideGeneratedCount',
+    width: 220,
+    valueGetter: (params) => {
+      return params.data.bonafideGeneratedCount || 0;
+    }
+  },
+  {
+    headerName: 'Leave Certificates Generated',
+    field: 'leaveGeneratedCount',
+    width: 220,
+    valueGetter: (params) => {
+      return params.data.leaveGeneratedCount || 0;
+    }
+  },
+  {
     headerName: 'Last Updated',
     field: 'lastUpdated',
     filter: 'agDateColumnFilter',
