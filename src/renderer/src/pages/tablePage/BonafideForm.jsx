@@ -35,6 +35,7 @@ const BonafideForm = () => {
   const [isReasonDialogOpen, setIsReasonDialogOpen] = useState(false)
   const [selectedStandard, setSelectedStandard] = useState('')
   const [selectedReason, setSelectedReason] = useState('')
+  const [generatedCount, setGeneratedCount] = useState(0)
 
   const standardOptions = ['V', 'VI', 'VII', 'VIII', 'IX', 'X']
   const reasonOptions = [
@@ -47,6 +48,7 @@ const BonafideForm = () => {
 
   useEffect(() => {
     loadStudentData()
+    loadGeneratedCount()
   }, [])
 
   const loadStudentData = async () => {
@@ -64,6 +66,15 @@ const BonafideForm = () => {
       }
     } catch (error) {
       console.error('Error loading student data:', error)
+    }
+  }
+
+  const loadGeneratedCount = async () => {
+    try {
+      const count = await window.api.getBonafideGeneratedCount()
+      setGeneratedCount(count)
+    } catch (error) {
+      console.error('Error loading generated count:', error)
     }
   }
 
@@ -100,15 +111,17 @@ const BonafideForm = () => {
       const newPdfUrl = `data:application/pdf;base64,${base64Data}`
       setCurrentPdfUrl(newPdfUrl)
 
+      // Update the generated count
+      const newCount = await window.api.getBonafideGeneratedCount()
+      setGeneratedCount(newCount)
+
       // Update student data in the students table only if data has changed
       if (hasDataChanged) {
-        await window.api.updateStudent(studentData.studentId, {
+        const updatedStudent = await window.api.updateStudent(studentData.studentId, {
           ...formData,
           lastUpdated: new Date().toISOString()
         })
-        onStudentUpdate({ ...studentData, ...formData, lastUpdated: new Date().toISOString() })
-      } else {
-        onStudentUpdate({ ...studentData, ...formData })
+        setStudentData(updatedStudent)
       }
     } catch (error) {
       console.error('Error generating official bonafide certificate:', error)
@@ -340,7 +353,10 @@ const BonafideForm = () => {
     <>
       <div className="flex justify-between m-4">
         <h2 className="text-xl font-semibold ">Bonafide Certificate Form</h2>
-        <Button onClick={generateOfficialCertificate}>Generate Official Certificate</Button>
+        <div>
+          <span className="mr-4">Generated Count: {generatedCount}</span>
+          <Button onClick={generateOfficialCertificate}>Generate Official Certificate</Button>
+        </div>
         <Button onClick={refreshDraftCertificate} variant="secondary">
           Refresh Draft
         </Button>

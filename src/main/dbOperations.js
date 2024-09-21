@@ -8,7 +8,7 @@ export const initializeDatabase = async () => {
     // Initialize certificate counters if they don't exist
     if (!store.has('certificate_counters')) {
       store.set('certificate_counters', {
-        bonafide: { next_number: 1 },
+        bonafide: { next_number: 1, generated_count: 0 },
         leave: { next_number: 1 }
       });
     }
@@ -145,6 +145,30 @@ export const getLatestCertificate = async (studentId, type) => {
     return typeCertificates.sort((a, b) => b.timestamp - a.timestamp)[0];
   } catch (err) {
     console.error('Error getting latest certificate:', err);
+    throw err;
+  }
+};
+
+// Add a new function to increment the bonafide generated count
+export const incrementBonafideGeneratedCount = async () => {
+  try {
+    const counters = store.get('certificate_counters');
+    counters.bonafide.generated_count += 1;
+    store.set('certificate_counters', counters);
+    return counters.bonafide.generated_count;
+  } catch (err) {
+    console.error('Error incrementing bonafide generated count:', err);
+    throw err;
+  }
+};
+
+// Add a new function to get the current bonafide generated count
+export const getBonafideGeneratedCount = async () => {
+  try {
+    const counters = store.get('certificate_counters');
+    return counters.bonafide.generated_count;
+  } catch (err) {
+    console.error('Error getting bonafide generated count:', err);
     throw err;
   }
 };

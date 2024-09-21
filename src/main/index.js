@@ -18,6 +18,10 @@ import {
   getStudentById  // Add this import
 } from './dbOperations'
 import { handleImportData, resolveDuplicates } from './ImportHandler'
+import {
+  incrementBonafideGeneratedCount,
+  getBonafideGeneratedCount
+} from './dbOperations'
 
 // Function to create the main window
 function createWindow() {
@@ -174,9 +178,29 @@ function setupIpcHandlers() {
       )
       const base64Pdf = Buffer.from(pdfBuffer).toString('base64')
       await incrementCertificateCounter('bonafide')
+      await incrementBonafideGeneratedCount() // Increment the generated count
       return base64Pdf
     } catch (error) {
       console.error('Error generating official bonafide certificate:', error)
+      throw error
+    }
+  })
+
+  // Add these new handlers for bonafide generated count
+  ipcMain.handle('get-bonafide-generated-count', async () => {
+    try {
+      return await getBonafideGeneratedCount()
+    } catch (error) {
+      console.error('Error getting bonafide generated count:', error)
+      throw error
+    }
+  })
+
+  ipcMain.handle('increment-bonafide-generated-count', async () => {
+    try {
+      return await incrementBonafideGeneratedCount()
+    } catch (error) {
+      console.error('Error incrementing bonafide generated count:', error)
       throw error
     }
   })

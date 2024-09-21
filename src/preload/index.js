@@ -32,6 +32,10 @@ const api = {
   resolveDuplicates: (resolvedStudents) => ipcRenderer.invoke('resolve-duplicates', resolvedStudents),
 
   getStudentById: (studentId) => ipcRenderer.invoke("get-student-by-id", studentId),
+
+  // Add these new functions for bonafide generated count
+  getBonafideGeneratedCount: () => ipcRenderer.invoke("get-bonafide-generated-count"),
+  incrementBonafideGeneratedCount: () => ipcRenderer.invoke("increment-bonafide-generated-count"),
 };
 
 // Use `contextBridge` APIs to expose Electron APIs to
