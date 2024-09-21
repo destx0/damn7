@@ -13,19 +13,22 @@ import {
   DialogTitle,
   DialogTrigger
 } from '@/components/ui/dialog'
+import { toast } from 'react-hot-toast'
 
 const BonafideForm = () => {
   const location = useLocation()
   const navigate = useNavigate()
-  const { pdfDataUrl, studentData } = location.state || {}
+  const { pdfDataUrl, studentData: initialStudentData } = location.state || {}
 
+  const [studentData, setStudentData] = useState(initialStudentData || {})
   const [formData, setFormData] = useState({
     academicYear: '',
     reasonOfBonafide: '',
     requestOfBonafideBy: '',
     dateOfBonafide: '',
     currentStandardForBonafide: '',
-    bonafideStandard: ''
+    bonafideStandard: '',
+    otherReason: ''
   })
   const [currentPdfUrl, setCurrentPdfUrl] = useState(pdfDataUrl)
   const [isStandardDialogOpen, setIsStandardDialogOpen] = useState(false)
@@ -48,11 +51,13 @@ const BonafideForm = () => {
 
   const loadStudentData = async () => {
     try {
-      if (studentData && studentData.studentId) {
-        const student = await window.api.getStudent(studentData.studentId)
+      if (initialStudentData && initialStudentData.studentId) {
+        const student = await window.api.getStudent(initialStudentData.studentId)
+        setStudentData(student)
         setFormData((prevData) => ({
           ...prevData,
-          ...student
+          ...student,
+          otherReason: student.otherReason || ''
         }))
       } else {
         console.error('Student data or studentId is undefined')
@@ -66,7 +71,7 @@ const BonafideForm = () => {
     const { name, value } = e.target
     setFormData((prevData) => ({
       ...prevData,
-      [name]: value
+      [name]: value ?? ''
     }))
   }
 
@@ -85,10 +90,10 @@ const BonafideForm = () => {
       }
 
       // Check if data has changed
-      const hasDataChanged = Object.keys(formData).some(key => formData[key] !== studentData[key]);
+      const hasDataChanged = Object.keys(formData).some((key) => formData[key] !== studentData[key])
 
       if (hasDataChanged) {
-        certificateData.lastUpdated = new Date().toISOString();
+        certificateData.lastUpdated = new Date().toISOString()
       }
 
       const base64Data = await window.api.generateOfficialBonafideCertificate(certificateData)
@@ -145,12 +150,14 @@ const BonafideForm = () => {
     if (selectedReason === 'Other') {
       setFormData((prevData) => ({
         ...prevData,
-        reasonOfBonafide: formData.otherReason
+        reasonOfBonafide: formData.otherReason || '',
+        otherReason: formData.otherReason || ''
       }))
     } else {
       setFormData((prevData) => ({
         ...prevData,
-        reasonOfBonafide: selectedReason
+        reasonOfBonafide: selectedReason,
+        otherReason: ''
       }))
     }
     setIsReasonDialogOpen(false)
@@ -174,11 +181,13 @@ const BonafideForm = () => {
             <Input
               id={field.name}
               name={field.name}
-              value={formData[field.name]}
+              value={formData[field.name] || ''}
               onChange={handleInputChange}
               placeholder={`Enter ${field.label.toLowerCase()}`}
               className="w-full"
-              readOnly
+              readOnly={
+                field.name === 'currentStandardForBonafide' || field.name === 'bonafideStandard'
+              }
             />
             <Dialog open={isStandardDialogOpen} onOpenChange={setIsStandardDialogOpen}>
               <DialogTrigger asChild>
@@ -215,11 +224,11 @@ const BonafideForm = () => {
             <Input
               id={field.name}
               name={field.name}
-              value={formData[field.name]}
+              value={formData[field.name] || ''}
               onChange={handleInputChange}
               placeholder={`Enter ${field.label.toLowerCase()}`}
               className="w-full"
-              readOnly
+              readOnly={field.name === 'reasonOfBonafide'}
             />
             <Dialog open={isReasonDialogOpen} onOpenChange={setIsReasonDialogOpen}>
               <DialogTrigger asChild>
@@ -249,7 +258,7 @@ const BonafideForm = () => {
                     <Input
                       id="otherReason"
                       name="otherReason"
-                      value={formData.otherReason}
+                      value={formData.otherReason || ''}
                       onChange={handleInputChange}
                       placeholder="Enter other reason"
                     />
@@ -267,7 +276,7 @@ const BonafideForm = () => {
           <Textarea
             id={field.name}
             name={field.name}
-            value={formData[field.name]}
+            value={formData[field.name] || ''}
             onChange={handleInputChange}
             placeholder={`Enter ${field.label.toLowerCase()}`}
             className="w-full"
@@ -290,7 +299,7 @@ const BonafideForm = () => {
           <Input
             id={field.name}
             name={field.name}
-            value={formData[field.name]}
+            value={formData[field.name] || ''}
             onChange={handleInputChange}
             type={field.type}
             placeholder={`Enter ${field.label.toLowerCase()}`}
@@ -304,39 +313,69 @@ const BonafideForm = () => {
     navigate('/table')
   }
 
+  const handleSave = async () => {
+    try {
+      // Check if data has changed
+      const hasDataChanged = Object.keys(formData).some((key) => formData[key] !== studentData[key])
+
+      if (hasDataChanged) {
+        const updatedData = {
+          ...formData,
+          lastUpdated: new Date().toISOString()
+        }
+        await window.api.updateStudent(studentData.studentId, updatedData)
+        toast.success('Student data saved successfully')
+        // Update the local studentData state
+        setStudentData((prevData) => ({ ...prevData, ...updatedData }))
+      } else {
+        toast.success('No changes to save')
+      }
+    } catch (error) {
+      console.error('Error saving student data:', error)
+      toast.error('Failed to save student data')
+    }
+  }
+
   return (
-    <ResizablePanelGroup direction="horizontal" className="w-full h-full rounded-lg border">
-      <ResizablePanel defaultSize={50} minSize={30}>
-        <div className="p-4 h-full flex flex-col">
-          <h2 className="text-xl font-semibold mb-4">Bonafide Certificate Form</h2>
-          <div className="flex justify-between mb-4">
-            <Button onClick={generateOfficialCertificate}>Generate Official Certificate</Button>
-            <Button onClick={refreshDraftCertificate} variant="secondary">Refresh Draft</Button>
-            <Button onClick={closeCertificate} variant="outline">
-              Close
-            </Button>
+    <>
+      <div className="flex justify-between m-4">
+        <h2 className="text-xl font-semibold ">Bonafide Certificate Form</h2>
+        <Button onClick={generateOfficialCertificate}>Generate Official Certificate</Button>
+        <Button onClick={refreshDraftCertificate} variant="secondary">
+          Refresh Draft
+        </Button>
+        <Button onClick={handleSave} variant="outline">
+          Save
+        </Button>
+        <Button onClick={closeCertificate} variant="outline">
+          Close
+        </Button>
+      </div>
+      <ResizablePanelGroup direction="horizontal" className="w-full h-full rounded-lg border">
+        <ResizablePanel defaultSize={50} minSize={30}>
+          <div className="p-4 h-full flex flex-col">
+            <div className="space-y-4 flex-grow overflow-y-auto">
+              {formFields.map((field) => (
+                <div key={field.name} className="space-y-2">
+                  <Label htmlFor={field.name}>{field.label}</Label>
+                  {renderField(field)}
+                </div>
+              ))}
+            </div>
           </div>
-          <div className="space-y-4 flex-grow overflow-y-auto">
-            {formFields.map((field) => (
-              <div key={field.name} className="space-y-2">
-                <Label htmlFor={field.name}>{field.label}</Label>
-                {renderField(field)}
-              </div>
-            ))}
+        </ResizablePanel>
+        <ResizableHandle withHandle />
+        <ResizablePanel defaultSize={50} minSize={30}>
+          <div className="h-full p-4">
+            <iframe
+              src={currentPdfUrl}
+              className="w-full h-full border-none"
+              title="Bonafide Certificate PDF"
+            />
           </div>
-        </div>
-      </ResizablePanel>
-      <ResizableHandle withHandle />
-      <ResizablePanel defaultSize={50} minSize={30}>
-        <div className="h-full p-4">
-          <iframe
-            src={currentPdfUrl}
-            className="w-full h-full border-none"
-            title="Bonafide Certificate PDF"
-          />
-        </div>
-      </ResizablePanel>
-    </ResizablePanelGroup>
+        </ResizablePanel>
+      </ResizablePanelGroup>
+    </>
   )
 }
 

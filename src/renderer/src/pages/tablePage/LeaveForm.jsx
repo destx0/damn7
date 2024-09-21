@@ -110,10 +110,10 @@ const LeaveForm = () => {
       }
 
       // Check if data has changed
-      const hasDataChanged = Object.keys(formData).some(key => formData[key] !== studentData[key]);
+      const hasDataChanged = Object.keys(formData).some((key) => formData[key] !== studentData[key])
 
       if (hasDataChanged) {
-        certificateData.lastUpdated = new Date().toISOString();
+        certificateData.lastUpdated = new Date().toISOString()
       }
 
       const base64Data = await window.api.generateOfficialLeaveCertificate(certificateData)
@@ -559,60 +559,66 @@ const LeaveForm = () => {
   const handleSave = async () => {
     try {
       // Check if data has changed
-      const hasDataChanged = Object.keys(formData).some(key => formData[key] !== studentData[key]);
+      const hasDataChanged = Object.keys(formData).some((key) => formData[key] !== studentData[key])
 
       if (hasDataChanged) {
         const updatedData = {
           ...formData,
           lastUpdated: new Date().toISOString()
-        };
-        await window.api.updateStudent(studentData.studentId, updatedData);
-        toast.success('Student data saved successfully');
+        }
+        await window.api.updateStudent(studentData.studentId, updatedData)
+        toast.success('Student data saved successfully')
         // Update the local studentData state
-        setStudentData(prevData => ({ ...prevData, ...updatedData }));
+        setStudentData((prevData) => ({ ...prevData, ...updatedData }))
       } else {
-        toast.info('No changes to save');
+        toast.success('No changes to save')
       }
     } catch (error) {
-      console.error('Error saving student data:', error);
-      toast.error('Failed to save student data');
+      console.error('Error saving student data:', error)
+      toast.error('Failed to save student data')
     }
-  };
+  }
 
   return (
-    <ResizablePanelGroup direction="horizontal" className="w-full h-full rounded-lg border">
-      <ResizablePanel defaultSize={50} minSize={30}>
-        <div className="p-4 h-full flex flex-col">
-          <h2 className="text-xl font-semibold mb-4">Leave Certificate Form</h2>
-          <div className="flex justify-between mb-4">
-            <Button onClick={generateOfficialCertificate}>Generate Official Certificate</Button>
-            <Button onClick={refreshDraftCertificate} variant="secondary">Refresh Draft</Button>
-            <Button onClick={handleSave} variant="outline">Save</Button>
-            <Button onClick={closeCertificate} variant="outline">
-              Close
-            </Button>
+    <>
+      <div className="flex justify-between m-4">
+        <h2 className="text-xl font-semibold mb-4">Leave Certificate Form</h2>
+        <Button onClick={generateOfficialCertificate}>Generate Official Certificate</Button>
+        <Button onClick={refreshDraftCertificate} variant="secondary">
+          Refresh Draft
+        </Button>
+        <Button onClick={handleSave} variant="outline">
+          Save
+        </Button>
+        <Button onClick={closeCertificate} variant="outline">
+          Close
+        </Button>
+      </div>
+      <ResizablePanelGroup direction="horizontal" className="w-full h-full rounded-lg border">
+        <ResizablePanel defaultSize={50} minSize={30}>
+          <div className="p-4 h-full flex flex-col">
+            <div className="space-y-4 flex-grow overflow-y-auto px-4 pb-10">
+              {formFields.map((field) => (
+                <div key={field.name} className="space-y-2">
+                  <Label htmlFor={field.name}>{field.label}</Label>
+                  {renderField(field)}
+                </div>
+              ))}
+            </div>
           </div>
-          <div className="space-y-4 flex-grow overflow-y-auto px-4 pb-10">
-            {formFields.map((field) => (
-              <div key={field.name} className="space-y-2">
-                <Label htmlFor={field.name}>{field.label}</Label>
-                {renderField(field)}
-              </div>
-            ))}
+        </ResizablePanel>
+        <ResizableHandle withHandle />
+        <ResizablePanel defaultSize={50} minSize={30}>
+          <div className="h-full p-4">
+            <iframe
+              src={currentPdfUrl}
+              className="w-full h-full border-none"
+              title="Leave Certificate PDF"
+            />
           </div>
-        </div>
-      </ResizablePanel>
-      <ResizableHandle withHandle />
-      <ResizablePanel defaultSize={50} minSize={30}>
-        <div className="h-full p-4">
-          <iframe
-            src={currentPdfUrl}
-            className="w-full h-full border-none"
-            title="Leave Certificate PDF"
-          />
-        </div>
-      </ResizablePanel>
-    </ResizablePanelGroup>
+        </ResizablePanel>
+      </ResizablePanelGroup>
+    </>
   )
 }
 
