@@ -116,4 +116,11 @@ const createColumnDefs = (
   }
 ]
 
-export { createColumnDefs, ActionMenu }
+const getRowStyle = (params) => {
+  if (params.data.isFrozen) {
+    return { background: '#E6F3FF' }; // Light blue background for frozen rows
+  }
+  return null; // Default style for unfrozen rows
+};
+
+export { createColumnDefs, ActionMenu, getRowStyle }

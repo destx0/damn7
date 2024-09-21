@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router-dom'
 import useUserStore from '@/stores/useUserStore'
 import LeaveForm from './LeaveForm'
 import BonafideForm from './BonafideForm'
-import { createColumnDefs } from './ColumnDefs'
+import { createColumnDefs, getRowStyle } from './ColumnDefs'
 import Header from '@/components/Header'
 import { Toaster, toast } from 'react-hot-toast'
 import DuplicateResolutionDialog from '@/components/DuplicateResolutionDialog'
@@ -282,6 +282,7 @@ const TablePage = () => {
               headerHeight={32}
               rowHeight={32}
               quickFilterText={quickFilterText}
+              getRowStyle={getRowStyle}
             />
           </div>
         ) : (
