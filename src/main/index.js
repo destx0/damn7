@@ -233,16 +233,29 @@ function setupIpcHandlers() {
     }
   });
 
-  // Remove this duplicate handler
-  // ipcMain.handle('update-student', async (event, studentId, updatedStudent) => {
-  //   try {
-  //     const result = await updateStudent(studentId, updatedStudent);
-  //     return result;
-  //   } catch (error) {
-  //     console.error('Error updating student:', error);
-  //     throw error;
-  //   }
-  // });
+  ipcMain.handle('freeze-student', async (_, studentId) => {
+    try {
+      const student = await getStudentById(studentId)
+      const frozenStudent = { ...student, isFrozen: true }
+      const updatedStudent = await updateStudent(studentId, frozenStudent)
+      return updatedStudent
+    } catch (error) {
+      console.error('Error freezing student:', error)
+      throw error
+    }
+  })
+
+  ipcMain.handle('unfreeze-student', async (_, studentId) => {
+    try {
+      const student = await getStudentById(studentId)
+      const unfrozenStudent = { ...student, isFrozen: false }
+      const updatedStudent = await updateStudent(studentId, unfrozenStudent)
+      return updatedStudent
+    } catch (error) {
+      console.error('Error unfreezing student:', error)
+      throw error
+    }
+  })
 }
 
 // App lifecycle events

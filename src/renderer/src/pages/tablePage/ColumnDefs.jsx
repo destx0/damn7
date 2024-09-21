@@ -7,27 +7,20 @@ import {
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
 import { Button } from '@/components/ui/button'
+import ActionRenderer from '@/components/ActionRenderer'
 
-const ActionMenu = ({ isAdmin, onEdit, onDelete, onLeaveCertificate, onBonafideCertificate }) => {
+const ActionMenu = ({ isAdmin, onEdit, onDelete, onLeaveCertificate, onBonafideCertificate, onFreeze, onUnfreeze, data }) => {
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="h-8 w-8 p-0">
-          <span className="sr-only">Open menu</span>
-          <MoreVertical className="h-4 w-4" />
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
-        {isAdmin && (
-          <>
-            <DropdownMenuItem onClick={onEdit}>Edit</DropdownMenuItem>
-            <DropdownMenuItem onClick={onDelete}>Delete</DropdownMenuItem>
-          </>
-        )}
-        <DropdownMenuItem onClick={onLeaveCertificate}>Leave Certificate</DropdownMenuItem>
-        <DropdownMenuItem onClick={onBonafideCertificate}>Bonafide Certificate</DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+    <ActionRenderer
+      data={data}
+      onEdit={onEdit}
+      onDelete={onDelete}
+      onGenerateCertificate={(type) =>
+        type === 'leave' ? onLeaveCertificate(data) : onBonafideCertificate(data)
+      }
+      onFreeze={onFreeze}
+      onUnfreeze={onUnfreeze}
+    />
   )
 }
 
@@ -35,17 +28,22 @@ const createColumnDefs = (
   isAdmin,
   handleEditStudent,
   handleDeleteStudent,
-  generateDraftCertificate
+  generateDraftCertificate,
+  handleFreezeStudent,
+  handleUnfreezeStudent
 ) => [
   {
     headerName: '',
     cellRenderer: (params) => (
       <ActionMenu
         isAdmin={isAdmin}
+        data={params.data}
         onEdit={() => handleEditStudent(params.data)}
         onDelete={() => handleDeleteStudent(params.data.studentId)}
         onLeaveCertificate={() => generateDraftCertificate(params.data, 'leave')}
         onBonafideCertificate={() => generateDraftCertificate(params.data, 'bonafide')}
+        onFreeze={() => handleFreezeStudent(params.data.studentId)}
+        onUnfreeze={() => handleUnfreezeStudent(params.data.studentId)}
       />
     ),
     pinned: 'left',

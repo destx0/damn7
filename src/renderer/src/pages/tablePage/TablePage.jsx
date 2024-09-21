@@ -102,10 +102,47 @@ const TablePage = () => {
     )
   }, [])
 
+  const handleFreezeStudent = useCallback(async (studentId) => {
+    try {
+      const updatedStudent = await window.api.freezeStudent(studentId)
+      setRowData((prevData) =>
+        prevData.map((student) =>
+          student.studentId === studentId ? { ...student, ...updatedStudent } : student
+        )
+      )
+      toast.success('Student data frozen successfully')
+    } catch (error) {
+      console.error('Error freezing student:', error)
+      toast.error('Failed to freeze student data')
+    }
+  }, [])
+
+  const handleUnfreezeStudent = useCallback(async (studentId) => {
+    try {
+      const updatedStudent = await window.api.unfreezeStudent(studentId)
+      setRowData((prevData) =>
+        prevData.map((student) =>
+          student.studentId === studentId ? { ...student, ...updatedStudent } : student
+        )
+      )
+      toast.success('Student data unfrozen successfully')
+    } catch (error) {
+      console.error('Error unfreezing student:', error)
+      toast.error('Failed to unfreeze student data')
+    }
+  }, [])
+
   const columnDefs = useMemo(
     () =>
-      createColumnDefs(isAdmin, handleEditStudent, handleDeleteStudent, generateDraftCertificate),
-    [isAdmin, handleEditStudent, handleDeleteStudent, generateDraftCertificate]
+      createColumnDefs(
+        isAdmin,
+        handleEditStudent,
+        handleDeleteStudent,
+        generateDraftCertificate,
+        handleFreezeStudent,
+        handleUnfreezeStudent
+      ),
+    [isAdmin, handleEditStudent, handleDeleteStudent, generateDraftCertificate, handleFreezeStudent, handleUnfreezeStudent]
   )
 
   const defaultColDef = useMemo(

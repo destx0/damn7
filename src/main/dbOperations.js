@@ -75,7 +75,12 @@ export const updateStudent = async (studentId, updatedStudent) => {
     const index = students.findIndex(student => student.studentId === studentId);
     if (index !== -1) {
       const existingStudent = await getStudentById(studentId);
-      students[index] = { ...existingStudent, ...updatedStudent };
+      students[index] = {
+        ...existingStudent,
+        ...updatedStudent,
+        isFrozen: updatedStudent.isFrozen !== undefined ? updatedStudent.isFrozen : existingStudent.isFrozen,
+        lastUpdated: new Date().toISOString()
+      };
       store.set('students', students);
       console.log('Student updated successfully');
       return students[index];

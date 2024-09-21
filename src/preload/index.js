@@ -40,6 +40,10 @@ const api = {
   // Add these new functions for leave generated count
   getLeaveGeneratedCount: (studentId) => ipcRenderer.invoke("get-leave-generated-count", studentId),
   incrementLeaveGeneratedCount: () => ipcRenderer.invoke("increment-leave-generated-count"),
+
+  // New functions for freeze/unfreeze
+  freezeStudent: (studentId) => ipcRenderer.invoke("freeze-student", studentId),
+  unfreezeStudent: (studentId) => ipcRenderer.invoke("unfreeze-student", studentId),
 };
 
 // Use `contextBridge` APIs to expose Electron APIs to

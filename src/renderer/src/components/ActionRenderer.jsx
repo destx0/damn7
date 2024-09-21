@@ -1,5 +1,5 @@
-import React from 'react'
-import { MoreHorizontal } from 'lucide-react'
+import React, { useState, useEffect } from 'react'
+import { MoreHorizontal, Lock, Unlock } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -10,7 +10,22 @@ import {
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
 
-const ActionRenderer = ({ data, onEdit, onDelete, onGenerateCertificate }) => {
+const ActionRenderer = ({ data, onEdit, onDelete, onGenerateCertificate, onFreeze, onUnfreeze }) => {
+  const [isFrozen, setIsFrozen] = useState(data.isFrozen || false)
+
+  useEffect(() => {
+    setIsFrozen(data.isFrozen || false)
+  }, [data.isFrozen])
+
+  const handleFreeze = async () => {
+    if (isFrozen) {
+      await onUnfreeze(data.studentId)
+    } else {
+      await onFreeze(data.studentId)
+    }
+    setIsFrozen(!isFrozen)
+  }
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -21,8 +36,23 @@ const ActionRenderer = ({ data, onEdit, onDelete, onGenerateCertificate }) => {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuLabel>Actions</DropdownMenuLabel>
-        <DropdownMenuItem onClick={() => onEdit(data)}>Edit</DropdownMenuItem>
-        <DropdownMenuItem onClick={() => onDelete(data.id)}>Delete</DropdownMenuItem>
+        {!isFrozen && (
+          <>
+            <DropdownMenuItem onClick={() => onEdit(data)}>Edit</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => onDelete(data.studentId)}>Delete</DropdownMenuItem>
+          </>
+        )}
+        <DropdownMenuItem onClick={handleFreeze}>
+          {isFrozen ? (
+            <>
+              <Unlock className="mr-2 h-4 w-4" /> Unfreeze
+            </>
+          ) : (
+            <>
+              <Lock className="mr-2 h-4 w-4" /> Freeze
+            </>
+          )}
+        </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuLabel>Certificates</DropdownMenuLabel>
         <DropdownMenuItem onClick={() => onGenerateCertificate(data, 'leave')}>
