@@ -41,6 +41,9 @@ export const generateLeaveCertificate = async (data, isDraft = true) => {
     ? new Date(data.leaveCertificateGenerationDate)
     : new Date()
 
+  // Use leaveGeneratedCount to determine the certificate title
+  const certificateTitle = data.leaveGeneratedCount > 0 ? 'Duplicate Leaving Certificate' : 'Leaving Certificate'
+
   const content = `
     <html>
       <head>
@@ -76,7 +79,7 @@ export const generateLeaveCertificate = async (data, isDraft = true) => {
               <span><strong>Board</strong>- Nashik</span>
               <span>${createField('Index No.', '15.15.005', 12)}</span>
             </div>
-            <h1 style="font-size: 24pt; margin-top: -10px;margin-bottom: 0px;">Leaving Certificate</h1>
+            <h1 style="font-size: 24pt; margin-top: -10px;margin-bottom: 0px;">${certificateTitle}</h1>
             <pre style="margin-top: 10px;">
 ${createField('PEN', data.PENNo, 77)}
 ${createField('Student ID', data.studentId, 26)} ${createField('U.I.D. No. (Aadhar Card No.)', data.aadharNo, 17)}

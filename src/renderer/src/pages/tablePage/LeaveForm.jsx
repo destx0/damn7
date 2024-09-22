@@ -53,7 +53,7 @@ const LeaveForm = () => {
   const [selectedRemarks, setSelectedRemarks] = useState('')
   const [selectedProgress, setSelectedProgress] = useState('')
   const [selectedConduct, setSelectedConduct] = useState('')
-  const [generatedCount, setGeneratedCount] = useState(0)
+  const [leaveGeneratedCount, setLeaveGeneratedCount] = useState(0)
 
   const predefinedReasons = [
     'Name struck off due to long absence',
@@ -92,7 +92,7 @@ const LeaveForm = () => {
   const loadGeneratedCount = async () => {
     try {
       const count = await window.api.getLeaveGeneratedCount(studentData.studentId)
-      setGeneratedCount(count)
+      setLeaveGeneratedCount(count)
     } catch (error) {
       console.error('Error loading generated count:', error)
     }
@@ -117,7 +117,8 @@ const LeaveForm = () => {
     try {
       const certificateData = {
         ...studentData,
-        ...formData
+        ...formData,
+        leaveGeneratedCount: leaveGeneratedCount
       }
 
       // Check if data has changed
@@ -133,7 +134,7 @@ const LeaveForm = () => {
 
       // Update the generated count
       const newCount = await window.api.getLeaveGeneratedCount(studentData.studentId)
-      setGeneratedCount(newCount)
+      setLeaveGeneratedCount(newCount)
 
       // Update student data in the students table only if data has changed
       if (hasDataChanged) {
@@ -151,7 +152,8 @@ const LeaveForm = () => {
     try {
       const certificateData = {
         ...studentData,
-        ...formData
+        ...formData,
+        leaveGeneratedCount: leaveGeneratedCount
       }
       const base64Data = await window.api.generateDraftLeaveCertificate(certificateData)
       const newPdfUrl = `data:application/pdf;base64,${base64Data}`
@@ -596,7 +598,7 @@ const LeaveForm = () => {
       <div className="flex justify-between m-4">
         <h2 className="text-xl font-semibold mb-4">Leave Certificate Form</h2>
         <div>
-          <span className="mr-4">Generated Count: {generatedCount}</span>
+          <span className="mr-4">Generated Count: {leaveGeneratedCount}</span>
           <Button onClick={generateOfficialCertificate}>Generate Official Certificate</Button>
         </div>
         <Button onClick={refreshDraftCertificate} variant="secondary">
