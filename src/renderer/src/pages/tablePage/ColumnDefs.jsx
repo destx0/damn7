@@ -9,7 +9,16 @@ import {
 import { Button } from '@/components/ui/button'
 import ActionRenderer from '@/components/ActionRenderer'
 
-const ActionMenu = ({ isAdmin, onEdit, onDelete, onLeaveCertificate, onBonafideCertificate, onFreeze, onUnfreeze, data }) => {
+const ActionMenu = ({
+  isAdmin,
+  onEdit,
+  onDelete,
+  onLeaveCertificate,
+  onBonafideCertificate,
+  onFreeze,
+  onUnfreeze,
+  data
+}) => {
   return (
     <ActionRenderer
       data={data}
@@ -71,26 +80,41 @@ const createColumnDefs = (
   { headerName: 'Admission Standard', field: 'admissionStandard' },
   { headerName: 'Nationality', field: 'nationality', hide: true },
   { headerName: 'Mother Tongue', field: 'motherTongue' },
-  { headerName: 'Current Standard', field: 'currentStandard', hide: true },
-  { headerName: 'Progress', field: 'progress', hide: true },
-  { headerName: 'Conduct', field: 'conduct', hide: true },
-  { headerName: 'Date of Leaving', field: 'dateOfLeaving', filter: 'agDateColumnFilter', hide: true },
-  { headerName: 'Reason of Leaving', field: 'reasonOfLeaving', hide: true },
-  { headerName: 'Remarks', field: 'remarks', hide: true },
-  { headerName: 'Leave Certificate Date', field: 'leaveCertificateGenerationDate', filter: 'agDateColumnFilter', hide: true },
+  { headerName: 'Current Standard', field: 'currentStandard' },
+  { headerName: 'Progress', field: 'progress' },
+  { headerName: 'Conduct', field: 'conduct' },
+  {
+    headerName: 'Date of Leaving',
+    field: 'dateOfLeaving',
+    filter: 'agDateColumnFilter'
+  },
+  { headerName: 'Reason of Leaving', field: 'reasonOfLeaving' },
+  { headerName: 'Remarks', field: 'remarks' },
+  {
+    headerName: 'Leave Certificate Date',
+    field: 'leaveCertificateGenerationDate',
+    filter: 'agDateColumnFilter',
+    hide: true
+  },
   { headerName: 'SSC Exam Year', field: 'sscExamYear', hide: true },
   { headerName: 'SSC Pass Status', field: 'sscPassStatus', hide: true },
-  { headerName: 'Academic Year', field: 'academicYear', hide: true },
+  { headerName: 'Academic Year', field: 'academicYear' },
   { headerName: 'Bonafide Reason', field: 'reasonOfBonafide', hide: true },
   { headerName: 'Bonafide Requested By', field: 'requestOfBonafideBy', hide: true },
-  { headerName: 'Bonafide Date', field: 'dateOfBonafide', filter: 'agDateColumnFilter', hide: true },
+  {
+    headerName: 'Bonafide Date',
+    field: 'dateOfBonafide',
+    filter: 'agDateColumnFilter',
+    hide: true
+  },
   { headerName: 'Bonafide Standard', field: 'bonafideStandard', hide: true },
   {
     headerName: 'Bonafide Certificates Generated',
     field: 'bonafideGeneratedCount',
     width: 220,
+    hide: true,
     valueGetter: (params) => {
-      return params.data.bonafideGeneratedCount || 0;
+      return params.data.bonafideGeneratedCount || 0
     }
   },
   {
@@ -98,7 +122,7 @@ const createColumnDefs = (
     field: 'leaveGeneratedCount',
     width: 220,
     valueGetter: (params) => {
-      return params.data.leaveGeneratedCount || 0;
+      return params.data.leaveGeneratedCount || 0
     }
   },
   {
@@ -107,19 +131,19 @@ const createColumnDefs = (
     filter: 'agDateColumnFilter',
     valueFormatter: (params) => {
       if (params.value) {
-        const date = new Date(params.value);
-        return date.toLocaleString(); // This will format the date and time
+        const date = new Date(params.value)
+        return date.toLocaleString() // This will format the date and time
       }
-      return '';
+      return ''
     }
   }
 ]
 
 const getRowStyle = (params) => {
   if (params.data.isFrozen) {
-    return { background: '#E6F3FF' }; // Light blue background for frozen rows
+    return { background: '#E6F3FF' } // Light blue background for frozen rows
   }
-  return null; // Default style for unfrozen rows
-};
+  return null // Default style for unfrozen rows
+}
 
 export { createColumnDefs, ActionMenu, getRowStyle }
