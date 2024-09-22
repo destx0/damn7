@@ -65,9 +65,9 @@ function setupIpcHandlers() {
         ...studentData,
         lastUpdated: new Date().toISOString()
       }
-      // Add the new student to the database
-      // ...
-      return newStudent
+      // Add the new student to the database using the addStudent function
+      const addedStudent = await addStudent(newStudent)
+      return addedStudent
     } catch (error) {
       console.error('Error adding student:', error)
       throw error
