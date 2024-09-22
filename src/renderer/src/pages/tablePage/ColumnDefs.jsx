@@ -32,6 +32,14 @@ const ActionMenu = ({
   )
 }
 
+const formatDateField = (params) => {
+  if (params.value) {
+    const date = new Date(params.value);
+    return date.toLocaleDateString(); // This will format the date only
+  }
+  return '';
+};
+
 const createColumnDefs = (
   isAdmin,
   handleEditStudent,
@@ -73,10 +81,10 @@ const createColumnDefs = (
   { headerName: 'Taluka', field: 'taluka' },
   { headerName: 'District', field: 'district' },
   { headerName: 'State', field: 'state' },
-  { headerName: 'Date of Birth', field: 'dateOfBirth', filter: 'agDateColumnFilter' },
+  { headerName: 'Date of Birth', field: 'dateOfBirth', filter: 'agDateColumnFilter', valueFormatter: formatDateField },
   { headerName: 'Last Attended School', field: 'lastAttendedSchool' },
   { headerName: 'Last School Standard', field: 'lastSchoolStandard' },
-  { headerName: 'Date of Admission', field: 'dateOfAdmission', filter: 'agDateColumnFilter' },
+  { headerName: 'Date of Admission', field: 'dateOfAdmission', filter: 'agDateColumnFilter', valueFormatter: formatDateField },
   { headerName: 'Admission Standard', field: 'admissionStandard' },
   { headerName: 'Nationality', field: 'nationality', hide: true },
   { headerName: 'Mother Tongue', field: 'motherTongue' },
@@ -86,7 +94,8 @@ const createColumnDefs = (
   {
     headerName: 'Date of Leaving',
     field: 'dateOfLeaving',
-    filter: 'agDateColumnFilter'
+    filter: 'agDateColumnFilter',
+    valueFormatter: formatDateField
   },
   { headerName: 'Reason of Leaving', field: 'reasonOfLeaving' },
   { headerName: 'Remarks', field: 'remarks' },
@@ -94,7 +103,8 @@ const createColumnDefs = (
     headerName: 'Leave Certificate Date',
     field: 'leaveCertificateGenerationDate',
     filter: 'agDateColumnFilter',
-    hide: true
+    hide: true,
+    valueFormatter: formatDateField
   },
   { headerName: 'SSC Exam Year', field: 'sscExamYear', hide: true },
   { headerName: 'SSC Pass Status', field: 'sscPassStatus', hide: true },
@@ -105,7 +115,8 @@ const createColumnDefs = (
     headerName: 'Bonafide Date',
     field: 'dateOfBonafide',
     filter: 'agDateColumnFilter',
-    hide: true
+    hide: true,
+    valueFormatter: formatDateField
   },
   { headerName: 'Bonafide Standard', field: 'bonafideStandard', hide: true },
   {
@@ -129,13 +140,7 @@ const createColumnDefs = (
     headerName: 'Last Updated',
     field: 'lastUpdated',
     filter: 'agDateColumnFilter',
-    valueFormatter: (params) => {
-      if (params.value) {
-        const date = new Date(params.value)
-        return date.toLocaleString() // This will format the date and time
-      }
-      return ''
-    }
+    valueFormatter: formatDateField
   }
 ]
 
