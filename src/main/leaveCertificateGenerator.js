@@ -42,7 +42,9 @@ export const generateLeaveCertificate = async (data, isDraft = true) => {
     : new Date()
 
   // Use leaveGeneratedCount to determine the certificate title
-  const certificateTitle = data.leaveGeneratedCount > 0 ? 'Duplicate Leaving Certificate' : 'Leaving Certificate'
+  const certificateTitle = data.leaveGeneratedCount > 0
+    ? '<i>Duplicate</i> Leaving Certificate'
+    : 'Leaving Certificate'
 
   const content = `
     <html>
