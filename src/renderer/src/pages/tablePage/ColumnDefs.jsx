@@ -15,9 +15,8 @@ const ActionMenu = ({ isAdmin, onEdit, onDelete, onLeaveCertificate, onBonafideC
       data={data}
       onEdit={onEdit}
       onDelete={onDelete}
-      onGenerateCertificate={(type) =>
-        type === 'leave' ? onLeaveCertificate(data) : onBonafideCertificate(data)
-      }
+      onLeaveCertificate={() => onLeaveCertificate(data)}
+      onBonafideCertificate={() => onBonafideCertificate(data)}
       onFreeze={onFreeze}
       onUnfreeze={onUnfreeze}
     />

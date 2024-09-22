@@ -20,7 +20,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 
-const ActionRenderer = ({ data, onEdit, onDelete, onGenerateCertificate, onFreeze, onUnfreeze }) => {
+const ActionRenderer = ({ data, onEdit, onDelete, onLeaveCertificate, onBonafideCertificate, onFreeze, onUnfreeze }) => {
   const [isFrozen, setIsFrozen] = useState(data.isFrozen || false)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [password, setPassword] = useState('')
@@ -80,12 +80,8 @@ const ActionRenderer = ({ data, onEdit, onDelete, onGenerateCertificate, onFreez
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuLabel>Certificates</DropdownMenuLabel>
-          <DropdownMenuItem onClick={() => onGenerateCertificate(data, 'leave')}>
-            View Leave Certificate
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => onGenerateCertificate(data, 'bonafide')}>
-            View Bonafide Certificate
-          </DropdownMenuItem>
+          <DropdownMenuItem onClick={onLeaveCertificate}>Leave Certificate</DropdownMenuItem>
+          <DropdownMenuItem onClick={onBonafideCertificate}>Bonafide Certificate</DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
 
