@@ -353,10 +353,7 @@ const BonafideForm = () => {
     <>
       <div className="flex justify-between m-4">
         <h2 className="text-xl font-semibold ">Bonafide Certificate Form</h2>
-        <div>
-          <span className="mr-4">Generated Count: {generatedCount}</span>
-          <Button onClick={generateOfficialCertificate}>Generate Official Certificate</Button>
-        </div>
+        <Button onClick={generateOfficialCertificate}>Generate Official Certificate</Button>
         <Button onClick={refreshDraftCertificate} variant="secondary">
           Refresh Draft
         </Button>
