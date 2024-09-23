@@ -1,7 +1,7 @@
 import { z } from 'zod'
 
 export const studentSchema = z.object({
-  studentId: z.string().regex(/^\d+$/, { message: 'Student ID must be numeric' }).optional(),
+  studentId: z.string().regex(/^\d{19}$/, { message: 'Student ID must be exactly 19 digits' }),
   aadharNo: z.string().regex(/^\d{12}$/, { message: 'Aadhar Number must be exactly 12 digits' }),
   PENNo: z
     .string()

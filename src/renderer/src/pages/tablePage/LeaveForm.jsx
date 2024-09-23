@@ -63,7 +63,7 @@ const LeaveForm = () => {
   ]
 
   const standardOptions = ['V', 'VI', 'VII', 'VIII', 'IX', 'X']
-  const remarksOptions = ['Dues nill', 'Custom']
+  const remarksOptions = ['Dues nil', 'Custom']
   const progressOptions = ['Fair', 'Good', 'Excellent', 'Custom']
   const conductOptions = ['Fair', 'Good', 'Excellent', 'Custom']
 
