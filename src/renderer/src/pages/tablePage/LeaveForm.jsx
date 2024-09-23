@@ -587,6 +587,9 @@ const LeaveForm = () => {
       } else {
         toast.success('No changes to save')
       }
+
+      // Navigate to the table page after saving
+      navigate('/table')
     } catch (error) {
       console.error('Error saving student data:', error)
       toast.error('Failed to save student data')
@@ -596,11 +599,10 @@ const LeaveForm = () => {
   return (
     <>
       <div className="flex justify-between m-4">
-        <h2 className="text-xl font-semibold mb-4">Leave Certificate Form</h2>
-        <div>
-          <span className="mr-4">Generated Count: {leaveGeneratedCount}</span>
-          <Button onClick={generateOfficialCertificate}>Generate Official Certificate</Button>
-        </div>
+        <h2 className="text-xl font-semibold mb-4">
+          Leave Certificate Form : ({leaveGeneratedCount})
+        </h2>
+        <Button onClick={generateOfficialCertificate}>Generate Official Certificate</Button>
         <Button onClick={refreshDraftCertificate} variant="secondary">
           Refresh Draft
         </Button>

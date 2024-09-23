@@ -343,6 +343,9 @@ const BonafideForm = () => {
       } else {
         toast.success('No changes to save')
       }
+
+      // Navigate to the table page after saving
+      navigate('/table')
     } catch (error) {
       console.error('Error saving student data:', error)
       toast.error('Failed to save student data')
@@ -352,7 +355,7 @@ const BonafideForm = () => {
   return (
     <>
       <div className="flex justify-between m-4">
-        <h2 className="text-xl font-semibold ">Bonafide Certificate Form</h2>
+        <h2 className="text-xl font-semibold ">Bonafide Certificate Form </h2>
         <Button onClick={generateOfficialCertificate}>Generate Official Certificate</Button>
         <Button onClick={refreshDraftCertificate} variant="secondary">
           Refresh Draft
