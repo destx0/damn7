@@ -17,7 +17,7 @@ const formatStandard = (standard) => {
   const upperStandard = standard.toString().toUpperCase()
   if (romanToOrdinal.hasOwnProperty(upperStandard)) {
     const ordinal = romanToOrdinal[upperStandard]
-    return `Std ${ordinal} ${standard}`
+    return `Std - ${ordinal} ${standard}`
   }
   return standard
 }
@@ -56,8 +56,7 @@ export const generateLeaveCertificate = async (data, isDraft = true) => {
           .header { margin-bottom: -10px; }
           .content { line-height: 1.6;margin-top: -5px; font-weight: 500;}
           .footer { margin-top: -40px; }
-          .draft { position: absolute; font-size: 100px; color: #e0e0e0; transform: rotate(45deg); top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(45deg); }
-          pre { font-family: inherit; white-space: pre-wrap; word-wrap: break-word; }
+                   .draft { position: absolute; font-size: 100px; color: rgba(224, 224, 224, 0.5); transform: rotate(45deg); top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(45deg); }
         </style>
       </head>
       <body>
@@ -99,7 +98,7 @@ ${createField('Date of admission in this school', formatDate(data.dateOfAdmissio
 ${createField('Progress', data.progress, 33)} ${createField('Conduct', data.conduct, 30)}
 ${createField('Date of leaving school', formatDate(data.dateOfLeaving), 60)}
 ${createField('Standard in which studying and since when (in words and figure)', formatStandard(data.currentStandard), 22)}
-${createField('Since', monthYear(data.dateOfAdmission), 76)}
+Since${createField('', monthYear(data.dateOfAdmission), 76)}
 ${createField('Reason of leaving school', data.reasonOfLeaving, 58)}
 ${createField('Remarks', data.remarks, 72)}
             </pre>
