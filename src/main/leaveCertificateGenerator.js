@@ -41,8 +41,7 @@ export const generateLeaveCertificate = async (data, isDraft = true) => {
     ? new Date(data.leaveCertificateGenerationDate)
     : new Date()
 
-  // Use leaveGeneratedCount to determine the certificate title
-  const certificateTitle = data.leaveGeneratedCount > 0
+  const certificateTitle = data.isDuplicate
     ? '<i>Duplicate</i> Leaving Certificate'
     : 'Leaving Certificate'
 
@@ -98,7 +97,7 @@ ${createField('Date of admission in this school', formatDate(data.dateOfAdmissio
 ${createField('Progress', data.progress, 33)} ${createField('Conduct', data.conduct, 30)}
 ${createField('Date of leaving school', formatDate(data.dateOfLeaving), 60)}
 ${createField('Standard in which studying and since when (in words and figure)', formatStandard(data.currentStandard), 22)}
-Since${createField('', monthYear(data.dateOfAdmission), 76)}
+Since${createField('', monthYear(data.dateOfAdmission), 70)}
 ${createField('Reason of leaving school', data.reasonOfLeaving, 58)}
 ${createField('Remarks', data.remarks, 72)}
             </pre>

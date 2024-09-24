@@ -53,7 +53,6 @@ const LeaveForm = () => {
   const [selectedRemarks, setSelectedRemarks] = useState('')
   const [selectedProgress, setSelectedProgress] = useState('')
   const [selectedConduct, setSelectedConduct] = useState('')
-  const [leaveGeneratedCount, setLeaveGeneratedCount] = useState(0)
 
   const predefinedReasons = [
     'Name struck off due to long absence',
@@ -69,7 +68,6 @@ const LeaveForm = () => {
 
   useEffect(() => {
     loadStudentData()
-    loadGeneratedCount()
   }, [])
 
   const loadStudentData = async () => {
@@ -89,15 +87,6 @@ const LeaveForm = () => {
     }
   }
 
-  const loadGeneratedCount = async () => {
-    try {
-      const count = await window.api.getLeaveGeneratedCount(studentData.studentId)
-      setLeaveGeneratedCount(count)
-    } catch (error) {
-      console.error('Error loading generated count:', error)
-    }
-  }
-
   const handleInputChange = (e) => {
     const { name, value } = e.target
     setFormData((prevData) => ({
@@ -113,12 +102,12 @@ const LeaveForm = () => {
     }))
   }
 
-  const generateOfficialCertificate = async () => {
+  const generateOfficialCertificate = async (isDuplicate = false) => {
     try {
       const certificateData = {
         ...studentData,
         ...formData,
-        leaveGeneratedCount: leaveGeneratedCount
+        isDuplicate: isDuplicate
       }
 
       // Check if data has changed
@@ -132,10 +121,6 @@ const LeaveForm = () => {
       const newPdfUrl = `data:application/pdf;base64,${base64Data}`
       setCurrentPdfUrl(newPdfUrl)
 
-      // Update the generated count
-      const newCount = await window.api.getLeaveGeneratedCount(studentData.studentId)
-      setLeaveGeneratedCount(newCount)
-
       // Update student data in the students table only if data has changed
       if (hasDataChanged) {
         await window.api.updateStudent(studentData.studentId, {
@@ -148,12 +133,15 @@ const LeaveForm = () => {
     }
   }
 
+  const generateDuplicateCertificate = () => {
+    generateOfficialCertificate(true)
+  }
+
   const refreshDraftCertificate = async () => {
     try {
       const certificateData = {
         ...studentData,
-        ...formData,
-        leaveGeneratedCount: leaveGeneratedCount
+        ...formData
       }
       const base64Data = await window.api.generateDraftLeaveCertificate(certificateData)
       const newPdfUrl = `data:application/pdf;base64,${base64Data}`
@@ -599,10 +587,11 @@ const LeaveForm = () => {
   return (
     <>
       <div className="flex justify-between m-4">
-        <h2 className="text-xl font-semibold mb-4">
-          Leave Certificate Form : ({leaveGeneratedCount})
-        </h2>
-        <Button onClick={generateOfficialCertificate}>Generate Official Certificate</Button>
+        <h2 className="text-xl font-semibold mb-4">Leave Certificate Form</h2>
+        <Button onClick={() => generateOfficialCertificate(false)}>Generate Official Certificate</Button>
+        <Button onClick={generateDuplicateCertificate} variant="secondary">
+          Generate Duplicate
+        </Button>
         <Button onClick={refreshDraftCertificate} variant="secondary">
           Refresh Draft
         </Button>
