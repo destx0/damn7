@@ -91,7 +91,7 @@ export const generateBonafideCertificate = async (data, isDraft = true) => {
           .header { margin-bottom: 10px; }
           .content { line-height: 1.6; }
           .footer { margin-top: 20px; }
-          .draft { position: absolute; font-size: 100px; color: rgba(224, 224, 224, 0.5); transform: rotate(45deg); top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(45deg); }
+          .draft { position: absolute; font-size: 100px; color: rgba(224, 224, 224, 0.3); transform: rotate(45deg); top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(45deg); }
         </style>
       </head>
       <body>
