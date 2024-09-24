@@ -55,7 +55,16 @@ export const generateLeaveCertificate = async (data, isDraft = true) => {
           .header { margin-bottom: -10px; }
           .content { line-height: 1.6;margin-top: -5px; font-weight: 500;}
           .footer { margin-top: -40px; }
-                   .draft { position: absolute; font-size: 100px; color: rgba(224, 224, 224, 0.5); transform: rotate(45deg); top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(45deg); }
+          .draft {
+            position: absolute;
+            font-size: 100px;
+            color: rgba(224, 224, 224, 0.3); /* Changed to use rgba for 50% opacity */
+            transform: rotate(45deg);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(45deg);
+          }
+          pre { font-family: inherit; white-space: pre-wrap; word-wrap: break-word; }
         </style>
       </head>
       <body>
@@ -97,7 +106,7 @@ ${createField('Date of admission in this school', formatDate(data.dateOfAdmissio
 ${createField('Progress', data.progress, 33)} ${createField('Conduct', data.conduct, 30)}
 ${createField('Date of leaving school', formatDate(data.dateOfLeaving), 60)}
 ${createField('Standard in which studying and since when (in words and figure)', formatStandard(data.currentStandard), 22)}
-Since${createField('', monthYear(data.dateOfAdmission), 70)}
+Since${createField('', monthYear(data.dateOfAdmission), 76)}
 ${createField('Reason of leaving school', data.reasonOfLeaving, 58)}
 ${createField('Remarks', data.remarks, 72)}
             </pre>
