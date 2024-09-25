@@ -17,7 +17,8 @@ import {
 import { fieldNames, fieldLabels, dateFields, dialogOptions } from '@/constants/studentFormConstants'
 import { studentSchema } from '@/schemas/studentSchema'
 import { formatLabel, sanitizeValue } from '@/utils/studentFormUtils'
-import { z } from 'zod'  // Add this import
+import { z } from 'zod'
+import { format, parse, isValid } from 'date-fns' // Add this import
 
 const StudentFormPage = () => {
   const [formData, setFormData] = useState(
@@ -32,10 +33,34 @@ const StudentFormPage = () => {
   const { studentId } = useParams()
   const location = useLocation()
 
+  const formatDateString = (dateValue) => {
+    if (!dateValue) return ''
+    if (typeof dateValue === 'string') {
+      // Try parsing as 'dd-MM-yyyy' first
+      let date = parse(dateValue, 'dd-MM-yyyy', new Date())
+      if (isValid(date)) {
+        return format(date, 'dd-MM-yyyy')
+      }
+      // If parsing fails, try as ISO string
+      date = new Date(dateValue)
+      if (isValid(date)) {
+        return format(date, 'dd-MM-yyyy')
+      }
+    } else if (dateValue instanceof Date && isValid(dateValue)) {
+      return format(dateValue, 'dd-MM-yyyy')
+    }
+    return '' // Return empty string if parsing fails
+  }
+
   useEffect(() => {
     if (studentId && location.state?.student) {
-      console.log('Initializing form with student data:', location.state.student);
-      setFormData(location.state.student)
+      const formattedStudent = {
+        ...location.state.student,
+        dateOfBirth: formatDateString(location.state.student.dateOfBirth),
+        dateOfAdmission: formatDateString(location.state.student.dateOfAdmission),
+      }
+      console.log('Initializing form with student data:', formattedStudent);
+      setFormData(formattedStudent)
     } else if (studentId) {
       console.log('Fetching student data for ID:', studentId);
       fetchStudentData(studentId);
@@ -47,7 +72,12 @@ const StudentFormPage = () => {
       const student = await window.api.getStudent(id);
       console.log('Fetched student data:', student);
       if (student) {
-        setFormData(student);
+        const formattedStudent = {
+          ...student,
+          dateOfBirth: formatDateString(student.dateOfBirth),
+          dateOfAdmission: formatDateString(student.dateOfAdmission),
+        }
+        setFormData(formattedStudent);
       } else {
         console.error('Student not found');
       }
@@ -85,7 +115,7 @@ const StudentFormPage = () => {
   }
 
   const handleDateChange = (field, value) => {
-    setFormData({ ...formData, [field]: value.startDate ? new Date(value.startDate) : null })
+    setFormData({ ...formData, [field]: value.startDate || '' })
   }
 
   const handleSubmit = async (e) => {
@@ -96,7 +126,7 @@ const StudentFormPage = () => {
     try {
       const updatedFormData = {
         ...formData,
-        lastUpdated: new Date().toISOString()
+        lastUpdated: format(new Date(), 'dd-MM-yyyy')
       };
       if (studentId) {
         console.log('Updating student with ID:', studentId);
@@ -170,11 +200,12 @@ const StudentFormPage = () => {
                           asSingle={true}
                           useRange={false}
                           value={{
-                            startDate: formData[field] ? new Date(formData[field]) : null,
-                            endDate: formData[field] ? new Date(formData[field]) : null
+                            startDate: formData[field] || null,
+                            endDate: formData[field] || null
                           }}
                           onChange={(value) => handleDateChange(field, value)}
                           displayFormat="DD-MM-YYYY"
+                          inputFormat="DD-MM-YYYY"
                           placeholder={`Select ${formatLabel(field, fieldLabels)}`}
                           inputClassName="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                         />
