@@ -20,6 +20,7 @@ import {
   DialogTrigger
 } from '@/components/ui/dialog'
 import { toast } from 'react-hot-toast'
+import { format, parse, isValid } from 'date-fns'
 
 const LeaveForm = () => {
   const location = useLocation()
@@ -66,6 +67,25 @@ const LeaveForm = () => {
   const progressOptions = ['Fair', 'Good', 'Excellent', 'Custom']
   const conductOptions = ['Fair', 'Good', 'Excellent', 'Custom']
 
+  const formatDateString = (dateValue) => {
+    if (!dateValue) return ''
+    if (typeof dateValue === 'string') {
+      // Try parsing as 'dd-MM-yyyy' first
+      let date = parse(dateValue, 'dd-MM-yyyy', new Date())
+      if (isValid(date)) {
+        return format(date, 'dd-MM-yyyy')
+      }
+      // If parsing fails, try as ISO string
+      date = new Date(dateValue)
+      if (isValid(date)) {
+        return format(date, 'dd-MM-yyyy')
+      }
+    } else if (dateValue instanceof Date && isValid(dateValue)) {
+      return format(dateValue, 'dd-MM-yyyy')
+    }
+    return '' // Return empty string if parsing fails
+  }
+
   useEffect(() => {
     loadStudentData()
   }, [])
@@ -77,7 +97,9 @@ const LeaveForm = () => {
         setStudentData(student)
         setFormData((prevData) => ({
           ...prevData,
-          ...student
+          ...student,
+          dateOfLeaving: formatDateString(student.dateOfLeaving),
+          leaveCertificateGenerationDate: formatDateString(student.leaveCertificateGenerationDate),
         }))
       } else {
         console.error('Student data or studentId is undefined')
@@ -114,7 +136,7 @@ const LeaveForm = () => {
       const hasDataChanged = Object.keys(formData).some((key) => formData[key] !== studentData[key])
 
       if (hasDataChanged) {
-        certificateData.lastUpdated = new Date().toISOString()
+        certificateData.lastUpdated = format(new Date(), 'dd-MM-yyyy')
       }
 
       const base64Data = await window.api.generateOfficialLeaveCertificate(certificateData)
@@ -125,7 +147,7 @@ const LeaveForm = () => {
       if (hasDataChanged) {
         await window.api.updateStudent(studentData.studentId, {
           ...formData,
-          lastUpdated: new Date().toISOString()
+          lastUpdated: format(new Date(), 'dd-MM-yyyy')
         })
       }
     } catch (error) {
@@ -521,6 +543,7 @@ const LeaveForm = () => {
             value={{ startDate: formData[field.name], endDate: formData[field.name] }}
             onChange={(value) => handleDateChange(field.name, value)}
             displayFormat="DD-MM-YYYY"
+            inputFormat="DD-MM-YYYY"
             placeholder={`Select ${field.label.toLowerCase()}`}
             inputClassName="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
           />
@@ -566,7 +589,7 @@ const LeaveForm = () => {
       if (hasDataChanged) {
         const updatedData = {
           ...formData,
-          lastUpdated: new Date().toISOString()
+          lastUpdated: format(new Date(), 'dd-MM-yyyy')
         }
         await window.api.updateStudent(studentData.studentId, updatedData)
         toast.success('Student data saved successfully')

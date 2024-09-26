@@ -3,7 +3,7 @@ import LeaveForm from './tablePage/LeaveForm'
 
 const LeaveFormPage = () => {
   return (
-    <div className="w-screen h-screen">
+    <div className="w-screen h-screen pb-10">
       <LeaveForm />
     </div>
   )

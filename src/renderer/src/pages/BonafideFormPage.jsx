@@ -3,7 +3,7 @@ import BonafideForm from './tablePage/BonafideForm'
 
 const BonafideFormPage = () => {
   return (
-    <div className="w-screen h-screen">
+    <div className="w-screen h-screen pb-10">
       <BonafideForm />
     </div>
   )

@@ -14,6 +14,7 @@ import {
   DialogTrigger
 } from '@/components/ui/dialog'
 import { toast } from 'react-hot-toast'
+import { format, parse, isValid } from 'date-fns' // Add this import
 
 const BonafideForm = () => {
   const location = useLocation()
@@ -46,6 +47,25 @@ const BonafideForm = () => {
     'Other'
   ]
 
+  const formatDateString = (dateValue) => {
+    if (!dateValue) return ''
+    if (typeof dateValue === 'string') {
+      // Try parsing as 'dd-MM-yyyy' first
+      let date = parse(dateValue, 'dd-MM-yyyy', new Date())
+      if (isValid(date)) {
+        return format(date, 'dd-MM-yyyy')
+      }
+      // If parsing fails, try as ISO string
+      date = new Date(dateValue)
+      if (isValid(date)) {
+        return format(date, 'dd-MM-yyyy')
+      }
+    } else if (dateValue instanceof Date && isValid(dateValue)) {
+      return format(dateValue, 'dd-MM-yyyy')
+    }
+    return '' // Return empty string if parsing fails
+  }
+
   useEffect(() => {
     loadStudentData()
     loadGeneratedCount()
@@ -55,11 +75,15 @@ const BonafideForm = () => {
     try {
       if (initialStudentData && initialStudentData.studentId) {
         const student = await window.api.getStudent(initialStudentData.studentId)
-        setStudentData(student)
+        const formattedStudent = {
+          ...student,
+          dateOfBonafide: formatDateString(student.dateOfBonafide),
+        }
+        setStudentData(formattedStudent)
         setFormData((prevData) => ({
           ...prevData,
-          ...student,
-          otherReason: student.otherReason || ''
+          ...formattedStudent,
+          otherReason: formattedStudent.otherReason || ''
         }))
       } else {
         console.error('Student data or studentId is undefined')
@@ -89,7 +113,7 @@ const BonafideForm = () => {
   const handleDateChange = (name, value) => {
     setFormData((prevData) => ({
       ...prevData,
-      [name]: value.startDate
+      [name]: value.startDate || ''
     }))
   }
 
@@ -97,7 +121,8 @@ const BonafideForm = () => {
     try {
       const certificateData = {
         ...studentData,
-        ...formData
+        ...formData,
+        lastUpdated: format(new Date(), 'dd-MM-yyyy')
       }
 
       // Check if data has changed
@@ -300,9 +325,13 @@ const BonafideForm = () => {
           <Datepicker
             asSingle={true}
             useRange={false}
-            value={{ startDate: formData[field.name], endDate: formData[field.name] }}
+            value={{
+              startDate: formData[field.name] || null,
+              endDate: formData[field.name] || null
+            }}
             onChange={(value) => handleDateChange(field.name, value)}
             displayFormat="DD-MM-YYYY"
+            inputFormat="DD-MM-YYYY"
             placeholder={`Select ${field.label.toLowerCase()}`}
             inputClassName="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
           />
