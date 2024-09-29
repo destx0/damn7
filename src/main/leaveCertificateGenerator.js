@@ -13,11 +13,10 @@ const romanToOrdinal = {
 }
 
 const formatStandard = (standard) => {
-  if (!standard) return '' // Return empty string if standard is undefined or empty
+  if (!standard) return ''
   const upperStandard = standard.toString().toUpperCase()
   if (romanToOrdinal.hasOwnProperty(upperStandard)) {
-    const ordinal = romanToOrdinal[upperStandard]
-    return `Std - ${ordinal} ${standard}`
+    return `Std - ${upperStandard}<sup>th</sup> ${romanToOrdinal[upperStandard]}`
   }
   return standard
 }
@@ -74,6 +73,7 @@ export const generateLeaveCertificate = async (data, isDraft = true) => {
             transform: translate(-50%, -50%) rotate(45deg);
           }
           pre { font-family: inherit; white-space: pre-wrap; word-wrap: break-word; }
+          sup { font-size: 0.6em; }
         </style>
       </head>
       <body>

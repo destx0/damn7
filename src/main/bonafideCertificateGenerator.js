@@ -62,6 +62,11 @@ const dateToWords = (dateString) => {
   return `${day} ${month} ${year}`
 }
 
+const formatStandard = (standard) => {
+  if (!standard) return ''
+  return `${standard}<sup>th</sup>`
+}
+
 export const generateBonafideCertificate = async (data, isDraft = true) => {
   const certificateNumber = isDraft ? 'DRAFT' : data.certificateNumber.toString().padStart(4, '0')
 
@@ -92,6 +97,7 @@ export const generateBonafideCertificate = async (data, isDraft = true) => {
           .content { line-height: 1.6; }
           .footer { margin-top: 20px; }
           .draft { position: absolute; font-size: 100px; color: rgba(224, 224, 224, 0.3); transform: rotate(45deg); top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(45deg); }
+          sup { font-size: 0.6em; }
         </style>
       </head>
       <body>
@@ -106,7 +112,7 @@ export const generateBonafideCertificate = async (data, isDraft = true) => {
               <div>${createField('General Register No.', data.GRN, 20)}</div>
               <div>${createField('Date', formatDate(data.dateOfBonafide), 20)}&nbsp;&nbsp;&nbsp;&nbsp;</div>
             </div>
-            <p>This is to certify that Ms. ${createField('', formatName(data.name, data.fathersName, data.surname), 40)}, is a student of Shashikant Sakharam Chaudhari Kanya Vidyalay, Yawal, Taluka-Yawal, Dist.-Jalgaon. She is currently enrolled in the ${createField('', data.currentStandardForBonafide, 10)} std for the academic year ${createField('', data.academicYear, 22)}.</p>
+            <p>This is to certify that Ms. ${createField('', formatName(data.name, data.fathersName, data.surname), 40)}, is a student of Shashikant Sakharam Chaudhari Kanya Vidyalay, Yawal, Taluka-Yawal, Dist.-Jalgaon. She is currently enrolled in the ${createField('', formatStandard(data.currentStandardForBonafide), 12)} std for the academic year ${createField('', data.academicYear, 22)}.</p>
             <p>This certificate is issued to her for the purposes of ${createField('', data.reasonOfBonafide, 20)} requirements. According to her leaving certificate, her date of birth is ${createField('', formatDate(data.dateOfBirth), 12)}, her birthplace is ${createField('', data.placeOfBirth, 24)}, and her caste, as per the general register, is ${createField('', data.caste, 15)}.</p>
             <p>This certificate is issued at the request of ${createField('', data.requestOfBonafideBy, 42)}.</p>
           </div>
