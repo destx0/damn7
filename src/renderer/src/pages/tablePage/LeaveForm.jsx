@@ -41,7 +41,8 @@ const LeaveForm = () => {
     otherReason: '',
     customRemarks: '',
     customProgress: '',
-    customConduct: ''
+    customConduct: '',
+    since: ''
   })
   const [currentPdfUrl, setCurrentPdfUrl] = useState(pdfDataUrl)
   const [isReasonDialogOpen, setIsReasonDialogOpen] = useState(false)
@@ -54,6 +55,9 @@ const LeaveForm = () => {
   const [selectedRemarks, setSelectedRemarks] = useState('')
   const [selectedProgress, setSelectedProgress] = useState('')
   const [selectedConduct, setSelectedConduct] = useState('')
+  const [isSinceDialogOpen, setIsSinceDialogOpen] = useState(false)
+  const [selectedSinceMonth, setSelectedSinceMonth] = useState('')
+  const [selectedSinceYear, setSelectedSinceYear] = useState('')
 
   const predefinedReasons = [
     'Name struck off due to long absence',
@@ -66,6 +70,21 @@ const LeaveForm = () => {
   const remarksOptions = ['Dues nil', 'Custom']
   const progressOptions = ['Fair', 'Good', 'Excellent', 'Custom']
   const conductOptions = ['Fair', 'Good', 'Excellent', 'Custom']
+
+  const months = [
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December'
+  ]
+
+  const currentYear = new Date().getFullYear()
+  const years = Array.from({length: 50}, (_, i) => currentYear - i)
+
+  const handleSelectChange = (name, value) => {
+    setFormData(prevData => ({
+      ...prevData,
+      [name]: value
+    }))
+  }
 
   const formatDateString = (dateValue) => {
     if (!dateValue) return ''
@@ -269,6 +288,16 @@ const LeaveForm = () => {
     }
     setIsConductDialogOpen(false)
     setSelectedConduct('')
+  }
+
+  const handleConfirmSince = () => {
+    if (selectedSinceMonth && selectedSinceYear) {
+      setFormData(prevData => ({
+        ...prevData,
+        since: `${selectedSinceMonth} ${selectedSinceYear}`
+      }))
+    }
+    setIsSinceDialogOpen(false)
   }
 
   const renderField = (field) => {
@@ -548,6 +577,67 @@ const LeaveForm = () => {
             inputClassName="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
           />
         )
+      case 'since':
+        return (
+          <div className="flex items-center space-x-2">
+            <Input
+              id={field.name}
+              name={field.name}
+              value={formData[field.name]}
+              onChange={handleInputChange}
+              placeholder="Select since month and year"
+              className="w-full"
+              readOnly
+            />
+            <Dialog open={isSinceDialogOpen} onOpenChange={setIsSinceDialogOpen}>
+              <DialogTrigger asChild>
+                <Button variant="outline" size="sm">
+                  Select
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[425px]">
+                <DialogHeader>
+                  <DialogTitle>Select Since Month and Year</DialogTitle>
+                </DialogHeader>
+                <div className="grid gap-4">
+                  <div className="grid gap-2">
+                    <Label>Month</Label>
+                    <div className="grid grid-cols-3 gap-2">
+                      {months.map((month) => (
+                        <Button
+                          key={month}
+                          onClick={() => setSelectedSinceMonth(month)}
+                          variant={selectedSinceMonth === month ? "default" : "outline"}
+                          size="sm"
+                        >
+                          {month}
+                        </Button>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="grid gap-2">
+                    <Label>Year</Label>
+                    <div className="grid grid-cols-5 gap-2 max-h-[200px] overflow-y-auto">
+                      {years.map((year) => (
+                        <Button
+                          key={year}
+                          onClick={() => setSelectedSinceYear(year.toString())}
+                          variant={selectedSinceYear === year.toString() ? "default" : "outline"}
+                          size="sm"
+                        >
+                          {year}
+                        </Button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+                <Button onClick={handleConfirmSince} className="w-full mt-4">
+                  Confirm
+                </Button>
+              </DialogContent>
+            </Dialog>
+          </div>
+        )
       default:
         return (
           <Input
@@ -574,7 +664,8 @@ const LeaveForm = () => {
       name: 'leaveCertificateGenerationDate',
       label: 'Leave Certificate Generation Date',
       type: 'date'
-    }
+    },
+    { name: 'since', label: 'Since', type: 'select' },
   ]
 
   const closeCertificate = () => {
