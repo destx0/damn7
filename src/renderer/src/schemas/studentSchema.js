@@ -12,14 +12,14 @@ export const studentSchema = z.object({
     .string()
     .regex(/^[a-zA-Z\s]+$/, { message: 'Name must contain only letters and spaces' })
     .min(1, { message: 'Name is required' }),
-  surname: z
-    .string()
-    .regex(/^[a-zA-Z\s]+$/, { message: 'Surname must contain only letters and spaces' })
-    .min(1, { message: 'Surname is required' }),
   fathersName: z
     .string()
     .regex(/^[a-zA-Z\s]+$/, { message: "Father's Name must contain only letters and spaces" })
     .min(1, { message: "Father's Name is required" }),
+  surname: z
+    .string()
+    .regex(/^[a-zA-Z\s]+$/, { message: 'Surname must contain only letters and spaces' })
+    .min(1, { message: 'Surname is required' }),
   mothersName: z
     .string()
     .regex(/^[a-zA-Z\s]+$/, { message: "Mother's Name must contain only letters and spaces" })
