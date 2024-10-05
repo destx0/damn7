@@ -21,6 +21,7 @@ import {
 } from '@/components/ui/dialog'
 import { toast } from 'react-hot-toast'
 import { format, parse, isValid } from 'date-fns'
+import { Checkbox } from '@/components/ui/checkbox'
 
 const LeaveForm = () => {
   const location = useLocation()
@@ -58,6 +59,7 @@ const LeaveForm = () => {
   const [isSinceDialogOpen, setIsSinceDialogOpen] = useState(false)
   const [selectedSinceMonth, setSelectedSinceMonth] = useState('')
   const [selectedSinceYear, setSelectedSinceYear] = useState('')
+  const [isSemi, setIsSemi] = useState(false)
 
   const predefinedReasons = [
     'Name struck off due to long absence',
@@ -196,10 +198,21 @@ const LeaveForm = () => {
     setSelectedStandard(standard)
   }
 
+  const romanToOrdinal = {
+    V: 'Fifth',
+    VI: 'Sixth',
+    VII: 'Seventh',
+    VIII: 'Eighth',
+    IX: 'Ninth',
+    X: 'Tenth'
+  }
+
   const handleConfirmStandard = () => {
+    const semiPrefix = isSemi ? 'Semi ' : ''
+    const standardText = `${romanToOrdinal[selectedStandard]} ${semiPrefix}${selectedStandard}`
     setFormData((prevData) => ({
       ...prevData,
-      currentStandard: selectedStandard
+      currentStandard: standardText
     }))
     setIsStandardDialogOpen(false)
   }
@@ -335,6 +348,14 @@ const LeaveForm = () => {
                       {standard}
                     </Button>
                   ))}
+                </div>
+                <div className="flex items-center space-x-2 mt-4">
+                  <Checkbox
+                    id="semi"
+                    checked={isSemi}
+                    onCheckedChange={(checked) => setIsSemi(checked)}
+                  />
+                  <Label htmlFor="semi">Semi</Label>
                 </div>
                 <Button onClick={handleConfirmStandard} className="w-full mt-4">
                   Confirm Standard

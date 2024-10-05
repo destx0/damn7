@@ -14,11 +14,16 @@ const romanToOrdinal = {
 
 const formatStandard = (standard) => {
   if (!standard) return ''
-  const upperStandard = standard.toString().toUpperCase()
-  if (romanToOrdinal.hasOwnProperty(upperStandard)) {
-    return `Std - ${upperStandard}<sup>th</sup> ${romanToOrdinal[upperStandard]}`
+
+  // Check if the standard includes "Semi"
+  if (standard.includes('Semi')) {
+    const [ordinal, _, roman] = standard.split(' ')
+    return `${ordinal} Semi ${roman}<sup>th</sup>`
   }
-  return standard
+
+  // For non-Semi standards
+  const [ordinal, roman] = standard.split(' ')
+  return `${ordinal} ${roman}<sup>th</sup>`
 }
 
 export const generateLeaveCertificate = async (data, isDraft = true) => {
