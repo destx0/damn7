@@ -38,6 +38,11 @@ export const generateLeaveCertificate = async (data, isDraft = true) => {
     const padding = '&nbsp;'.repeat(Math.max(0, size - field.length))
     return `<strong style="font-size: 18px;">${label}:</strong> <span style="display: inline-block; position: relative; width: ${size}ch; font-weight: 500;">${field}${padding}<span style="position: absolute; bottom: 5px; left: 0; right: 0; border-bottom: 1px solid black;"></span></span>`
   }
+  const createFieldNoColon = (label, value, size) => {
+    const field = value || '---'
+    const padding = '&nbsp;'.repeat(Math.max(0, size - field.length))
+    return `<strong style="font-size: 18px;">${label}</strong> <span style="display: inline-block; position: relative; width: ${size}ch; font-weight: 500;">${field}${padding}<span style="position: absolute; bottom: 5px; left: 0; right: 0; border-bottom: 1px solid black;"></span></span>`
+  }
 
   // New helper function to format the last attended school name
   const formatLastAttendedSchool = (schoolName) => {
@@ -48,7 +53,7 @@ export const generateLeaveCertificate = async (data, isDraft = true) => {
       // Split into two lines
       const firstLine = schoolName.slice(0, 50)
       const secondLine = schoolName.slice(50)
-      return createField('', firstLine, 53) + '\n' + createField('', secondLine, 71)
+      return createField('', firstLine, 53) + '\n' + createFieldNoColon('', secondLine, 71)
     }
   }
 
