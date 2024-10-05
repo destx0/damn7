@@ -39,6 +39,19 @@ export const generateLeaveCertificate = async (data, isDraft = true) => {
     return `<strong style="font-size: 18px;">${label}:</strong> <span style="display: inline-block; position: relative; width: ${size}ch; font-weight: 500;">${field}${padding}<span style="position: absolute; bottom: 5px; left: 0; right: 0; border-bottom: 1px solid black;"></span></span>`
   }
 
+  // New helper function to format the last attended school name
+  const formatLastAttendedSchool = (schoolName) => {
+    if (!schoolName) return createField('', '---', 42)
+    if (schoolName.length <= 40) {
+      return createField('', schoolName, 42)
+    } else {
+      // Split into two lines
+      const firstLine = schoolName.slice(0, 50)
+      const secondLine = schoolName.slice(50)
+      return createField('', firstLine, 53) + '\n' + createField('', secondLine, 71)
+    }
+  }
+
   const dateOfBirthInWords = dateToWords(data.dateOfBirth)
   const generationDate = data.leaveCertificateGenerationDate
     ? new Date(data.leaveCertificateGenerationDate)
@@ -70,7 +83,7 @@ export const generateLeaveCertificate = async (data, isDraft = true) => {
           .draft {
             position: absolute;
             font-size: 100px;
-            color: rgba(224, 224, 224, 0.3); /* Changed to use rgba for 50% opacity */
+            color: rgba(224, 224, 224, 0.3);
             transform: rotate(45deg);
             top: 50%;
             left: 50%;
@@ -114,7 +127,7 @@ ${createField('Place of Birth', data.placeOfBirth, 20)} ${createField('Taluka', 
 ${createField('State', data.state, 27)} ${createField('Country', 'India', 40)}
 ${createField('Date of Birth (DD/MM/YY) according to the Christian era', formatDate(data.dateOfBirth), 29)}
 ${createField('Date of Birth (In words)', dateOfBirthInWords, 60)}
-<strong>Last school attended & standard</strong>${createField('', data.lastAttendedSchool, 42)}${createField('', data.lastSchoolStandard + '<sup>th</sup>', 9)}
+<strong>Last school attended & standard</strong>${formatLastAttendedSchool(data.lastAttendedSchool)}${createField('', data.lastSchoolStandard + '<sup>th</sup>', 9)}
 ${createField('Date of admission in this school', formatDate(data.dateOfAdmission), 24)} ${createField('Standard', data.admissionStandard + '<sup>th</sup>', 19)}
 ${createField('Progress', data.progress, 33)} ${createField('Conduct', data.conduct, 30)}
 ${createField('Date of leaving school', formatDate(data.dateOfLeaving), 60)}
