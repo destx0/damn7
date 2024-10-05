@@ -15,14 +15,13 @@ const romanToOrdinal = {
 const formatStandard = (standard) => {
   if (!standard) return ''
 
-  // Check if the standard includes "Semi"
-  if (standard.includes('Semi')) {
-    const [ordinal, _, roman] = standard.split(' ')
-    return `${ordinal} Semi ${roman}<sup>th</sup>`
+  const [roman, semi] = standard.split(' ')
+  const ordinal = romanToOrdinal[roman] || roman
+
+  if (semi === 'Semi') {
+    return `${ordinal} ${roman}<sup>th</sup> Semi`
   }
 
-  // For non-Semi standards
-  const [ordinal, roman] = standard.split(' ')
   return `${ordinal} ${roman}<sup>th</sup>`
 }
 

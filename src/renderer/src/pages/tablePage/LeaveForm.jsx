@@ -208,8 +208,8 @@ const LeaveForm = () => {
   }
 
   const handleConfirmStandard = () => {
-    const semiPrefix = isSemi ? 'Semi ' : ''
-    const standardText = `${romanToOrdinal[selectedStandard]} ${semiPrefix}${selectedStandard}`
+    const semiSuffix = isSemi ? ' Semi' : ''
+    const standardText = `${selectedStandard}${semiSuffix}`
     setFormData((prevData) => ({
       ...prevData,
       currentStandard: standardText
