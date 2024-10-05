@@ -6,11 +6,11 @@ export const formatLabel = (field, fieldLabels) => {
 }
 
 export const sanitizeValue = (id, value) => {
-  if (['studentId', 'aadharNo', 'PENNo', 'GRN'].includes(id)) {
+  if (['studentId', 'aadharNo', 'PENNo', 'GRN', 'APAARId'].includes(id)) {
     let sanitizedValue = value.replace(/\D/g, '');
     if (id === 'PENNo') {
       return sanitizedValue.slice(0, 11);
-    } else if (id === 'aadharNo') {
+    } else if (id === 'aadharNo' || id === 'APAARId') {
       return sanitizedValue.slice(0, 12);
     }
     return sanitizedValue;

@@ -272,11 +272,15 @@ const StudentFormPage = () => {
                           id={field}
                           value={formData[field]}
                           onChange={handleChange}
-                          required={!['caste', 'subCaste', 'taluka', 'lastAttendedSchool', 'lastSchoolStandard', 'PENNo', 'GRN'].includes(field)}
+                          required={field === 'name' || field === 'GRN'}
                           className={`mt-1 ${errors[field] ? 'border-red-500' : ''}`}
-                          maxLength={field === 'aadharNo' ? 12 : field === 'PENNo' ? 11 : undefined}
+                          maxLength={
+                            field === 'aadharNo' || field === 'APAARId' ? 12 :
+                            field === 'PENNo' ? 11 :
+                            undefined
+                          }
                           pattern={
-                            field === 'aadharNo' ? "\\d{12}" :
+                            field === 'aadharNo' || field === 'APAARId' ? "\\d{12}" :
                             field === 'PENNo' ? "\\d{11}" :
                             field === 'GRN' ? "\\d+" :
                             ['name', 'surname', 'fathersName', 'mothersName'].includes(field) ? "[a-zA-Z\\s]+" :
@@ -284,6 +288,7 @@ const StudentFormPage = () => {
                           }
                           title={
                             field === 'aadharNo' ? "Aadhar Number must be exactly 12 digits" :
+                            field === 'APAARId' ? "APAAR ID/ABC ID must be exactly 12 digits" :
                             field === 'PENNo' ? "PEN Number must be exactly 11 digits" :
                             field === 'GRN' ? "Must be numeric" :
                             ['name', 'surname', 'fathersName', 'mothersName'].includes(field) ? "Must contain only letters and spaces" :
