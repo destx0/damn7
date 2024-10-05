@@ -61,15 +61,28 @@ const tens = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 
 const numberToWords = (num) => {
   if (num < 20) return units[num]
   if (num < 100) return tens[Math.floor(num / 10)] + (num % 10 !== 0 ? '-' + units[num % 10] : '')
+  if (num < 1000)
+    return (
+      units[Math.floor(num / 100)] +
+      ' Hundred' +
+      (num % 100 !== 0 ? ' ' + numberToWords(num % 100) : '')
+    )
   return ''
 }
 
 const yearToWords = (year) => {
-  const firstPart = Math.floor(year / 100)
-  const secondPart = year % 100
-  const firstPartWords = numberToWords(firstPart)
-  const secondPartWords = secondPart === 0 ? '' : numberToWords(secondPart)
-  return firstPartWords + (secondPartWords ? ' ' + secondPartWords : '')
+  if (year >= 2000) {
+    const remainder = year - 2000
+    const firstPartWords = 'Two Thousand'
+    const secondPartWords = remainder > 0 ? ' ' + numberToWords(remainder) : ''
+    return firstPartWords + secondPartWords
+  } else {
+    const firstPart = Math.floor(year / 100)
+    const secondPart = year % 100
+    const firstPartWords = numberToWords(firstPart)
+    const secondPartWords = numberToWords(secondPart)
+    return firstPartWords + ' ' + secondPartWords
+  }
 }
 
 export const dateToWords = (dateString) => {
