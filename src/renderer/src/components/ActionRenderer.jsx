@@ -40,9 +40,9 @@ const ActionRenderer = ({ data, onEdit, onDelete, onLeaveCertificate, onBonafide
       setIsDialogOpen(false)
       setPassword('')
       if (isFrozen) {
-        await onUnfreeze(data.studentId)
+        await onUnfreeze(data.GRN)
       } else {
-        await onFreeze(data.studentId)
+        await onFreeze(data.GRN)
       }
       setIsFrozen(!isFrozen)
     } else {
@@ -64,7 +64,7 @@ const ActionRenderer = ({ data, onEdit, onDelete, onLeaveCertificate, onBonafide
           {!isFrozen && (
             <>
               <DropdownMenuItem onClick={() => onEdit(data)}>Edit</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => onDelete(data.studentId)}>Delete</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => onDelete(data.GRN)}>Delete</DropdownMenuItem>
             </>
           )}
           <DropdownMenuItem onClick={handleFreeze}>
@@ -80,8 +80,8 @@ const ActionRenderer = ({ data, onEdit, onDelete, onLeaveCertificate, onBonafide
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuLabel>Certificates</DropdownMenuLabel>
-          <DropdownMenuItem onClick={onLeaveCertificate}>Leave Certificate</DropdownMenuItem>
-          <DropdownMenuItem onClick={onBonafideCertificate}>Bonafide Certificate</DropdownMenuItem>
+          <DropdownMenuItem onClick={() => onLeaveCertificate(data.GRN)}>Leave Certificate</DropdownMenuItem>
+          <DropdownMenuItem onClick={() => onBonafideCertificate(data.GRN)}>Bonafide Certificate</DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
 

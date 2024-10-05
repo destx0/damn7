@@ -13,17 +13,17 @@ const api = {
   // Updated database operations
   addStudent: (student) => ipcRenderer.invoke("add-student", student),
   getStudents: () => ipcRenderer.invoke("get-students"),
-  getStudent: (studentId) => ipcRenderer.invoke("get-student", studentId),
-  updateStudent: (studentId, student) => ipcRenderer.invoke("update-student", studentId, student),
-  deleteStudent: (studentId) => ipcRenderer.invoke("delete-student", studentId),
+  getStudent: (GRN) => ipcRenderer.invoke("get-student", GRN),
+  updateStudent: (GRN, student) => ipcRenderer.invoke("update-student", GRN, student),
+  deleteStudent: (GRN) => ipcRenderer.invoke("delete-student", GRN),
 
   // Certificate counter operations
   getNextCertificateNumber: (type) => ipcRenderer.invoke("get-next-certificate-number", type),
   incrementCertificateCounter: (type) => ipcRenderer.invoke("increment-certificate-counter", type),
 
   // Existing certificate save and retrieval functions
-  saveCertificate: (studentId, type, data) => ipcRenderer.invoke("save-certificate", studentId, type, data),
-  getLatestCertificate: (studentId, type) => ipcRenderer.invoke("get-latest-certificate", studentId, type),
+  saveCertificate: (GRN, type, data) => ipcRenderer.invoke("save-certificate", GRN, type, data),
+  getLatestCertificate: (GRN, type) => ipcRenderer.invoke("get-latest-certificate", GRN, type),
 
   // Import function
   importData: () => ipcRenderer.invoke('import-data'),
@@ -31,19 +31,19 @@ const api = {
   // Add the resolveDuplicates function
   resolveDuplicates: (resolvedStudents) => ipcRenderer.invoke('resolve-duplicates', resolvedStudents),
 
-  getStudentById: (studentId) => ipcRenderer.invoke("get-student-by-id", studentId),
+  getStudentByGRN: (GRN) => ipcRenderer.invoke("get-student-by-grn", GRN),
 
   // Add these new functions for bonafide generated count
-  getBonafideGeneratedCount: (studentId) => ipcRenderer.invoke("get-bonafide-generated-count", studentId),
+  getBonafideGeneratedCount: (GRN) => ipcRenderer.invoke("get-bonafide-generated-count", GRN),
   incrementBonafideGeneratedCount: () => ipcRenderer.invoke("increment-bonafide-generated-count"),
 
   // Add these new functions for leave generated count
-  getLeaveGeneratedCount: (studentId) => ipcRenderer.invoke("get-leave-generated-count", studentId),
+  getLeaveGeneratedCount: (GRN) => ipcRenderer.invoke("get-leave-generated-count", GRN),
   incrementLeaveGeneratedCount: () => ipcRenderer.invoke("increment-leave-generated-count"),
 
   // New functions for freeze/unfreeze
-  freezeStudent: (studentId) => ipcRenderer.invoke("freeze-student", studentId),
-  unfreezeStudent: (studentId) => ipcRenderer.invoke("unfreeze-student", studentId),
+  freezeStudent: (GRN) => ipcRenderer.invoke("freeze-student", GRN),
+  unfreezeStudent: (GRN) => ipcRenderer.invoke("unfreeze-student", GRN),
 };
 
 // Use `contextBridge` APIs to expose Electron APIs to

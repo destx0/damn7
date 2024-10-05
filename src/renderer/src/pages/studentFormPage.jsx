@@ -18,7 +18,7 @@ import { fieldNames, fieldLabels, dateFields, dialogOptions } from '@/constants/
 import { studentSchema } from '@/schemas/studentSchema'
 import { formatLabel, sanitizeValue } from '@/utils/studentFormUtils'
 import { z } from 'zod'
-import { format, parse, isValid } from 'date-fns' // Add this import
+import { format, parse, isValid } from 'date-fns'
 
 const StudentFormPage = () => {
   const [formData, setFormData] = useState(
@@ -30,18 +30,16 @@ const StudentFormPage = () => {
   const [errors, setErrors] = useState({})
 
   const navigate = useNavigate()
-  const { studentId } = useParams()
+  const { GRN } = useParams()
   const location = useLocation()
 
   const formatDateString = (dateValue) => {
     if (!dateValue) return ''
     if (typeof dateValue === 'string') {
-      // Try parsing as 'dd-MM-yyyy' first
       let date = parse(dateValue, 'dd-MM-yyyy', new Date())
       if (isValid(date)) {
         return format(date, 'dd-MM-yyyy')
       }
-      // If parsing fails, try as ISO string
       date = new Date(dateValue)
       if (isValid(date)) {
         return format(date, 'dd-MM-yyyy')
@@ -49,11 +47,11 @@ const StudentFormPage = () => {
     } else if (dateValue instanceof Date && isValid(dateValue)) {
       return format(dateValue, 'dd-MM-yyyy')
     }
-    return '' // Return empty string if parsing fails
+    return ''
   }
 
   useEffect(() => {
-    if (studentId && location.state?.student) {
+    if (GRN && location.state?.student) {
       const formattedStudent = {
         ...location.state.student,
         dateOfBirth: formatDateString(location.state.student.dateOfBirth),
@@ -61,15 +59,15 @@ const StudentFormPage = () => {
       }
       console.log('Initializing form with student data:', formattedStudent);
       setFormData(formattedStudent)
-    } else if (studentId) {
-      console.log('Fetching student data for ID:', studentId);
-      fetchStudentData(studentId);
+    } else if (GRN) {
+      console.log('Fetching student data for GRN:', GRN);
+      fetchStudentData(GRN);
     }
-  }, [studentId, location.state])
+  }, [GRN, location.state])
 
-  const fetchStudentData = async (id) => {
+  const fetchStudentData = async (grn) => {
     try {
-      const student = await window.api.getStudent(id);
+      const student = await window.api.getStudent(grn);
       console.log('Fetched student data:', student);
       if (student) {
         const formattedStudent = {
@@ -128,10 +126,10 @@ const StudentFormPage = () => {
         ...formData,
         lastUpdated: format(new Date(), 'dd-MM-yyyy')
       };
-      if (studentId) {
-        console.log('Updating student with ID:', studentId);
+      if (GRN) {
+        console.log('Updating student with GRN:', GRN);
         console.log('Updated data:', updatedFormData);
-        const updatedStudent = await window.api.updateStudent(studentId, updatedFormData)
+        const updatedStudent = await window.api.updateStudent(GRN, updatedFormData)
         console.log('Student updated successfully:', updatedStudent)
       } else {
         console.log('Adding new student');
@@ -141,7 +139,7 @@ const StudentFormPage = () => {
       }
       navigate('/table')
     } catch (error) {
-      console.error(`Error ${studentId ? 'updating' : 'adding'} student:`, error)
+      console.error(`Error ${GRN ? 'updating' : 'adding'} student:`, error)
     }
   }
 
@@ -178,8 +176,8 @@ const StudentFormPage = () => {
               Cancel
             </Button>
             <Button onClick={handleSubmit} className="bg-green-600 hover:bg-green-700">
-              {studentId ? <Save className="mr-2 h-4 w-4" /> : <UserPlus className="mr-2 h-4 w-4" />}
-              {studentId ? 'Update' : 'Add'} Student
+              {GRN ? <Save className="mr-2 h-4 w-4" /> : <UserPlus className="mr-2 h-4 w-4" />}
+              {GRN ? 'Update' : 'Add'} Student
             </Button>
           </div>
         </div>
@@ -274,20 +272,20 @@ const StudentFormPage = () => {
                           id={field}
                           value={formData[field]}
                           onChange={handleChange}
-                          required={!['caste', 'subCaste', 'taluka', 'lastAttendedSchool', 'lastSchoolStandard', 'studentId', 'PENNo', 'GRN'].includes(field)}
+                          required={!['caste', 'subCaste', 'taluka', 'lastAttendedSchool', 'lastSchoolStandard', 'PENNo', 'GRN'].includes(field)}
                           className={`mt-1 ${errors[field] ? 'border-red-500' : ''}`}
                           maxLength={field === 'aadharNo' ? 12 : field === 'PENNo' ? 11 : undefined}
                           pattern={
                             field === 'aadharNo' ? "\\d{12}" :
                             field === 'PENNo' ? "\\d{11}" :
-                            ['studentId', 'GRN'].includes(field) ? "\\d+" :
+                            field === 'GRN' ? "\\d+" :
                             ['name', 'surname', 'fathersName', 'mothersName'].includes(field) ? "[a-zA-Z\\s]+" :
                             undefined
                           }
                           title={
                             field === 'aadharNo' ? "Aadhar Number must be exactly 12 digits" :
                             field === 'PENNo' ? "PEN Number must be exactly 11 digits" :
-                            ['studentId', 'GRN'].includes(field) ? "Must be numeric" :
+                            field === 'GRN' ? "Must be numeric" :
                             ['name', 'surname', 'fathersName', 'mothersName'].includes(field) ? "Must contain only letters and spaces" :
                             undefined
                           }

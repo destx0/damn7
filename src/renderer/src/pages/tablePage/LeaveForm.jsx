@@ -113,8 +113,8 @@ const LeaveForm = () => {
 
   const loadStudentData = async () => {
     try {
-      if (studentData && studentData.studentId) {
-        const student = await window.api.getStudent(studentData.studentId)
+      if (studentData && studentData.GRN) {
+        const student = await window.api.getStudent(studentData.GRN)
         setStudentData(student)
         setFormData((prevData) => ({
           ...prevData,
@@ -123,7 +123,7 @@ const LeaveForm = () => {
           leaveCertificateGenerationDate: formatDateString(student.leaveCertificateGenerationDate),
         }))
       } else {
-        console.error('Student data or studentId is undefined')
+        console.error('Student data or GRN is undefined')
       }
     } catch (error) {
       console.error('Error loading student data:', error)
@@ -153,7 +153,6 @@ const LeaveForm = () => {
         isDuplicate: isDuplicate
       }
 
-      // Check if data has changed
       const hasDataChanged = Object.keys(formData).some((key) => formData[key] !== studentData[key])
 
       if (hasDataChanged) {
@@ -164,9 +163,8 @@ const LeaveForm = () => {
       const newPdfUrl = `data:application/pdf;base64,${base64Data}`
       setCurrentPdfUrl(newPdfUrl)
 
-      // Update student data in the students table only if data has changed
       if (hasDataChanged) {
-        await window.api.updateStudent(studentData.studentId, {
+        await window.api.updateStudent(studentData.GRN, {
           ...formData,
           lastUpdated: format(new Date(), 'dd-MM-yyyy')
         })
@@ -695,7 +693,6 @@ const LeaveForm = () => {
 
   const handleSave = async () => {
     try {
-      // Check if data has changed
       const hasDataChanged = Object.keys(formData).some((key) => formData[key] !== studentData[key])
 
       if (hasDataChanged) {
@@ -703,15 +700,13 @@ const LeaveForm = () => {
           ...formData,
           lastUpdated: format(new Date(), 'dd-MM-yyyy')
         }
-        await window.api.updateStudent(studentData.studentId, updatedData)
+        await window.api.updateStudent(studentData.GRN, updatedData)
         toast.success('Student data saved successfully')
-        // Update the local studentData state
         setStudentData((prevData) => ({ ...prevData, ...updatedData }))
       } else {
         toast.success('No changes to save')
       }
 
-      // Navigate to the table page after saving
       navigate('/table')
     } catch (error) {
       console.error('Error saving student data:', error)

@@ -55,19 +55,18 @@ const createColumnDefs = (
         isAdmin={isAdmin}
         data={params.data}
         onEdit={() => handleEditStudent(params.data)}
-        onDelete={() => handleDeleteStudent(params.data.studentId)}
+        onDelete={() => handleDeleteStudent(params.data.GRN)}
         onLeaveCertificate={() => generateDraftCertificate(params.data, 'leave')}
         onBonafideCertificate={() => generateDraftCertificate(params.data, 'bonafide')}
-        onFreeze={() => handleFreezeStudent(params.data.studentId)}
-        onUnfreeze={() => handleUnfreezeStudent(params.data.studentId)}
+        onFreeze={() => handleFreezeStudent(params.data.GRN)}
+        onUnfreeze={() => handleUnfreezeStudent(params.data.GRN)}
       />
     ),
     pinned: 'left',
     width: 30,
     cellStyle: { display: 'flex', justifyContent: 'center', alignItems: 'center' }
   },
-  { headerName: 'Student ID', field: 'studentId', pinned: 'left', width: 120 },
-  { headerName: 'GRN', field: 'GRN', pinned: 'left', width: 80 },
+  { headerName: 'GRN', field: 'GRN', pinned: 'left', width: 120 },
   { headerName: 'PEN No', field: 'PENNo' },
   { headerName: 'Aadhar No', field: 'aadharNo' },
   { headerName: 'Name', field: 'name' },
@@ -143,6 +142,7 @@ const createColumnDefs = (
     valueFormatter: formatDateField
   }
 ]
+
 
 const getRowStyle = (params) => {
   if (params.data.isFrozen) {

@@ -35,24 +35,24 @@ const DuplicateResolutionDialog = ({ duplicates, onResolve, onCancel }) => {
         </DialogHeader>
         <div className="max-h-[60vh] overflow-y-auto">
           {duplicates.map((student, index) => (
-            <div key={student.studentId} className="mb-4 p-2 border rounded">
-              <p>Student ID: {student.studentId}</p>
+            <div key={student.GRN} className="mb-4 p-2 border rounded">
+              <p>GRN: {student.GRN}</p>
               <p>Name: {student.name} {student.surname}</p>
               <RadioGroup
                 value={resolutions[index].action}
                 onValueChange={(value) => handleResolutionChange(index, value)}
               >
                 <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="keep" id={`keep-${student.studentId}`} />
-                  <Label htmlFor={`keep-${student.studentId}`}>Keep Existing</Label>
+                  <RadioGroupItem value="keep" id={`keep-${student.GRN}`} />
+                  <Label htmlFor={`keep-${student.GRN}`}>Keep Existing</Label>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="replace" id={`replace-${student.studentId}`} />
-                  <Label htmlFor={`replace-${student.studentId}`}>Replace</Label>
+                  <RadioGroupItem value="replace" id={`replace-${student.GRN}`} />
+                  <Label htmlFor={`replace-${student.GRN}`}>Replace</Label>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="skip" id={`skip-${student.studentId}`} />
-                  <Label htmlFor={`skip-${student.studentId}`}>Skip</Label>
+                  <RadioGroupItem value="skip" id={`skip-${student.GRN}`} />
+                  <Label htmlFor={`skip-${student.GRN}`}>Skip</Label>
                 </div>
               </RadioGroup>
             </div>

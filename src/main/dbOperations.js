@@ -40,11 +40,11 @@ export const getStudents = async () => {
   }
 };
 
-export const getStudent = async (studentId) => {
+export const getStudent = async (GRN) => {
   try {
-    console.log('Getting student with ID:', studentId);
+    console.log('Getting student with GRN:', GRN);
     const students = store.get('students', []);
-    const student = students.find(student => student.studentId === studentId);
+    const student = students.find(student => student.GRN === GRN);
     console.log('Found student:', student);
     return student;
   } catch (err) {
@@ -53,28 +53,28 @@ export const getStudent = async (studentId) => {
   }
 };
 
-export const getStudentById = async (studentId) => {
+export const getStudentByGRN = async (GRN) => {
   try {
     const students = store.get('students', []);
-    const student = students.find(s => s.studentId === studentId);
+    const student = students.find(s => s.GRN === GRN);
     if (!student) {
       throw new Error('Student not found');
     }
     return student;
   } catch (err) {
-    console.error('Error getting student by ID:', err);
+    console.error('Error getting student by GRN:', err);
     throw err;
   }
 };
 
-export const updateStudent = async (studentId, updatedStudent) => {
+export const updateStudent = async (GRN, updatedStudent) => {
   try {
-    console.log('Updating student with ID:', studentId);
+    console.log('Updating student with GRN:', GRN);
     console.log('Updated data:', updatedStudent);
     const students = store.get('students', []);
-    const index = students.findIndex(student => student.studentId === studentId);
+    const index = students.findIndex(student => student.GRN === GRN);
     if (index !== -1) {
-      const existingStudent = await getStudentById(studentId);
+      const existingStudent = await getStudentByGRN(GRN);
       students[index] = {
         ...existingStudent,
         ...updatedStudent,
@@ -93,16 +93,16 @@ export const updateStudent = async (studentId, updatedStudent) => {
   }
 };
 
-export const deleteStudent = async (studentId) => {
+export const deleteStudent = async (GRN) => {
   try {
-    console.log('Deleting student with ID:', studentId);
+    console.log('Deleting student with GRN:', GRN);
     const students = store.get('students', []);
     console.log('Current number of students:', students.length);
-    const updatedStudents = students.filter(student => student.studentId !== studentId);
+    const updatedStudents = students.filter(student => student.GRN !== GRN);
     console.log('Number of students after filter:', updatedStudents.length);
     store.set('students', updatedStudents);
     console.log('Students updated in store');
-    return studentId;
+    return GRN;
   } catch (err) {
     console.error('Error deleting student:', err);
     throw err;
@@ -130,10 +130,10 @@ export const incrementCertificateCounter = async (type) => {
   }
 };
 
-export const saveCertificate = async (studentId, type, data) => {
+export const saveCertificate = async (GRN, type, data) => {
   try {
     const certificates = store.get('certificates', []);
-    const certificate = { studentId, type, timestamp: Date.now(), data };
+    const certificate = { GRN, type, timestamp: Date.now(), data };
     certificates.push(certificate);
     store.set('certificates', certificates);
     return certificate;
@@ -143,10 +143,10 @@ export const saveCertificate = async (studentId, type, data) => {
   }
 };
 
-export const getLatestCertificate = async (studentId, type) => {
+export const getLatestCertificate = async (GRN, type) => {
   try {
     const certificates = store.get('certificates', []);
-    const typeCertificates = certificates.filter(cert => cert.studentId === studentId && cert.type === type);
+    const typeCertificates = certificates.filter(cert => cert.GRN === GRN && cert.type === type);
     return typeCertificates.sort((a, b) => b.timestamp - a.timestamp)[0];
   } catch (err) {
     console.error('Error getting latest certificate:', err);
@@ -155,10 +155,10 @@ export const getLatestCertificate = async (studentId, type) => {
 };
 
 // Modify these functions to work with individual student counters
-export const incrementBonafideGeneratedCount = async (studentId) => {
+export const incrementBonafideGeneratedCount = async (GRN) => {
   try {
     const students = store.get('students', []);
-    const studentIndex = students.findIndex(s => s.studentId === studentId);
+    const studentIndex = students.findIndex(s => s.GRN === GRN);
     if (studentIndex !== -1) {
       if (!students[studentIndex].bonafideGeneratedCount) {
         students[studentIndex].bonafideGeneratedCount = 0;
@@ -174,10 +174,10 @@ export const incrementBonafideGeneratedCount = async (studentId) => {
   }
 };
 
-export const getBonafideGeneratedCount = async (studentId) => {
+export const getBonafideGeneratedCount = async (GRN) => {
   try {
     const students = store.get('students', []);
-    const student = students.find(s => s.studentId === studentId);
+    const student = students.find(s => s.GRN === GRN);
     if (student) {
       return student.bonafideGeneratedCount || 0;
     }
@@ -188,10 +188,10 @@ export const getBonafideGeneratedCount = async (studentId) => {
   }
 };
 
-export const incrementLeaveGeneratedCount = async (studentId) => {
+export const incrementLeaveGeneratedCount = async (GRN) => {
   try {
     const students = store.get('students', []);
-    const studentIndex = students.findIndex(s => s.studentId === studentId);
+    const studentIndex = students.findIndex(s => s.GRN === GRN);
     if (studentIndex !== -1) {
       if (!students[studentIndex].leaveGeneratedCount) {
         students[studentIndex].leaveGeneratedCount = 0;
@@ -207,10 +207,10 @@ export const incrementLeaveGeneratedCount = async (studentId) => {
   }
 };
 
-export const getLeaveGeneratedCount = async (studentId) => {
+export const getLeaveGeneratedCount = async (GRN) => {
   try {
     const students = store.get('students', []);
-    const student = students.find(s => s.studentId === studentId);
+    const student = students.find(s => s.GRN === GRN);
     if (student) {
       return student.leaveGeneratedCount || 0;
     }

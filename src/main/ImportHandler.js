@@ -42,7 +42,6 @@ export const handleImportData = async (event) => {
 
     for (const row of data) {
       const student = {
-        studentId: row['Student ID'] || '',
         GRN: row['GRN'] || '',
         PENNo: row['PEN No'] || '',
         aadharNo: row['Aadhar No'] || '',
@@ -82,7 +81,7 @@ export const handleImportData = async (event) => {
 
       // Only process the student if at least one field is non-empty
       if (Object.values(student).some(value => value !== '')) {
-        const existingStudent = await getStudent(student.studentId)
+        const existingStudent = await getStudent(student.GRN)
 
         if (existingStudent) {
           duplicates.push(student)
@@ -117,7 +116,7 @@ export const resolveDuplicates = async (resolvedStudents) => {
 
     for (const student of resolvedStudents) {
       if (student.action === 'replace') {
-        await updateStudent(student.studentId, student)
+        await updateStudent(student.GRN, student)
         importedCount++
       } else if (student.action === 'keep') {
         skippedCount++

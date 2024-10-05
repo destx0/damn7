@@ -14,7 +14,7 @@ import {
   DialogTrigger
 } from '@/components/ui/dialog'
 import { toast } from 'react-hot-toast'
-import { format, parse, isValid } from 'date-fns' // Add this import
+import { format, parse, isValid } from 'date-fns'
 
 const BonafideForm = () => {
   const location = useLocation()
@@ -50,12 +50,10 @@ const BonafideForm = () => {
   const formatDateString = (dateValue) => {
     if (!dateValue) return ''
     if (typeof dateValue === 'string') {
-      // Try parsing as 'dd-MM-yyyy' first
       let date = parse(dateValue, 'dd-MM-yyyy', new Date())
       if (isValid(date)) {
         return format(date, 'dd-MM-yyyy')
       }
-      // If parsing fails, try as ISO string
       date = new Date(dateValue)
       if (isValid(date)) {
         return format(date, 'dd-MM-yyyy')
@@ -63,7 +61,7 @@ const BonafideForm = () => {
     } else if (dateValue instanceof Date && isValid(dateValue)) {
       return format(dateValue, 'dd-MM-yyyy')
     }
-    return '' // Return empty string if parsing fails
+    return ''
   }
 
   useEffect(() => {
@@ -73,8 +71,8 @@ const BonafideForm = () => {
 
   const loadStudentData = async () => {
     try {
-      if (initialStudentData && initialStudentData.studentId) {
-        const student = await window.api.getStudent(initialStudentData.studentId)
+      if (initialStudentData && initialStudentData.GRN) {
+        const student = await window.api.getStudent(initialStudentData.GRN)
         const formattedStudent = {
           ...student,
           dateOfBonafide: formatDateString(student.dateOfBonafide),
@@ -86,7 +84,7 @@ const BonafideForm = () => {
           otherReason: formattedStudent.otherReason || ''
         }))
       } else {
-        console.error('Student data or studentId is undefined')
+        console.error('Student data or GRN is undefined')
       }
     } catch (error) {
       console.error('Error loading student data:', error)
@@ -95,7 +93,7 @@ const BonafideForm = () => {
 
   const loadGeneratedCount = async () => {
     try {
-      const count = await window.api.getBonafideGeneratedCount(studentData.studentId)
+      const count = await window.api.getBonafideGeneratedCount(studentData.GRN)
       setGeneratedCount(count)
     } catch (error) {
       console.error('Error loading generated count:', error)
@@ -125,7 +123,6 @@ const BonafideForm = () => {
         lastUpdated: format(new Date(), 'dd-MM-yyyy')
       }
 
-      // Check if data has changed
       const hasDataChanged = Object.keys(formData).some((key) => formData[key] !== studentData[key])
 
       if (hasDataChanged) {
@@ -136,13 +133,11 @@ const BonafideForm = () => {
       const newPdfUrl = `data:application/pdf;base64,${base64Data}`
       setCurrentPdfUrl(newPdfUrl)
 
-      // Update the generated count
-      const newCount = await window.api.getBonafideGeneratedCount(studentData.studentId)
+      const newCount = await window.api.getBonafideGeneratedCount(studentData.GRN)
       setGeneratedCount(newCount)
 
-      // Update student data in the students table only if data has changed
       if (hasDataChanged) {
-        const updatedStudent = await window.api.updateStudent(studentData.studentId, {
+        const updatedStudent = await window.api.updateStudent(studentData.GRN, {
           ...formData,
           lastUpdated: new Date().toISOString()
         })
@@ -357,7 +352,6 @@ const BonafideForm = () => {
 
   const handleSave = async () => {
     try {
-      // Check if data has changed
       const hasDataChanged = Object.keys(formData).some((key) => formData[key] !== studentData[key])
 
       if (hasDataChanged) {
@@ -365,15 +359,13 @@ const BonafideForm = () => {
           ...formData,
           lastUpdated: new Date().toISOString()
         }
-        await window.api.updateStudent(studentData.studentId, updatedData)
+        await window.api.updateStudent(studentData.GRN, updatedData)
         toast.success('Student data saved successfully')
-        // Update the local studentData state
         setStudentData((prevData) => ({ ...prevData, ...updatedData }))
       } else {
         toast.success('No changes to save')
       }
 
-      // Navigate to the table page after saving
       navigate('/table')
     } catch (error) {
       console.error('Error saving student data:', error)

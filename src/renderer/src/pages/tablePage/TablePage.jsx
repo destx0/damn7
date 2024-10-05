@@ -29,8 +29,8 @@ const TablePage = () => {
       const students = await window.api.getStudents()
       // Fetch certificate counts for each student
       const studentsWithCounts = await Promise.all(students.map(async (student) => {
-        const bonafideCount = await window.api.getBonafideGeneratedCount(student.studentId)
-        const leaveCount = await window.api.getLeaveGeneratedCount(student.studentId)
+        const bonafideCount = await window.api.getBonafideGeneratedCount(student.GRN)
+        const leaveCount = await window.api.getLeaveGeneratedCount(student.GRN)
         return {
           ...student,
           bonafideGeneratedCount: bonafideCount,
@@ -51,20 +51,20 @@ const TablePage = () => {
     (student) => {
       if (userType === 'admin') {
         console.log('Editing student:', student);
-        navigate(`/edit-student/${student.studentId}`, { state: { student } })
+        navigate(`/edit-student/${student.GRN}`, { state: { student } })
       }
     },
     [navigate, userType]
   )
 
   const handleDeleteStudent = useCallback(
-    async (studentId) => {
+    async (GRN) => {
       if (userType === 'admin') {
         try {
-          console.log('Attempting to delete student with ID:', studentId);
-          await window.api.deleteStudent(studentId);
+          console.log('Attempting to delete student with GRN:', GRN);
+          await window.api.deleteStudent(GRN);
           console.log('Student deleted successfully');
-          setRowData((prevData) => prevData.filter((student) => student.studentId !== studentId));
+          setRowData((prevData) => prevData.filter((student) => student.GRN !== GRN));
         } catch (error) {
           console.error('Error deleting student:', error);
         }
@@ -80,10 +80,10 @@ const TablePage = () => {
       let base64Data
       if (type === 'leave') {
         base64Data = await window.api.generateDraftLeaveCertificate(data)
-        navigate(`/leave-form/${data.studentId}`, { state: { pdfDataUrl: `data:application/pdf;base64,${base64Data}`, studentData: data } })
+        navigate(`/leave-form/${data.GRN}`, { state: { pdfDataUrl: `data:application/pdf;base64,${base64Data}`, studentData: data } })
       } else if (type === 'bonafide') {
         base64Data = await window.api.generateDraftBonafideCertificate(data)
-        navigate(`/bonafide-form/${data.studentId}`, { state: { pdfDataUrl: `data:application/pdf;base64,${base64Data}`, studentData: data } })
+        navigate(`/bonafide-form/${data.GRN}`, { state: { pdfDataUrl: `data:application/pdf;base64,${base64Data}`, studentData: data } })
       } else {
         throw new Error('Unknown certificate type')
       }
@@ -95,19 +95,19 @@ const TablePage = () => {
   const handleStudentUpdate = useCallback((updatedStudent) => {
     setRowData((prevData) =>
       prevData.map((student) =>
-        student.studentId === updatedStudent.studentId
+        student.GRN === updatedStudent.GRN
           ? { ...student, ...updatedStudent, lastUpdated: new Date().toISOString() }
           : student
       )
     )
   }, [])
 
-  const handleFreezeStudent = useCallback(async (studentId) => {
+  const handleFreezeStudent = useCallback(async (GRN) => {
     try {
-      const updatedStudent = await window.api.freezeStudent(studentId)
+      const updatedStudent = await window.api.freezeStudent(GRN)
       setRowData((prevData) =>
         prevData.map((student) =>
-          student.studentId === studentId ? { ...student, ...updatedStudent } : student
+          student.GRN === GRN ? { ...student, ...updatedStudent } : student
         )
       )
       toast.success('Student data frozen successfully')
@@ -117,12 +117,12 @@ const TablePage = () => {
     }
   }, [])
 
-  const handleUnfreezeStudent = useCallback(async (studentId) => {
+  const handleUnfreezeStudent = useCallback(async (GRN) => {
     try {
-      const updatedStudent = await window.api.unfreezeStudent(studentId)
+      const updatedStudent = await window.api.unfreezeStudent(GRN)
       setRowData((prevData) =>
         prevData.map((student) =>
-          student.studentId === studentId ? { ...student, ...updatedStudent } : student
+          student.GRN === GRN ? { ...student, ...updatedStudent } : student
         )
       )
       toast.success('Student data unfrozen successfully')
@@ -187,10 +187,9 @@ const TablePage = () => {
         columnSeparator: ',',
       }
 
-      // Check if columnApi is available
       if (gridRef.current.columnApi) {
         params.columnKeys = gridRef.current.columnApi.getAllColumns()
-          .filter(column => column.colDef.field) // Only include columns with a field
+          .filter(column => column.colDef.field)
           .map(column => column.getColId())
       }
 
@@ -239,7 +238,6 @@ const TablePage = () => {
   const gridRef = useRef(null)
 
   useEffect(() => {
-    // Listen for duplicate students event
     const handleDuplicateStudents = (_, duplicates) => {
       setDuplicateStudents(duplicates)
     }

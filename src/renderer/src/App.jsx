@@ -1,4 +1,3 @@
-
 import LoginPage from './pages/loginPage'
 import TablePage from './pages/tablePage/TablePage'
 import StudentFormPage from './pages/studentFormPage'
@@ -15,9 +14,9 @@ function App() {
         <Route path="/" element={<LoginPage />} />
         <Route path="/table" element={<TablePage />} />
         <Route path="/add-student" element={<StudentFormPage />} />
-        <Route path="/edit-student/:studentId" element={<StudentFormPage />} />
-        <Route path="/leave-form/:studentId" element={<LeaveFormPage />} />
-        <Route path="/bonafide-form/:studentId" element={<BonafideFormPage />} />
+        <Route path="/edit-student/:GRN" element={<StudentFormPage />} />
+        <Route path="/leave-form/:GRN" element={<LeaveFormPage />} />
+        <Route path="/bonafide-form/:GRN" element={<BonafideFormPage />} />
       </Routes>
     </Router>
   )

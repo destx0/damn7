@@ -65,7 +65,6 @@ function setupIpcHandlers() {
         ...studentData,
         lastUpdated: new Date().toISOString()
       }
-      // Add the new student to the database using the addStudent function
       const addedStudent = await addStudent(newStudent)
       return addedStudent
     } catch (error) {
@@ -76,7 +75,6 @@ function setupIpcHandlers() {
 
   ipcMain.handle('get-students', async () => {
     try {
-      // Use getStudents from dbOperations instead of fetchStudentsFromDatabase
       const students = await getStudents();
       return students;
     } catch (error) {
@@ -85,22 +83,22 @@ function setupIpcHandlers() {
     }
   })
 
-  ipcMain.handle('get-student', async (_, studentId) => {
-    console.log('Fetching student with ID:', studentId)
-    const student = await getStudent(studentId)
+  ipcMain.handle('get-student', async (_, GRN) => {
+    console.log('Fetching student with GRN:', GRN)
+    const student = await getStudent(GRN)
     console.log('Fetched student:', student)
     return student
   })
 
-  ipcMain.handle('update-student', async (event, studentId, updatedData) => {
+  ipcMain.handle('update-student', async (event, GRN, updatedData) => {
     try {
-      const existingStudent = await getStudentById(studentId)
+      const existingStudent = await getStudentByGRN(GRN)
       const updatedStudent = {
         ...existingStudent,
         ...updatedData,
         lastUpdated: new Date().toISOString()
       }
-      const result = await updateStudent(studentId, updatedStudent)
+      const result = await updateStudent(GRN, updatedStudent)
       return result
     } catch (error) {
       console.error('Error updating student:', error)
@@ -108,9 +106,9 @@ function setupIpcHandlers() {
     }
   })
 
-  ipcMain.handle('delete-student', async (_, studentId) => {
-    console.log('Received delete request for student ID:', studentId)
-    const result = await deleteStudent(studentId)
+  ipcMain.handle('delete-student', async (_, GRN) => {
+    console.log('Received delete request for student GRN:', GRN)
+    const result = await deleteStudent(GRN)
     console.log('Delete operation result:', result)
     return result
   })
@@ -148,7 +146,7 @@ function setupIpcHandlers() {
       )
       const base64Pdf = Buffer.from(pdfBuffer).toString('base64')
       await incrementCertificateCounter('leave')
-      await incrementLeaveGeneratedCount(data.studentId) // Pass studentId
+      await incrementLeaveGeneratedCount(data.GRN) // Changed from studentId to GRN
       return base64Pdf
     } catch (error) {
       console.error('Error generating official leave certificate:', error)
@@ -179,7 +177,7 @@ function setupIpcHandlers() {
       )
       const base64Pdf = Buffer.from(pdfBuffer).toString('base64')
       await incrementCertificateCounter('bonafide')
-      await incrementBonafideGeneratedCount(data.studentId) // Pass studentId
+      await incrementBonafideGeneratedCount(data.GRN) // Changed from studentId to GRN
       return base64Pdf
     } catch (error) {
       console.error('Error generating official bonafide certificate:', error)
@@ -188,18 +186,18 @@ function setupIpcHandlers() {
   })
 
   // Add these new handlers for bonafide generated count
-  ipcMain.handle('get-bonafide-generated-count', async (_, studentId) => {
+  ipcMain.handle('get-bonafide-generated-count', async (_, GRN) => {
     try {
-      return await getBonafideGeneratedCount(studentId)
+      return await getBonafideGeneratedCount(GRN)
     } catch (error) {
       console.error('Error getting bonafide generated count:', error)
       throw error
     }
   })
 
-  ipcMain.handle('get-leave-generated-count', async (_, studentId) => {
+  ipcMain.handle('get-leave-generated-count', async (_, GRN) => {
     try {
-      return await getLeaveGeneratedCount(studentId)
+      return await getLeaveGeneratedCount(GRN)
     } catch (error) {
       console.error('Error getting leave generated count:', error)
       throw error
@@ -209,11 +207,11 @@ function setupIpcHandlers() {
   // Add these new handlers
   ipcMain.handle(
     'save-certificate',
-    async (_, studentId, type, data) => await saveCertificate(studentId, type, data)
+    async (_, GRN, type, data) => await saveCertificate(GRN, type, data)
   )
   ipcMain.handle(
     'get-latest-certificate',
-    async (_, studentId, type) => await getLatestCertificate(studentId, type)
+    async (_, GRN, type) => await getLatestCertificate(GRN, type)
   )
 
   // Import data handler
@@ -223,21 +221,21 @@ function setupIpcHandlers() {
   ipcMain.handle('resolve-duplicates', (_, resolvedStudents) => resolveDuplicates(resolvedStudents))
 
   // New handlers for get-student-by-id and update-student
-  ipcMain.handle('get-student-by-id', async (event, studentId) => {
+  ipcMain.handle('get-student-by-grn', async (event, GRN) => {
     try {
-      const student = await getStudentById(studentId);
+      const student = await getStudentByGRN(GRN);
       return student;
     } catch (error) {
-      console.error('Error getting student by ID:', error);
+      console.error('Error getting student by GRN:', error);
       throw error;
     }
   });
 
-  ipcMain.handle('freeze-student', async (_, studentId) => {
+  ipcMain.handle('freeze-student', async (_, GRN) => {
     try {
-      const student = await getStudentById(studentId)
+      const student = await getStudentByGRN(GRN)
       const frozenStudent = { ...student, isFrozen: true }
-      const updatedStudent = await updateStudent(studentId, frozenStudent)
+      const updatedStudent = await updateStudent(GRN, frozenStudent)
       return updatedStudent
     } catch (error) {
       console.error('Error freezing student:', error)
@@ -245,11 +243,11 @@ function setupIpcHandlers() {
     }
   })
 
-  ipcMain.handle('unfreeze-student', async (_, studentId) => {
+  ipcMain.handle('unfreeze-student', async (_, GRN) => {
     try {
-      const student = await getStudentById(studentId)
+      const student = await getStudentByGRN(GRN)
       const unfrozenStudent = { ...student, isFrozen: false }
-      const updatedStudent = await updateStudent(studentId, unfrozenStudent)
+      const updatedStudent = await updateStudent(GRN, unfrozenStudent)
       return updatedStudent
     } catch (error) {
       console.error('Error unfreezing student:', error)
