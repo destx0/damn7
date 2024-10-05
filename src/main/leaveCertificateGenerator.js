@@ -114,8 +114,8 @@ ${createField('Place of Birth', data.placeOfBirth, 20)} ${createField('Taluka', 
 ${createField('State', data.state, 27)} ${createField('Country', 'India', 40)}
 ${createField('Date of Birth (DD/MM/YY) according to the Christian era', formatDate(data.dateOfBirth), 29)}
 ${createField('Date of Birth (In words)', dateOfBirthInWords, 60)}
-<strong>Last school attended & standard</strong>${createField('', data.lastAttendedSchool, 42)}${createField('', data.lastSchoolStandard, 9)}
-${createField('Date of admission in this school', formatDate(data.dateOfAdmission), 24)} ${createField('Standard', data.admissionStandard, 19)}
+<strong>Last school attended & standard</strong>${createField('', data.lastAttendedSchool, 42)}${createField('', data.lastSchoolStandard + '<sup>th</sup>', 9)}
+${createField('Date of admission in this school', formatDate(data.dateOfAdmission), 24)} ${createField('Standard', data.admissionStandard + '<sup>th</sup>', 19)}
 ${createField('Progress', data.progress, 33)} ${createField('Conduct', data.conduct, 30)}
 ${createField('Date of leaving school', formatDate(data.dateOfLeaving), 60)}
 ${createField('Standard in which studying and since when (in words and figure)', formatStandard(data.currentStandard), 22)}
