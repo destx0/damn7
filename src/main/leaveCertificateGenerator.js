@@ -44,18 +44,26 @@ export const generateLeaveCertificate = async (data, isDraft = true) => {
     return `<strong style="font-size: 18px;">${label}</strong> <span style="display: inline-block; position: relative; width: ${size}ch; font-weight: 500;">${field}${padding}<span style="position: absolute; bottom: 5px; left: 0; right: 0; border-bottom: 1px solid black;"></span></span>`
   }
 
-  // New helper function to format the last attended school name
   const formatLastAttendedSchool = (schoolName) => {
     if (!schoolName) return createField('', '---', 42)
-    if (schoolName.length <= 40) {
+
+    const maxLength = 50 // Character limit for the first line
+    if (schoolName.length <= maxLength) {
       return createField('', schoolName, 42)
     } else {
-      // Split into two lines
-      const firstLine = schoolName.slice(0, 50)
-      const secondLine = schoolName.slice(50)
+      // Find the last space before the character limit
+      let splitIndex = schoolName.lastIndexOf(' ', maxLength)
+      if (splitIndex === -1) {
+        // If no space found, split at the character limit
+        splitIndex = maxLength
+      }
+      const firstLine = schoolName.slice(0, splitIndex)
+      const secondLine = schoolName.slice(splitIndex).trim()
+
       return createField('', firstLine, 53) + '\n' + createFieldNoColon('', secondLine, 71)
     }
   }
+
 
   const dateOfBirthInWords = dateToWords(data.dateOfBirth)
   const generationDate = data.leaveCertificateGenerationDate
