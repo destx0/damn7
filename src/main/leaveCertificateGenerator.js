@@ -64,7 +64,6 @@ export const generateLeaveCertificate = async (data, isDraft = true) => {
     }
   }
 
-
   const dateOfBirthInWords = dateToWords(data.dateOfBirth)
   const generationDate = data.leaveCertificateGenerationDate
     ? new Date(data.leaveCertificateGenerationDate)
@@ -129,8 +128,8 @@ export const generateLeaveCertificate = async (data, isDraft = true) => {
             </div>
             <h1 style="font-size: 24pt; margin-top: -10px;margin-bottom: 0px;">${certificateTitle}</h1>
             <pre style="margin-top: 10px;">
-${createField('PEN', data.PENNo, 27)} ${createField('APAAR ID/ABC ID', data.APAARId, 30)}
-${createField('Student ID', data.studentId, 26)} ${createField('U.I.D. No. (Aadhar Card No.)', data.aadharNo, 17)}
+${createField('PEN', data.PENNo, 32)} ${createField('APAAR ID/ABC ID', data.APAARId, 25)}
+${createField('Student ID', data.studentId, 26)}  ${createField('U.I.D. No. (Aadhar Card No.)', data.aadharNo, 16)}
 <strong>Name of the student in full</strong> ${createField('(Name)', data.name, 15)} ${createField("(Father's Name)", data.fathersName, 20)}
                                         ${createField('(Surname)', data.surname, 51)}
 ${createField("Mother's Name", data.mothersName, 67)}

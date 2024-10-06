@@ -34,11 +34,11 @@ const ActionMenu = ({
 
 const formatDateField = (params) => {
   if (params.value) {
-    const date = new Date(params.value);
-    return date.toLocaleDateString(); // This will format the date only
+    const date = new Date(params.value)
+    return date.toLocaleDateString() // This will format the date only
   }
-  return '';
-};
+  return ''
+}
 
 const createColumnDefs = (
   isAdmin,
@@ -68,6 +68,7 @@ const createColumnDefs = (
   },
   { headerName: 'GRN', field: 'GRN', pinned: 'left', width: 120 },
   { headerName: 'PEN No', field: 'PENNo' },
+  { headerName: 'APAAR ID', field: 'APAARId' },
   { headerName: 'Aadhar No', field: 'aadharNo' },
   { headerName: 'Name', field: 'name' },
   { headerName: 'Surname', field: 'surname' },
@@ -80,10 +81,20 @@ const createColumnDefs = (
   { headerName: 'Taluka', field: 'taluka' },
   { headerName: 'District', field: 'district' },
   { headerName: 'State', field: 'state' },
-  { headerName: 'Date of Birth', field: 'dateOfBirth', filter: 'agDateColumnFilter', valueFormatter: formatDateField },
+  {
+    headerName: 'Date of Birth',
+    field: 'dateOfBirth',
+    filter: 'agDateColumnFilter',
+    valueFormatter: formatDateField
+  },
   { headerName: 'Last Attended School', field: 'lastAttendedSchool' },
   { headerName: 'Last School Standard', field: 'lastSchoolStandard' },
-  { headerName: 'Date of Admission', field: 'dateOfAdmission', filter: 'agDateColumnFilter', valueFormatter: formatDateField },
+  {
+    headerName: 'Date of Admission',
+    field: 'dateOfAdmission',
+    filter: 'agDateColumnFilter',
+    valueFormatter: formatDateField
+  },
   { headerName: 'Admission Standard', field: 'admissionStandard' },
   { headerName: 'Nationality', field: 'nationality', hide: true },
   { headerName: 'Mother Tongue', field: 'motherTongue' },
@@ -142,7 +153,6 @@ const createColumnDefs = (
     valueFormatter: formatDateField
   }
 ]
-
 
 const getRowStyle = (params) => {
   if (params.data.isFrozen) {
