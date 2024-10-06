@@ -21,19 +21,19 @@ export const studentSchema = z.object({
   mothersName: z
     .string()
     .regex(/^[a-zA-Z\s]+$/, { message: "Mother's Name must contain only letters and spaces" })
-    .min(1, { message: "Mother's Name is required" }),
-  religion: z.string().min(1, { message: 'Religion is required' }),
+    .optional(),
+  religion: z.string().optional(),
   caste: z.string().optional(),
   subCaste: z.string().optional(),
-  placeOfBirth: z.string().min(1, { message: 'Place of Birth is required' }),
+  placeOfBirth: z.string().optional(),
   taluka: z.string().optional(),
-  district: z.string().min(1, { message: 'District is required' }),
-  state: z.string().min(1, { message: 'State is required' }),
+  district: z.string().optional(),
+  state: z.string().optional(),
   dateOfBirth: z.date({ required_error: 'Date of Birth is required' }),
   lastAttendedSchool: z.string().optional(),
   lastSchoolStandard: z.string().optional(),
-  dateOfAdmission: z.date({ required_error: 'Date of Admission is required' }),
-  admissionStandard: z.string().min(1, { message: 'Admission Standard is required' }),
-  nationality: z.string().min(1, { message: 'Nationality is required' }),
+  dateOfAdmission: z.date().optional(),
+  admissionStandard: z.string().optional(),
+  nationality: z.string().optional(),
   motherTongue: z.string().optional()
 })
