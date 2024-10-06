@@ -35,7 +35,6 @@ const LeaveForm = () => {
     conduct: '',
     dateOfLeaving: '',
     reasonOfLeaving: '',
-    remarks: '',
     leaveCertificateGenerationDate: '',
     sscExamYear: '',
     sscPassStatus: '',
@@ -43,7 +42,8 @@ const LeaveForm = () => {
     customRemarks: '',
     customProgress: '',
     customConduct: '',
-    since: ''
+    since: '',
+    remarks: ''
   })
   const [currentPdfUrl, setCurrentPdfUrl] = useState(pdfDataUrl)
   const [isReasonDialogOpen, setIsReasonDialogOpen] = useState(false)
@@ -74,15 +74,25 @@ const LeaveForm = () => {
   const conductOptions = ['Fair', 'Good', 'Excellent', 'Custom']
 
   const months = [
-    'January', 'February', 'March', 'April', 'May', 'June',
-    'July', 'August', 'September', 'October', 'November', 'December'
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December'
   ]
 
   const currentYear = new Date().getFullYear()
-  const years = Array.from({length: 50}, (_, i) => currentYear - i)
+  const years = Array.from({ length: 50 }, (_, i) => currentYear - i)
 
   const handleSelectChange = (name, value) => {
-    setFormData(prevData => ({
+    setFormData((prevData) => ({
       ...prevData,
       [name]: value
     }))
@@ -120,7 +130,7 @@ const LeaveForm = () => {
           ...prevData,
           ...student,
           dateOfLeaving: formatDateString(student.dateOfLeaving),
-          leaveCertificateGenerationDate: formatDateString(student.leaveCertificateGenerationDate),
+          leaveCertificateGenerationDate: formatDateString(student.leaveCertificateGenerationDate)
         }))
       } else {
         console.error('Student data or GRN is undefined')
@@ -303,7 +313,7 @@ const LeaveForm = () => {
 
   const handleConfirmSince = () => {
     if (selectedSinceMonth && selectedSinceYear) {
-      setFormData(prevData => ({
+      setFormData((prevData) => ({
         ...prevData,
         since: `${selectedSinceMonth} ${selectedSinceYear}`
       }))
@@ -626,7 +636,7 @@ const LeaveForm = () => {
                         <Button
                           key={month}
                           onClick={() => setSelectedSinceMonth(month)}
-                          variant={selectedSinceMonth === month ? "default" : "outline"}
+                          variant={selectedSinceMonth === month ? 'default' : 'outline'}
                           size="sm"
                         >
                           {month}
@@ -641,7 +651,7 @@ const LeaveForm = () => {
                         <Button
                           key={year}
                           onClick={() => setSelectedSinceYear(year.toString())}
-                          variant={selectedSinceYear === year.toString() ? "default" : "outline"}
+                          variant={selectedSinceYear === year.toString() ? 'default' : 'outline'}
                           size="sm"
                         >
                           {year}
@@ -673,18 +683,18 @@ const LeaveForm = () => {
   }
 
   const formFields = [
-    { name: 'currentStandard', label: 'Current Standard', type: 'select' },
     { name: 'progress', label: 'Progress', type: 'text' },
     { name: 'conduct', label: 'Conduct', type: 'text' },
+    { name: 'dateOfLeaving', label: 'Date of Leaving School', type: 'date' },
+    { name: 'currentStandard', label: 'Current Standard', type: 'select' },
+    { name: 'since', label: 'Since', type: 'select' },
     { name: 'reasonOfLeaving', label: 'Reason of Leaving', type: 'text' },
     { name: 'remarks', label: 'Remarks', type: 'text' },
-    { name: 'dateOfLeaving', label: 'Date of Leaving School', type: 'date' },
     {
       name: 'leaveCertificateGenerationDate',
       label: 'Leave Certificate Generation Date',
       type: 'date'
-    },
-    { name: 'since', label: 'Since', type: 'select' },
+    }
   ]
 
   const closeCertificate = () => {
@@ -718,7 +728,9 @@ const LeaveForm = () => {
     <>
       <div className="flex justify-between m-4">
         <h2 className="text-xl font-semibold mb-4">Leave Certificate Form</h2>
-        <Button onClick={() => generateOfficialCertificate(false)}>Generate Official Certificate</Button>
+        <Button onClick={() => generateOfficialCertificate(false)}>
+          Generate Official Certificate
+        </Button>
         <Button onClick={generateDuplicateCertificate} variant="secondary">
           Generate Duplicate
         </Button>

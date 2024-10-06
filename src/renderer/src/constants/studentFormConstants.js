@@ -1,13 +1,15 @@
 export const fieldNames = [
+  'GRN',
+  'PENNo',
+  'APAARId',
   'studentId',
   'aadharNo',
-  'PENNo',
-  'GRN',
-  'APAARId',
   'name',
   'fathersName',
   'surname',
   'mothersName',
+  'nationality',
+  'motherTongue',
   'religion',
   'caste',
   'subCaste',
@@ -20,8 +22,6 @@ export const fieldNames = [
   'lastSchoolStandard',
   'dateOfAdmission',
   'admissionStandard',
-  'nationality',
-  'motherTongue'
 ]
 
 export const fieldLabels = {

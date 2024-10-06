@@ -14,7 +14,12 @@ import {
   DialogTitle,
   DialogTrigger
 } from '@/components/ui/dialog'
-import { fieldNames, fieldLabels, dateFields, dialogOptions } from '@/constants/studentFormConstants'
+import {
+  fieldNames,
+  fieldLabels,
+  dateFields,
+  dialogOptions
+} from '@/constants/studentFormConstants'
 import { studentSchema } from '@/schemas/studentSchema'
 import { formatLabel, sanitizeValue } from '@/utils/studentFormUtils'
 import { z } from 'zod'
@@ -55,39 +60,39 @@ const StudentFormPage = () => {
       const formattedStudent = {
         ...location.state.student,
         dateOfBirth: formatDateString(location.state.student.dateOfBirth),
-        dateOfAdmission: formatDateString(location.state.student.dateOfAdmission),
+        dateOfAdmission: formatDateString(location.state.student.dateOfAdmission)
       }
-      console.log('Initializing form with student data:', formattedStudent);
+      console.log('Initializing form with student data:', formattedStudent)
       setFormData(formattedStudent)
     } else if (GRN) {
-      console.log('Fetching student data for GRN:', GRN);
-      fetchStudentData(GRN);
+      console.log('Fetching student data for GRN:', GRN)
+      fetchStudentData(GRN)
     }
   }, [GRN, location.state])
 
   const fetchStudentData = async (grn) => {
     try {
-      const student = await window.api.getStudent(grn);
-      console.log('Fetched student data:', student);
+      const student = await window.api.getStudent(grn)
+      console.log('Fetched student data:', student)
       if (student) {
         const formattedStudent = {
           ...student,
           dateOfBirth: formatDateString(student.dateOfBirth),
-          dateOfAdmission: formatDateString(student.dateOfAdmission),
+          dateOfAdmission: formatDateString(student.dateOfAdmission)
         }
-        setFormData(formattedStudent);
+        setFormData(formattedStudent)
       } else {
-        console.error('Student not found');
+        console.error('Student not found')
       }
     } catch (error) {
-      console.error('Error fetching student data:', error);
+      console.error('Error fetching student data:', error)
     }
-  };
+  }
 
   const handleChange = (e) => {
-    const { id, value } = e.target;
-    const sanitizedValue = sanitizeValue(id, value);
-    setFormData({ ...formData, [id]: sanitizedValue });
+    const { id, value } = e.target
+    const sanitizedValue = sanitizeValue(id, value)
+    setFormData({ ...formData, [id]: sanitizedValue })
   }
 
   const validateForm = () => {
@@ -95,7 +100,7 @@ const StudentFormPage = () => {
       const formDataWithDates = {
         ...formData,
         dateOfBirth: formData.dateOfBirth ? new Date(formData.dateOfBirth) : undefined,
-        dateOfAdmission: formData.dateOfAdmission ? new Date(formData.dateOfAdmission) : undefined,
+        dateOfAdmission: formData.dateOfAdmission ? new Date(formData.dateOfAdmission) : undefined
       }
       studentSchema.parse(formDataWithDates)
       setErrors({})
@@ -117,23 +122,23 @@ const StudentFormPage = () => {
   }
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    e.preventDefault()
     if (!validateForm()) {
-      return;
+      return
     }
     try {
       const updatedFormData = {
         ...formData,
         lastUpdated: format(new Date(), 'dd-MM-yyyy')
-      };
+      }
       if (GRN) {
-        console.log('Updating student with GRN:', GRN);
-        console.log('Updated data:', updatedFormData);
+        console.log('Updating student with GRN:', GRN)
+        console.log('Updated data:', updatedFormData)
         const updatedStudent = await window.api.updateStudent(GRN, updatedFormData)
         console.log('Student updated successfully:', updatedStudent)
       } else {
-        console.log('Adding new student');
-        console.log('New student data:', updatedFormData);
+        console.log('Adding new student')
+        console.log('New student data:', updatedFormData)
         const newStudent = await window.api.addStudent(updatedFormData)
         console.log('New student added successfully:', newStudent)
       }
@@ -172,9 +177,7 @@ const StudentFormPage = () => {
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           <h1 className="text-2xl font-bold">New Student Registration</h1>
           <div className="flex space-x-4">
-            <Button onClick={handleBack} >
-              Cancel
-            </Button>
+            <Button onClick={handleBack}>Cancel</Button>
             <Button onClick={handleSubmit} className="bg-green-600 hover:bg-green-700">
               {GRN ? <Save className="mr-2 h-4 w-4" /> : <UserPlus className="mr-2 h-4 w-4" />}
               {GRN ? 'Update' : 'Add'} Student
@@ -252,7 +255,9 @@ const StudentFormPage = () => {
                                   </div>
                                 </ScrollArea>
                                 <div className="pt-4 border-t">
-                                  <Label htmlFor="customValue">Custom {formatLabel(field, fieldLabels)}</Label>
+                                  <Label htmlFor="customValue">
+                                    Custom {formatLabel(field, fieldLabels)}
+                                  </Label>
                                   <div className="flex space-x-2 mt-2">
                                     <Input
                                       id="customValue"
@@ -275,24 +280,43 @@ const StudentFormPage = () => {
                           required={field === 'name' || field === 'GRN'}
                           className={`mt-1 ${errors[field] ? 'border-red-500' : ''}`}
                           maxLength={
-                            field === 'aadharNo' || field === 'APAARId' ? 12 :
-                            field === 'PENNo' ? 11 :
-                            undefined
+                            field === 'aadharNo' || field === 'APAARId'
+                              ? 12
+                              : field === 'PENNo'
+                                ? 11
+                                : field === 'studentId'
+                                  ? 19
+                                  : field === 'PENNo'
+                                    ? 11
+                                    : undefined
                           }
                           pattern={
-                            field === 'aadharNo' || field === 'APAARId' ? "\\d{12}" :
-                            field === 'PENNo' ? "\\d{11}" :
-                            field === 'GRN' ? "\\d+" :
-                            ['name', 'surname', 'fathersName', 'mothersName'].includes(field) ? "[a-zA-Z\\s]+" :
-                            undefined
+                            field === 'aadharNo' || field === 'APAARId'
+                              ? '\\d{12}'
+                              : field === 'PENNo'
+                                ? '\\d{11}'
+                                : field === 'GRN'
+                                  ? '\\d+'
+                                  : ['name', 'surname', 'fathersName', 'mothersName'].includes(
+                                        field
+                                      )
+                                    ? '[a-zA-Z\\s]+'
+                                    : undefined
                           }
                           title={
-                            field === 'aadharNo' ? "Aadhar Number must be exactly 12 digits" :
-                            field === 'APAARId' ? "APAAR ID/ABC ID must be exactly 12 digits" :
-                            field === 'PENNo' ? "PEN Number must be exactly 11 digits" :
-                            field === 'GRN' ? "Must be numeric" :
-                            ['name', 'surname', 'fathersName', 'mothersName'].includes(field) ? "Must contain only letters and spaces" :
-                            undefined
+                            field === 'aadharNo'
+                              ? 'Aadhar Number must be exactly 12 digits'
+                              : field === 'APAARId'
+                                ? 'APAAR ID/ABC ID must be exactly 12 digits'
+                                : field === 'PENNo'
+                                  ? 'PEN Number must be exactly 11 digits'
+                                  : field === 'GRN'
+                                    ? 'Must be numeric'
+                                    : ['name', 'surname', 'fathersName', 'mothersName'].includes(
+                                          field
+                                        )
+                                      ? 'Must contain only letters and spaces'
+                                      : undefined
                           }
                         />
                       )}
