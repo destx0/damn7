@@ -124,7 +124,7 @@ export const generateLeaveCertificate = async (data, isDraft = true) => {
                        <div style="display: flex; justify-content: space-between;">
               <span><strong>U Dise No.</strong>- 27031508414</span>
               <span><strong>Board</strong>- Nashik</span>
-              <span>${createField('Index No.', '15.15.005', 12)}</span>
+              <span>${createField('Index No.', 'S.15.15.005', 12)}</span>
             </div>
             <h1 style="font-size: 24pt; margin-top: -10px;margin-bottom: 0px;">${certificateTitle}</h1>
             <pre style="margin-top: 10px;">
