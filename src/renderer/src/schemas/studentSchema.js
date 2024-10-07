@@ -30,7 +30,7 @@ export const studentSchema = z.object({
   taluka: z.string().optional().or(z.literal('')),
   district: z.string().optional().or(z.literal('')),
   state: z.string().optional().or(z.literal('')),
-  dateOfBirth: z.date({ required_error: 'Date of Birth is required' }).or(z.literal('')),
+  dateOfBirth: z.date({ required_error: 'Date of Birth is required' }),
   lastAttendedSchool: z.string().optional().or(z.literal('')),
   lastSchoolStandard: z.string().optional().or(z.literal('')),
   dateOfAdmission: z.date().optional().or(z.literal('')),
