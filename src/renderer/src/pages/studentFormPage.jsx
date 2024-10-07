@@ -99,8 +99,8 @@ const StudentFormPage = () => {
     try {
       const formDataWithDates = {
         ...formData,
-        dateOfBirth: formData.dateOfBirth ? new Date(formData.dateOfBirth) : undefined,
-        dateOfAdmission: formData.dateOfAdmission ? new Date(formData.dateOfAdmission) : undefined
+        dateOfBirth: formData.dateOfBirth ? new Date(formData.dateOfBirth) : '',
+        dateOfAdmission: formData.dateOfAdmission ? new Date(formData.dateOfAdmission) : ''
       }
       studentSchema.parse(formDataWithDates)
       setErrors({})
