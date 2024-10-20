@@ -26,7 +26,7 @@ const formatStandard = (standard) => {
 }
 
 export const generateLeaveCertificate = async (data, isDraft = true) => {
-  const certificateNumber = isDraft ? 'DRAFT' : data.certificateNumber.toString().padStart(4, '0')
+  const certificateNumber = data.certificateNumber.toString().padStart(4, '0')
 
   const formatDate = (dateString) => {
     if (!dateString) return ''

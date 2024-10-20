@@ -1,12 +1,4 @@
 import React from 'react'
-import { MoreVertical } from 'lucide-react'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger
-} from '@/components/ui/dropdown-menu'
-import { Button } from '@/components/ui/button'
 import ActionRenderer from '@/components/ActionRenderer'
 
 const ActionMenu = ({
@@ -67,12 +59,12 @@ const createColumnDefs = (
     cellStyle: { display: 'flex', justifyContent: 'center', alignItems: 'center' }
   },
   { headerName: 'GRN', field: 'GRN', pinned: 'left', width: 120 },
+  { headerName: 'Name', field: 'name' },
+  { headerName: "Father's Name", field: 'fathersName' },
+  { headerName: 'Surname', field: 'surname' },
   { headerName: 'PEN No', field: 'PENNo' },
   { headerName: 'APAAR ID', field: 'APAARId' },
   { headerName: 'Aadhar No', field: 'aadharNo' },
-  { headerName: 'Name', field: 'name' },
-  { headerName: 'Surname', field: 'surname' },
-  { headerName: "Father's Name", field: 'fathersName' },
   { headerName: "Mother's Name", field: 'mothersName' },
   { headerName: 'Religion', field: 'religion' },
   { headerName: 'Caste', field: 'caste' },
@@ -150,15 +142,16 @@ const createColumnDefs = (
     headerName: 'Last Updated',
     field: 'lastUpdated',
     filter: 'agDateColumnFilter',
+    hide: true,
     valueFormatter: formatDateField
   }
 ]
 
 const getRowStyle = (params) => {
   if (params.data.isFrozen) {
-    return { background: '#E6F3FF' } // Light blue background for frozen rows
+    return { background: '#E6F3FF' }
   }
-  return null // Default style for unfrozen rows
+  return null
 }
 
 export { createColumnDefs, ActionMenu, getRowStyle }
