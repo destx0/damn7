@@ -18,50 +18,56 @@ export const exportToPDF = (gridApi) => {
 
   const doc = new jsPDF('landscape')
 
-  // Add title and date
-  doc.setFontSize(18)
-  doc.text('Student Records', 14, 15)
-  doc.setFontSize(10)
-  doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 14, 22)
-
-  // Get grid data and sort by GRN
-  const allRowData = []
+  // Get only filtered & sorted data
+  const filteredRowData = []
   gridApi.forEachNodeAfterFilterAndSort(node => {
     if (node.data) {
       const rowDataItem = {}
       selectedColumns.forEach(column => {
         rowDataItem[column.field] = node.data[column.field]
       })
-      allRowData.push(rowDataItem)
+      filteredRowData.push(rowDataItem)
     }
   })
 
+  // If no data after filtering, show message
+  if (filteredRowData.length === 0) {
+    doc.setFontSize(14)
+    doc.text('No records found matching the filter criteria.', 14, 30)
+    doc.save('student_records.pdf')
+    return
+  }
+
+  // Add title and date with filter info
+  doc.setFontSize(18)
+  doc.text('Student Records', 14, 15)
+  doc.setFontSize(10)
+  const currentDate = new Date().toLocaleDateString()
+  doc.text(`Generated on: ${currentDate}`, 14, 22)
+  doc.text(`Total Records: ${filteredRowData.length}`, 14, 27)
+
   // Sort by GRN
-  allRowData.sort((a, b) => a.GRN.localeCompare(b.GRN))
+  filteredRowData.sort((a, b) => a.GRN.localeCompare(b.GRN))
 
   // Split data into chunks of 20 records
   const chunkSize = 20
   const chunks = []
-  for (let i = 0; i < allRowData.length; i += chunkSize) {
-    chunks.push(allRowData.slice(i, i + chunkSize))
+  for (let i = 0; i < filteredRowData.length; i += chunkSize) {
+    chunks.push(filteredRowData.slice(i, i + chunkSize))
   }
 
   // Create tables for each chunk
-  let startY = 30
+  let startY = 35 // Adjusted to accommodate the new text
   chunks.forEach((chunk, index) => {
     if (index > 0) {
-      // Add new page for subsequent chunks
       doc.addPage()
-      // Reset startY for new page
       startY = 30
-      // Add header to new page
       doc.setFontSize(18)
       doc.text('Student Records (Continued)', 14, 15)
       doc.setFontSize(10)
       doc.text(`Page ${index + 1} of ${chunks.length}`, 14, 22)
     }
 
-    // Create the table for this chunk
     doc.autoTable({
       startY: startY,
       head: [selectedColumns.map(column => column.header)],
@@ -92,6 +98,7 @@ export const exportToPDF = (gridApi) => {
     })
   })
 
-  // Save the PDF
-  doc.save('student_records.pdf')
+  // Save the PDF with a more descriptive name including the date
+  const fileName = `student_records_${currentDate.replace(/\//g, '-')}.pdf`
+  doc.save(fileName)
 }
