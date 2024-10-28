@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { UserPlus, LogOut, Search, RefreshCw, Download, Upload, MoreVertical } from 'lucide-react'
+import { UserPlus, LogOut, Search, RefreshCw, Download, Upload, MoreVertical, FileDown } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import logo from '@/assets/logo.png'
 import {
@@ -18,6 +18,7 @@ const Header = ({
   handleLogout,
   handleRefresh,
   handleExportData,
+  handleExportPDF,
   handleImportData
 }) => {
   const navigate = useNavigate()
@@ -79,7 +80,11 @@ const Header = ({
               <>
                 <DropdownMenuItem onClick={handleExportData} className="hover:bg-slate-600">
                   <Download size={16} className="mr-2" />
-                  <span>Export Data</span>
+                  <span>Export as CSV</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={handleExportPDF} className="hover:bg-slate-600">
+                  <FileDown size={16} className="mr-2" />
+                  <span>Export as PDF</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={handleImportData} className="hover:bg-slate-600">
                   <Upload size={16} className="mr-2" />

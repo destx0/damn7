@@ -12,6 +12,7 @@ import { createColumnDefs, getRowStyle } from './ColumnDefs'
 import Header from '@/components/Header'
 import { Toaster, toast } from 'react-hot-toast'
 import DuplicateResolutionDialog from '@/components/DuplicateResolutionDialog'
+import { exportToPDF } from '@/components/StudentPDFExport'
 
 const TablePage = () => {
   const [rowData, setRowData] = useState([])
@@ -235,6 +236,14 @@ const TablePage = () => {
     }
   }
 
+  const handleExportPDF = useCallback(() => {
+    if (gridRef.current && gridRef.current.api) {
+      exportToPDF(gridRef.current.api)
+    } else {
+      console.error('Grid API is not available')
+    }
+  }, [])
+
   const gridRef = useRef(null)
 
   useEffect(() => {
@@ -262,6 +271,7 @@ const TablePage = () => {
         handleLogout={handleLogout}
         handleRefresh={handleRefresh}
         handleExportData={handleExportData}
+        handleExportPDF={handleExportPDF}
         handleImportData={handleImportData}
       />
       <div className="flex-1 overflow-hidden">
