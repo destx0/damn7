@@ -1,4 +1,3 @@
-import React from 'react'
 import LeaveForm from './tablePage/LeaveForm'
 
 const LeaveFormPage = () => {

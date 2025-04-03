@@ -1,10 +1,11 @@
-import React, { useState } from 'react'
+/* eslint-disable react/prop-types */
+import { useState } from 'react'
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogFooter,
+  DialogFooter
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
@@ -12,14 +13,12 @@ import { Label } from '@/components/ui/label'
 
 const DuplicateResolutionDialog = ({ duplicates, onResolve, onCancel }) => {
   const [resolutions, setResolutions] = useState(
-    duplicates.map(student => ({ ...student, action: 'skip' }))
+    duplicates.map((student) => ({ ...student, action: 'skip' }))
   )
 
   const handleResolutionChange = (index, action) => {
-    setResolutions(prev =>
-      prev.map((resolution, i) =>
-        i === index ? { ...resolution, action } : resolution
-      )
+    setResolutions((prev) =>
+      prev.map((resolution, i) => (i === index ? { ...resolution, action } : resolution))
     )
   }
 
@@ -37,7 +36,9 @@ const DuplicateResolutionDialog = ({ duplicates, onResolve, onCancel }) => {
           {duplicates.map((student, index) => (
             <div key={student.GRN} className="mb-4 p-2 border rounded">
               <p>GRN: {student.GRN}</p>
-              <p>Name: {student.name} {student.surname}</p>
+              <p>
+                Name: {student.name} {student.surname}
+              </p>
               <RadioGroup
                 value={resolutions[index].action}
                 onValueChange={(value) => handleResolutionChange(index, value)}

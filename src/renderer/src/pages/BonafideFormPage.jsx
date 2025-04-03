@@ -1,4 +1,3 @@
-import React from 'react'
 import BonafideForm from './tablePage/BonafideForm'
 
 const BonafideFormPage = () => {

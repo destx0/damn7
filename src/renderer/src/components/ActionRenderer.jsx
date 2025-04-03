@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react'
+/* eslint-disable react/prop-types */
+import { useState, useEffect } from 'react'
 import { MoreHorizontal, Lock, Unlock } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
@@ -15,12 +16,20 @@ import {
   DialogDescription,
   DialogFooter,
   DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+  DialogTitle
+} from '@/components/ui/dialog'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 
-const ActionRenderer = ({ data, onEdit, onDelete, onLeaveCertificate, onBonafideCertificate, onFreeze, onUnfreeze }) => {
+const ActionRenderer = ({
+  data,
+  onEdit,
+  onDelete,
+  onLeaveCertificate,
+  onBonafideCertificate,
+  onFreeze,
+  onUnfreeze
+}) => {
   const [isFrozen, setIsFrozen] = useState(data.isFrozen || false)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [password, setPassword] = useState('')
@@ -80,8 +89,12 @@ const ActionRenderer = ({ data, onEdit, onDelete, onLeaveCertificate, onBonafide
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuLabel>Certificates</DropdownMenuLabel>
-          <DropdownMenuItem onClick={() => onLeaveCertificate(data.GRN)}>Leave Certificate</DropdownMenuItem>
-          <DropdownMenuItem onClick={() => onBonafideCertificate(data.GRN)}>Bonafide Certificate</DropdownMenuItem>
+          <DropdownMenuItem onClick={() => onLeaveCertificate(data.GRN)}>
+            Leave Certificate
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => onBonafideCertificate(data.GRN)}>
+            Bonafide Certificate
+          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
 
@@ -90,7 +103,7 @@ const ActionRenderer = ({ data, onEdit, onDelete, onLeaveCertificate, onBonafide
           <DialogHeader>
             <DialogTitle>{isFrozen ? 'Unfreeze' : 'Freeze'} Student Data</DialogTitle>
             <DialogDescription>
-              Enter the password to {isFrozen ? 'unfreeze' : 'freeze'} this student's data.
+              Enter the password to {isFrozen ? 'unfreeze' : 'freeze'} this student&apos;s data.
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">

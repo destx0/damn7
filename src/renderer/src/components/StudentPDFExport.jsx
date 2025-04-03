@@ -20,10 +20,10 @@ export const exportToPDF = (gridApi) => {
 
   // Get only filtered & sorted data
   const filteredRowData = []
-  gridApi.forEachNodeAfterFilterAndSort(node => {
+  gridApi.forEachNodeAfterFilterAndSort((node) => {
     if (node.data) {
       const rowDataItem = {}
-      selectedColumns.forEach(column => {
+      selectedColumns.forEach((column) => {
         rowDataItem[column.field] = node.data[column.field]
       })
       filteredRowData.push(rowDataItem)
@@ -70,8 +70,8 @@ export const exportToPDF = (gridApi) => {
 
     doc.autoTable({
       startY: startY,
-      head: [selectedColumns.map(column => column.header)],
-      body: chunk.map(row => selectedColumns.map(column => row[column.field])),
+      head: [selectedColumns.map((column) => column.header)],
+      body: chunk.map((row) => selectedColumns.map((column) => row[column.field])),
       theme: 'grid',
       styles: {
         fontSize: 8,
@@ -85,7 +85,7 @@ export const exportToPDF = (gridApi) => {
         fontSize: 8,
         fontStyle: 'bold'
       },
-      didDrawPage: function(data) {
+      didDrawPage: function () {
         // Add page number at the bottom
         doc.setFontSize(8)
         doc.text(

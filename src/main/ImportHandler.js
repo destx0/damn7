@@ -8,9 +8,7 @@ export const handleImportData = async (event) => {
   try {
     const { filePaths } = await dialog.showOpenDialog({
       properties: ['openFile'],
-      filters: [
-        { name: 'Spreadsheets', extensions: ['xlsx', 'xls', 'csv'] }
-      ]
+      filters: [{ name: 'Spreadsheets', extensions: ['xlsx', 'xls', 'csv'] }]
     })
 
     if (filePaths.length === 0) return { success: false, message: 'No file selected' }
@@ -80,7 +78,7 @@ export const handleImportData = async (event) => {
       }
 
       // Only process the student if at least one field is non-empty
-      if (Object.values(student).some(value => value !== '')) {
+      if (Object.values(student).some((value) => value !== '')) {
         const existingStudent = await getStudent(student.GRN)
 
         if (existingStudent) {

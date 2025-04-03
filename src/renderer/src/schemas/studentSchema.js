@@ -8,7 +8,10 @@ export const studentSchema = z.object({
   studentId: optionalStringWithRegex(/^\d{19}$/, 'Student ID must be exactly 19 digits'),
   aadharNo: optionalStringWithRegex(/^\d{12}$/, 'Aadhar Number must be exactly 12 digits'),
   PENNo: optionalStringWithRegex(/^\d{11}$/, 'PEN Number must be exactly 11 digits'),
-  GRN: z.string().regex(/^\d+$/, { message: 'GRN must be numeric' }).min(1, { message: 'GRN is required' }),
+  GRN: z
+    .string()
+    .regex(/^\d+$/, { message: 'GRN must be numeric' })
+    .min(1, { message: 'GRN is required' }),
   APAARId: optionalStringWithRegex(/^\d{12}$/, 'APAAR ID/ABC ID must be exactly 12 digits'),
   name: z
     .string()
@@ -22,7 +25,10 @@ export const studentSchema = z.object({
     .string()
     .regex(/^[a-zA-Z\s]+$/, { message: 'Surname must contain only letters and spaces' })
     .min(1, { message: 'Surname is required' }),
-  mothersName: optionalStringWithRegex(/^[a-zA-Z\s]*$/, "Mother's Name must contain only letters and spaces"),
+  mothersName: optionalStringWithRegex(
+    /^[a-zA-Z\s]*$/,
+    "Mother's Name must contain only letters and spaces"
+  ),
   religion: z.string().optional().or(z.literal('')),
   caste: z.string().optional().or(z.literal('')),
   subCaste: z.string().optional().or(z.literal('')),

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -36,7 +36,7 @@ const BonafideForm = () => {
   const [isReasonDialogOpen, setIsReasonDialogOpen] = useState(false)
   const [selectedStandard, setSelectedStandard] = useState('')
   const [selectedReason, setSelectedReason] = useState('')
-  const [generatedCount, setGeneratedCount] = useState(0)
+  const [setGeneratedCount] = useState(0)
 
   const standardOptions = ['V', 'VI', 'VII', 'VIII', 'IX', 'X']
   const reasonOptions = [
@@ -75,7 +75,7 @@ const BonafideForm = () => {
         const student = await window.api.getStudent(initialStudentData.GRN)
         const formattedStudent = {
           ...student,
-          dateOfBonafide: formatDateString(student.dateOfBonafide),
+          dateOfBonafide: formatDateString(student.dateOfBonafide)
         }
         setStudentData(formattedStudent)
         setFormData((prevData) => ({

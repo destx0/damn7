@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react'
+import { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import { AgGridReact } from 'ag-grid-react'
 import 'ag-grid-community/styles/ag-grid.css'
 import 'ag-grid-community/styles/ag-theme-alpine.css'
@@ -29,15 +29,17 @@ const TablePage = () => {
     try {
       const students = await window.api.getStudents()
       // Fetch certificate counts for each student
-      const studentsWithCounts = await Promise.all(students.map(async (student) => {
-        const bonafideCount = await window.api.getBonafideGeneratedCount(student.GRN)
-        const leaveCount = await window.api.getLeaveGeneratedCount(student.GRN)
-        return {
-          ...student,
-          bonafideGeneratedCount: bonafideCount,
-          leaveGeneratedCount: leaveCount
-        }
-      }))
+      const studentsWithCounts = await Promise.all(
+        students.map(async (student) => {
+          const bonafideCount = await window.api.getBonafideGeneratedCount(student.GRN)
+          const leaveCount = await window.api.getLeaveGeneratedCount(student.GRN)
+          return {
+            ...student,
+            bonafideGeneratedCount: bonafideCount,
+            leaveGeneratedCount: leaveCount
+          }
+        })
+      )
       setRowData(studentsWithCounts)
     } catch (error) {
       console.error('Error fetching students:', error)
@@ -51,7 +53,7 @@ const TablePage = () => {
   const handleEditStudent = useCallback(
     (student) => {
       if (userType === 'admin') {
-        console.log('Editing student:', student);
+        console.log('Editing student:', student)
         navigate(`/edit-student/${student.GRN}`, { state: { student } })
       }
     },
@@ -62,12 +64,12 @@ const TablePage = () => {
     async (GRN) => {
       if (userType === 'admin') {
         try {
-          console.log('Attempting to delete student with GRN:', GRN);
-          await window.api.deleteStudent(GRN);
-          console.log('Student deleted successfully');
-          setRowData((prevData) => prevData.filter((student) => student.GRN !== GRN));
+          console.log('Attempting to delete student with GRN:', GRN)
+          await window.api.deleteStudent(GRN)
+          console.log('Student deleted successfully')
+          setRowData((prevData) => prevData.filter((student) => student.GRN !== GRN))
         } catch (error) {
-          console.error('Error deleting student:', error);
+          console.error('Error deleting student:', error)
         }
       }
     },
@@ -76,22 +78,29 @@ const TablePage = () => {
 
   const isAdmin = userType === 'admin'
 
-  const generateDraftCertificate = useCallback(async (data, type) => {
-    try {
-      let base64Data
-      if (type === 'leave') {
-        base64Data = await window.api.generateDraftLeaveCertificate(data)
-        navigate(`/leave-form/${data.GRN}`, { state: { pdfDataUrl: `data:application/pdf;base64,${base64Data}`, studentData: data } })
-      } else if (type === 'bonafide') {
-        base64Data = await window.api.generateDraftBonafideCertificate(data)
-        navigate(`/bonafide-form/${data.GRN}`, { state: { pdfDataUrl: `data:application/pdf;base64,${base64Data}`, studentData: data } })
-      } else {
-        throw new Error('Unknown certificate type')
+  const generateDraftCertificate = useCallback(
+    async (data, type) => {
+      try {
+        let base64Data
+        if (type === 'leave') {
+          base64Data = await window.api.generateDraftLeaveCertificate(data)
+          navigate(`/leave-form/${data.GRN}`, {
+            state: { pdfDataUrl: `data:application/pdf;base64,${base64Data}`, studentData: data }
+          })
+        } else if (type === 'bonafide') {
+          base64Data = await window.api.generateDraftBonafideCertificate(data)
+          navigate(`/bonafide-form/${data.GRN}`, {
+            state: { pdfDataUrl: `data:application/pdf;base64,${base64Data}`, studentData: data }
+          })
+        } else {
+          throw new Error('Unknown certificate type')
+        }
+      } catch (error) {
+        console.error(`Error generating draft ${type} certificate:`, error)
       }
-    } catch (error) {
-      console.error(`Error generating draft ${type} certificate:`, error)
-    }
-  }, [navigate])
+    },
+    [navigate]
+  )
 
   const handleStudentUpdate = useCallback((updatedStudent) => {
     setRowData((prevData) =>
@@ -143,7 +152,14 @@ const TablePage = () => {
         handleFreezeStudent,
         handleUnfreezeStudent
       ),
-    [isAdmin, handleEditStudent, handleDeleteStudent, generateDraftCertificate, handleFreezeStudent, handleUnfreezeStudent]
+    [
+      isAdmin,
+      handleEditStudent,
+      handleDeleteStudent,
+      generateDraftCertificate,
+      handleFreezeStudent,
+      handleUnfreezeStudent
+    ]
   )
 
   const defaultColDef = useMemo(
@@ -174,9 +190,13 @@ const TablePage = () => {
   }, [])
 
   const handleRefresh = useCallback(() => {
-    return new Promise(async (resolve) => {
-      await fetchStudents()
-      resolve()
+    return new Promise((resolve) => {
+      fetchStudents()
+        .then(() => resolve())
+        .catch((error) => {
+          console.error('Error refreshing data:', error)
+          resolve() // Still resolve to prevent hanging promises
+        })
     })
   }, [fetchStudents])
 
@@ -185,13 +205,14 @@ const TablePage = () => {
       const params = {
         fileName: 'student_data.csv',
         suppressQuotes: true,
-        columnSeparator: ',',
+        columnSeparator: ','
       }
 
       if (gridRef.current.columnApi) {
-        params.columnKeys = gridRef.current.columnApi.getAllColumns()
-          .filter(column => column.colDef.field)
-          .map(column => column.getColId())
+        params.columnKeys = gridRef.current.columnApi
+          .getAllColumns()
+          .filter((column) => column.colDef.field)
+          .map((column) => column.getColId())
       }
 
       gridRef.current.api.exportDataAsCsv(params)
@@ -253,7 +274,10 @@ const TablePage = () => {
     window.electron.ipcRenderer.on('duplicate-students-found', handleDuplicateStudents)
 
     return () => {
-      window.electron.ipcRenderer.removeListener('duplicate-students-found', handleDuplicateStudents)
+      window.electron.ipcRenderer.removeListener(
+        'duplicate-students-found',
+        handleDuplicateStudents
+      )
     }
   }, [])
 

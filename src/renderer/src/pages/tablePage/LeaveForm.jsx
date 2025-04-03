@@ -1,15 +1,9 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue
-} from '@/components/ui/select'
+
 import Datepicker from 'react-tailwindcss-datepicker'
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable'
 import {
@@ -91,12 +85,12 @@ const LeaveForm = () => {
   const currentYear = new Date().getFullYear()
   const years = Array.from({ length: 50 }, (_, i) => currentYear - i)
 
-  const handleSelectChange = (name, value) => {
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value
-    }))
-  }
+  // const handleSelectChange = (name, value) => {
+  //   setFormData((prevData) => ({
+  //     ...prevData,
+  //     [name]: value
+  //   }))
+  // }
 
   const formatDateString = (dateValue) => {
     if (!dateValue) return ''
@@ -206,14 +200,14 @@ const LeaveForm = () => {
     setSelectedStandard(standard)
   }
 
-  const romanToOrdinal = {
-    V: 'Fifth',
-    VI: 'Sixth',
-    VII: 'Seventh',
-    VIII: 'Eighth',
-    IX: 'Ninth',
-    X: 'Tenth'
-  }
+  // const romanToOrdinal = {
+  //   V: 'Fifth',
+  //   VI: 'Sixth',
+  //   VII: 'Seventh',
+  //   VIII: 'Eighth',
+  //   IX: 'Ninth',
+  //   X: 'Tenth'
+  // }
 
   const handleConfirmStandard = () => {
     const semiSuffix = isSemi ? ' Semi' : ''

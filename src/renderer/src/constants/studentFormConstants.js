@@ -21,7 +21,7 @@ export const fieldNames = [
   'lastAttendedSchool',
   'lastSchoolStandard',
   'dateOfAdmission',
-  'admissionStandard',
+  'admissionStandard'
 ]
 
 export const fieldLabels = {

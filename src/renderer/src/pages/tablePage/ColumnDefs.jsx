@@ -1,8 +1,7 @@
-import React from 'react'
+/* eslint-disable react/prop-types */
 import ActionRenderer from '@/components/ActionRenderer'
 
 const ActionMenu = ({
-  isAdmin,
   onEdit,
   onDelete,
   onLeaveCertificate,

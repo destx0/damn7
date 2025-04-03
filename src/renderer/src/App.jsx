@@ -6,8 +6,6 @@ import BonafideFormPage from './pages/BonafideFormPage'
 import { HashRouter as Router, Route, Routes } from 'react-router-dom'
 
 function App() {
-  const ipcHandle = () => window.electron.ipcRenderer.send('ping')
-
   return (
     <Router>
       <Routes>

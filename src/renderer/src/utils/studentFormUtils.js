@@ -1,21 +1,20 @@
 export const formatLabel = (field, fieldLabels) => {
   return (
-    fieldLabels[field] ||
-    field.replace(/([A-Z])/g, ' $1').replace(/^./, (str) => str.toUpperCase())
+    fieldLabels[field] || field.replace(/([A-Z])/g, ' $1').replace(/^./, (str) => str.toUpperCase())
   )
 }
 
 export const sanitizeValue = (id, value) => {
   if (['studentId', 'aadharNo', 'PENNo', 'GRN', 'APAARId'].includes(id)) {
-    let sanitizedValue = value.replace(/\D/g, '');
+    let sanitizedValue = value.replace(/\D/g, '')
     if (id === 'PENNo') {
-      return sanitizedValue.slice(0, 11);
+      return sanitizedValue.slice(0, 11)
     } else if (id === 'aadharNo' || id === 'APAARId') {
-      return sanitizedValue.slice(0, 12);
+      return sanitizedValue.slice(0, 12)
     }
-    return sanitizedValue;
+    return sanitizedValue
   } else if (['name', 'surname', 'fathersName', 'mothersName'].includes(id)) {
-    return value.replace(/[^a-zA-Z\s]/g, '');
+    return value.replace(/[^a-zA-Z\s]/g, '')
   }
-  return value;
+  return value
 }

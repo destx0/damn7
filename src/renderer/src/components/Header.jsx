@@ -1,7 +1,17 @@
-import React, { useState } from 'react'
+/* eslint-disable react/prop-types */
+import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { UserPlus, LogOut, Search, RefreshCw, Download, Upload, MoreVertical, FileDown } from 'lucide-react'
+import {
+  UserPlus,
+  LogOut,
+  Search,
+  RefreshCw,
+  Download,
+  Upload,
+  MoreVertical,
+  FileDown
+} from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import logo from '@/assets/logo.png'
 import {
