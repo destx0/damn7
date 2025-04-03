@@ -1,6 +1,6 @@
 import { app, shell, BrowserWindow, ipcMain } from 'electron'
 import { join } from 'path'
-import { electronApp, optimizer, is } from '@electron-toolkit/utils'
+import { electronApp, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 import { generateLeaveCertificate } from './leaveCertificateGenerator'
 import { generateBonafideCertificate } from './bonafideCertificateGenerator'
@@ -15,12 +15,13 @@ import {
   incrementCertificateCounter,
   saveCertificate,
   getLatestCertificate,
-  getStudentById,
   incrementBonafideGeneratedCount,
   getBonafideGeneratedCount,
   incrementLeaveGeneratedCount,
   getLeaveGeneratedCount,
-  getStudentByGRN
+  getStudentByGRN,
+  saveCertificateSerialNumber,
+  getCertificateSerialNumber
 } from './dbOperations'
 import { handleImportData, resolveDuplicates } from './ImportHandler'
 
@@ -76,11 +77,11 @@ function setupIpcHandlers() {
 
   ipcMain.handle('get-students', async () => {
     try {
-      const students = await getStudents();
-      return students;
+      const students = await getStudents()
+      return students
     } catch (error) {
-      console.error('Error fetching students:', error);
-      throw error;
+      console.error('Error fetching students:', error)
+      throw error
     }
   })
 
@@ -147,7 +148,7 @@ function setupIpcHandlers() {
       )
       const base64Pdf = Buffer.from(pdfBuffer).toString('base64')
       await incrementCertificateCounter('leave')
-      await incrementLeaveGeneratedCount(data.GRN) // Changed from studentId to GRN
+      await incrementLeaveGeneratedCount(data.GRN)
       return base64Pdf
     } catch (error) {
       console.error('Error generating official leave certificate:', error)
@@ -178,7 +179,7 @@ function setupIpcHandlers() {
       )
       const base64Pdf = Buffer.from(pdfBuffer).toString('base64')
       await incrementCertificateCounter('bonafide')
-      await incrementBonafideGeneratedCount(data.GRN) // Changed from studentId to GRN
+      await incrementBonafideGeneratedCount(data.GRN)
       return base64Pdf
     } catch (error) {
       console.error('Error generating official bonafide certificate:', error)
@@ -224,13 +225,13 @@ function setupIpcHandlers() {
   // New handlers for get-student-by-id and update-student
   ipcMain.handle('get-student-by-grn', async (event, GRN) => {
     try {
-      const student = await getStudentByGRN(GRN);
-      return student;
+      const student = await getStudentByGRN(GRN)
+      return student
     } catch (error) {
-      console.error('Error getting student by GRN:', error);
-      throw error;
+      console.error('Error getting student by GRN:', error)
+      throw error
     }
-  });
+  })
 
   ipcMain.handle('freeze-student', async (_, GRN) => {
     try {
@@ -254,6 +255,15 @@ function setupIpcHandlers() {
       console.error('Error unfreezing student:', error)
       throw error
     }
+  })
+
+  // Add new handlers for certificate serial numbers
+  ipcMain.handle('save-certificate-serial-number', async (_, GRN, type, serialNumber) => {
+    return await saveCertificateSerialNumber(GRN, type, serialNumber)
+  })
+
+  ipcMain.handle('get-certificate-serial-number', async (_, GRN, type) => {
+    return await getCertificateSerialNumber(GRN, type)
   })
 }
 

@@ -8,8 +8,8 @@ export const initializeDatabase = async () => {
     // Initialize certificate counters if they don't exist
     if (!store.has('certificate_counters')) {
       store.set('certificate_counters', {
-        bonafide: { next_number: 1, generated_count: 0 },
-        leave: { next_number: 1, generated_count: 0 }
+        bonafide_sr: { next_number: 1 },
+        leave_sr: { next_number: 1 }
       });
     }
     console.log('Database initialized successfully');
@@ -112,7 +112,8 @@ export const deleteStudent = async (GRN) => {
 export const getNextCertificateNumber = async (type) => {
   try {
     const counters = store.get('certificate_counters');
-    return counters[type].next_number;
+    const counterKey = `${type}_sr`;
+    return counters[counterKey].next_number;
   } catch (err) {
     console.error('Error getting next certificate number:', err);
     throw err;
@@ -122,7 +123,8 @@ export const getNextCertificateNumber = async (type) => {
 export const incrementCertificateCounter = async (type) => {
   try {
     const counters = store.get('certificate_counters');
-    counters[type].next_number += 1;
+    const counterKey = `${type}_sr`;
+    counters[counterKey].next_number += 1;
     store.set('certificate_counters', counters);
   } catch (err) {
     console.error('Error incrementing certificate counter:', err);
@@ -222,3 +224,38 @@ export const getLeaveGeneratedCount = async (GRN) => {
 };
 
 // No need for a closeDatabase function with IndexedDB
+
+// Add new function to save certificate serial number
+export const saveCertificateSerialNumber = async (GRN, type, serialNumber) => {
+  try {
+    const students = store.get('students', []);
+    const studentIndex = students.findIndex(s => s.GRN === GRN);
+    if (studentIndex !== -1) {
+      if (!students[studentIndex].certificateSerialNumbers) {
+        students[studentIndex].certificateSerialNumbers = {};
+      }
+      students[studentIndex].certificateSerialNumbers[type] = serialNumber;
+      store.set('students', students);
+      return serialNumber;
+    }
+    throw new Error('Student not found');
+  } catch (err) {
+    console.error('Error saving certificate serial number:', err);
+    throw err;
+  }
+};
+
+// Add new function to get certificate serial number
+export const getCertificateSerialNumber = async (GRN, type) => {
+  try {
+    const students = store.get('students', []);
+    const student = students.find(s => s.GRN === GRN);
+    if (student && student.certificateSerialNumbers && student.certificateSerialNumbers[type]) {
+      return student.certificateSerialNumbers[type];
+    }
+    return null;
+  } catch (err) {
+    console.error('Error getting certificate serial number:', err);
+    throw err;
+  }
+};

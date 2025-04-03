@@ -33,17 +33,19 @@ const api = {
 
   getStudentByGRN: (GRN) => ipcRenderer.invoke("get-student-by-grn", GRN),
 
-  // Add these new functions for bonafide generated count
+  // Simplified certificate count functions - remove redundant increment functions
   getBonafideGeneratedCount: (GRN) => ipcRenderer.invoke("get-bonafide-generated-count", GRN),
-  incrementBonafideGeneratedCount: () => ipcRenderer.invoke("increment-bonafide-generated-count"),
-
-  // Add these new functions for leave generated count
   getLeaveGeneratedCount: (GRN) => ipcRenderer.invoke("get-leave-generated-count", GRN),
-  incrementLeaveGeneratedCount: () => ipcRenderer.invoke("increment-leave-generated-count"),
 
   // New functions for freeze/unfreeze
   freezeStudent: (GRN) => ipcRenderer.invoke("freeze-student", GRN),
   unfreezeStudent: (GRN) => ipcRenderer.invoke("unfreeze-student", GRN),
+
+  // Add new functions for certificate serial numbers
+  saveCertificateSerialNumber: (GRN, type, serialNumber) =>
+    ipcRenderer.invoke("save-certificate-serial-number", GRN, type, serialNumber),
+  getCertificateSerialNumber: (GRN, type) =>
+    ipcRenderer.invoke("get-certificate-serial-number", GRN, type),
 };
 
 // Use `contextBridge` APIs to expose Electron APIs to
